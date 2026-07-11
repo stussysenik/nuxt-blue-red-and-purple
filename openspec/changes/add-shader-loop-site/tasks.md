@@ -34,8 +34,8 @@
       CPU-throttled run steps resolution down; 120 Hz speed parity spot-check
 
 ## 4. Ship
-- [ ] 4.1 Deploy to Vercel (preview → verify → production)
-- [ ] 4.2 Add blueredandpurple.world + www to the Vercel project; set
+- [x] 4.1 Deploy to Vercel (preview → verify → production)
+- [x] 4.2 Add blueredandpurple.world + www to the Vercel project; set
       Spaceship DNS records via API; confirm HTTPS resolution on both hosts
-- [ ] 4.3 Final binary-truth pass on the live domain: screenshot, console
+- [x] 4.3 Final binary-truth pass on the live domain: screenshot, console
       clean, Lighthouse perf sanity
