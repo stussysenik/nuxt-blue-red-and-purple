@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>blueredandpurple</title>
+    <meta name="description" content="blueredandpurple — a continuous loop of light. Thin-film iridescence, metallic flake, and silk sweeps in pastel blue, red, and purple." />
+    <meta name="theme-color" content="#8b8ad8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content="blueredandpurple" />
+    <meta property="og:description" content="A continuous loop of light — optical-physics shaders in pastel blue, red, and purple." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://blueredandpurple.world/" />
+    <meta property="og:image" content="https://blueredandpurple.world/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; }
+      body {
+        background: #8b8ad8;
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+      #c {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      body.no-webgl {
+        background: linear-gradient(160deg, #a8b8e8 0%, #c5a8e0 45%, #e8a8b8 100%);
+      }
+      .wordmark {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+        color: rgba(253, 252, 255, 0.94);
+        font-size: clamp(1.05rem, 3vw, 2rem);
+        font-weight: 300;
+        letter-spacing: 0.42em;
+        text-indent: 0.42em;
+        text-shadow: 0 0 24px rgba(80, 70, 140, 0.35);
+        animation: settle 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      .wordmark span { pointer-events: auto; user-select: text; }
+      @keyframes settle {
+        from { opacity: 0; letter-spacing: 0.58em; }
+        to { opacity: 1; letter-spacing: 0.42em; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .wordmark { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="c" aria-hidden="true"></canvas>
+    <h1 class="wordmark"><span>blueredandpurple</span></h1>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
