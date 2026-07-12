@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>blueredandpurple</title>
+    <title>*blue red + purple/</title>
     <meta name="description" content="blueredandpurple — a continuous loop of light. Thin-film iridescence, metallic flake, and silk sweeps in pastel blue, red, and purple." />
     <meta name="theme-color" content="#8b8ad8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -28,7 +28,13 @@
         display: block;
       }
       body.no-webgl {
-        background: linear-gradient(160deg, #a8b8e8 0%, #c5a8e0 45%, #e8a8b8 100%);
+        background: linear-gradient(200deg, #a8b8e8, #c5a8e0 30%, #e8a8b8 55%, #b3a4e4 80%, #a8b8e8);
+        background-size: 100% 400%;
+        animation: drift 36s ease-in-out infinite alternate;
+      }
+      @keyframes drift {
+        from { background-position: 50% 0%; }
+        to { background-position: 50% 100%; }
       }
       .wordmark {
         position: fixed;
@@ -51,12 +57,13 @@
       }
       @media (prefers-reduced-motion: reduce) {
         .wordmark { animation: none; }
+        body.no-webgl { animation-duration: 120s; }
       }
     </style>
   </head>
   <body>
     <canvas id="c" aria-hidden="true"></canvas>
-    <h1 class="wordmark"><span>blueredandpurple</span></h1>
+    <h1 class="wordmark"><span>*blue red + purple/</span></h1>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,7 +1,8 @@
 /**
  * Delta-time clock driving a rAF loop. Fully stops while the tab is hidden
  * and resumes without a time jump. Motion speed is refresh-rate independent.
- * Under `prefers-reduced-motion` the scaled dt slows to a gentle drift.
+ * Under `prefers-reduced-motion` the scaled dt slows to a gentle drift —
+ * still visibly alive, never parallax-fast.
  */
 export function startLoop(
   render: (elapsedSeconds: number, dt: number, rawDt: number) => void,
@@ -14,7 +15,7 @@ export function startLoop(
   const frame = (now: number): void => {
     const rawDt = last === null ? 0 : Math.min((now - last) / 1000, 0.1);
     last = now;
-    const dt = rawDt * (reduced.matches ? 0.05 : 1);
+    const dt = rawDt * (reduced.matches ? 0.3 : 1);
     elapsed += dt;
     render(elapsed, dt, rawDt);
     rafId = requestAnimationFrame(frame);
