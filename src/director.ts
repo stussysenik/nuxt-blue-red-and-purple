@@ -28,9 +28,11 @@ export function createDirector(durations: readonly number[]) {
       }
       let mix = 0;
       if (next !== null) {
-        const progress = Math.min((held - duration) / TRANSITION_SECONDS, 1);
-        mix = progress * progress * (3 - 2 * progress);
-        if (progress >= 1) {
+        const p = Math.min((held - duration) / TRANSITION_SECONDS, 1);
+        // Perlin smootherstep: C² continuous, so the crossfade has no
+        // perceptible velocity kink at either end.
+        mix = p * p * p * (p * (p * 6 - 15) + 10);
+        if (p >= 1) {
           active = next;
           next = null;
           held = 0;

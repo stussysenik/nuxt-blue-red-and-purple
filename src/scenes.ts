@@ -21,11 +21,12 @@ out vec4 fragColor;
 
 const assemble = (body: string): string => PRELUDE + commonSource + body;
 
-// Flake leads: it is the loading default.
+// Flake leads: it is the loading default. Short holds keep the loop lively —
+// a new scene is always seconds away (tap/swipe skips ahead anytime).
 export const SCENES: readonly Scene[] = [
-  { id: 'flake', fragSource: assemble(flakeBody), duration: 22 },
-  { id: 'ocean', fragSource: assemble(oceanBody), duration: 24 },
-  { id: 'life', fragSource: assemble(lifeBody), duration: 24 },
-  { id: 'thin-film', fragSource: assemble(thinFilmBody), duration: 26 },
-  { id: 'aniso', fragSource: assemble(anisoBody), duration: 24 },
+  { id: 'flake', fragSource: assemble(flakeBody), duration: 11 },
+  { id: 'ocean', fragSource: assemble(oceanBody), duration: 10 },
+  { id: 'life', fragSource: assemble(lifeBody), duration: 12 },
+  { id: 'thin-film', fragSource: assemble(thinFilmBody), duration: 10 },
+  { id: 'aniso', fragSource: assemble(anisoBody), duration: 11 },
 ];

@@ -14,9 +14,18 @@ function run(surface: GlSurface): void {
   const pipeline = createPipeline(gl, SCENES.map((scene) => scene.fragSource));
   const life = createLife(gl);
   const director = createDirector(SCENES.map((scene) => scene.duration));
-  const pointer = createPointer(() => {
-    director.skip(); // swipe advances the carousel
+  const advance = (): void => {
+    director.skip();
     if ('vibrate' in navigator) navigator.vibrate(8);
+  };
+  let menuWasOpen = false; // set at pointerdown, before a tap resolves
+  const pointer = createPointer({
+    onSwipe: advance,
+    onTap: (target) => {
+      if (target instanceof Element && target.closest('.actions')) return;
+      if (menuWasOpen) return; // that tap was just dismissing the size menu
+      advance();
+    },
   });
   const sceneTimes = SCENES.map((_, i) => i * 7.3); // desynced starting phases
   let renderScale = 1;
@@ -70,6 +79,7 @@ function run(surface: GlSurface): void {
   };
   saveButton?.addEventListener('click', () => setMenu(Boolean(sizesMenu?.hidden)));
   window.addEventListener('pointerdown', (event) => {
+    menuWasOpen = Boolean(sizesMenu && !sizesMenu.hidden);
     if (!(event.target instanceof Element) || !event.target.closest('.actions')) setMenu(false);
   });
   window.addEventListener('keydown', (event) => {

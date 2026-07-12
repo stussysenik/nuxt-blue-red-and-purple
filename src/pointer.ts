@@ -16,13 +16,21 @@ const norm = (e: PointerEvent) => ({
   ny: 1 - e.clientY / window.innerHeight,
 });
 
+export interface PointerCallbacks {
+  /** Deliberate horizontal/vertical drag — one call per gesture. */
+  readonly onSwipe: () => void;
+  /** Quick tap (short, near-still). Receives the event target for UI guards. */
+  readonly onTap: (target: EventTarget | null) => void;
+}
+
 /**
  * Unified pointer/touch input: a critically-damped trailing position, a
- * velocity-fed energy envelope, a pool of water-ripple emitters, and swipe
- * detection (one callback per gesture). All state advances on `sample(dt)`
- * with raw dt so interaction stays responsive under reduced motion.
+ * velocity-fed energy envelope, a pool of water-ripple emitters, and
+ * swipe/tap detection (one callback per gesture). All state advances on
+ * `sample(dt)` with raw dt so interaction stays responsive under reduced
+ * motion.
  */
-export function createPointer(onSwipe: () => void) {
+export function createPointer({ onSwipe, onTap }: PointerCallbacks) {
   let tx = 0.5, ty = 0.55, x = tx, y = ty;
   let heat = 0;
   let energy = 0;
@@ -55,7 +63,13 @@ export function createPointer(onSwipe: () => void) {
     }
   });
 
-  window.addEventListener('pointerup', () => { down = false; });
+  window.addEventListener('pointerup', (e) => {
+    down = false;
+    if (!swiped && performance.now() - downAt < 300
+      && Math.hypot(e.clientX - downX, e.clientY - downY) < 12) {
+      onTap(e.target);
+    }
+  });
   window.addEventListener('pointercancel', () => { down = false; });
 
   return {

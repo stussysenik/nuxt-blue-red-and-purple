@@ -2,9 +2,10 @@
 precision highp float;
 
 // Composite pass: crossfades two scene textures, layers interaction optics
-// (touch aura + water ripples), applies a cinematic grade (chromatic
-// aberration, filmic S-curve, vignette, rare heat-lightning pulses), and
-// dithers (interleaved gradient noise) so pastel gradients never band.
+// (touch aura + water ripples), applies a cinematic grade (filmic S-curve,
+// vignette, rare heat-lightning pulses — deliberately no chromatic
+// aberration: the signal stays clean), and dithers (interleaved gradient
+// noise) so pastel gradients never band.
 
 uniform sampler2D u_texA;
 uniform sampler2D u_texB;
@@ -54,10 +55,8 @@ void main() {
     ripLight += amp;
   }
 
-  // Lens: chromatic aberration growing quadratically toward the edges.
   vec2 c = (uv - 0.5) * vec2(aspect, 1.0);
-  vec2 caOff = c * dot(c, c) * 0.006;
-  vec3 col = vec3(scene(suv + caOff).r, scene(suv).g, scene(suv - caOff).b);
+  vec3 col = scene(suv);
 
   // Pastel lavender-pink lift under the aura and along ripple crests.
   col += aura * vec3(0.17, 0.11, 0.19) + ripLight * vec3(0.12, 0.09, 0.14);
@@ -91,10 +90,11 @@ void main() {
   // Shared grade: hold hues in the blue↔purple↔red band, soften extremes.
   col.g = min(col.g, mix(col.g, min(col.r, col.b), 0.35) + 0.10);
 
-  // Cinematic finish: filmic S-curve, saturation lift, breathing vignette.
+  // Cinematic finish: filmic S-curve, gentle saturation (kept low so no
+  // channel clips into discoloration), breathing vignette.
   col = mix(col, col * col * (3.0 - 2.0 * col), 0.30);
   float luma = dot(col, vec3(0.2126, 0.7152, 0.0722));
-  col = mix(vec3(luma), col, 1.12);
+  col = mix(vec3(luma), col, 1.06);
   float breathe = 0.16 + 0.02 * sin(u_time * 0.23);
   col *= 1.0 - breathe * smoothstep(0.35, 1.25, length(c));
 
