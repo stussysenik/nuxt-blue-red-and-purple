@@ -39,5 +39,11 @@ export function createDirector(durations: readonly number[]) {
       }
       return { active, next, mix };
     },
+    /** User-initiated advance: start the crossfade to the next scene now. */
+    skip(): void {
+      if (next !== null) return;
+      next = (active + 1) % durations.length;
+      held = Math.max(held, durations[active] ?? 20);
+    },
   };
 }

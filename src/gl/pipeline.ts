@@ -6,6 +6,8 @@ interface SceneProgram {
   readonly program: WebGLProgram;
   readonly uTime: WebGLUniformLocation | null;
   readonly uResolution: WebGLUniformLocation | null;
+  /** Present only on scenes that sample the Game of Life state. */
+  readonly uLife: WebGLUniformLocation | null;
 }
 
 interface Target {
@@ -49,6 +51,7 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
       program,
       uTime: gl.getUniformLocation(program, 'u_time'),
       uResolution: gl.getUniformLocation(program, 'u_resolution'),
+      uLife: gl.getUniformLocation(program, 'u_life'),
     };
   });
 
@@ -60,12 +63,22 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
     uMix: gl.getUniformLocation(compositeProgram, 'u_mix'),
     uTime: gl.getUniformLocation(compositeProgram, 'u_time'),
     uResolution: gl.getUniformLocation(compositeProgram, 'u_resolution'),
+    uPointer: gl.getUniformLocation(compositeProgram, 'u_pointer'),
+    uEnergy: gl.getUniformLocation(compositeProgram, 'u_energy'),
+    uRipples: gl.getUniformLocation(compositeProgram, 'u_ripples[0]'),
   };
 
   const targets = [createTarget(gl), createTarget(gl)] as const;
   gl.bindVertexArray(gl.createVertexArray());
 
-  function drawScene(index: number, targetIndex: 0 | 1, time: number, width: number, height: number): void {
+  function drawScene(
+    index: number,
+    targetIndex: 0 | 1,
+    time: number,
+    width: number,
+    height: number,
+    lifeTex?: WebGLTexture,
+  ): void {
     const scene = scenes[index];
     const target = targets[targetIndex];
     if (!scene || !target) return;
@@ -75,10 +88,21 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
     gl.useProgram(scene.program);
     gl.uniform1f(scene.uTime, time);
     gl.uniform2f(scene.uResolution, width, height);
+    if (scene.uLife && lifeTex) {
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, lifeTex);
+      gl.uniform1i(scene.uLife, 2);
+    }
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
-  function drawComposite(mix: number, time: number, width: number, height: number): void {
+  function drawComposite(
+    mix: number,
+    time: number,
+    width: number,
+    height: number,
+    pointer: { x: number; y: number; energy: number; ripples: Float32Array },
+  ): void {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, width, height);
     gl.useProgram(composite.program);
@@ -91,6 +115,9 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
     gl.uniform1f(composite.uMix, mix);
     gl.uniform1f(composite.uTime, time);
     gl.uniform2f(composite.uResolution, width, height);
+    gl.uniform2f(composite.uPointer, pointer.x, pointer.y);
+    gl.uniform1f(composite.uEnergy, pointer.energy);
+    gl.uniform3fv(composite.uRipples, pointer.ripples);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 

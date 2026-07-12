@@ -26,6 +26,7 @@
         width: 100%;
         height: 100%;
         display: block;
+        touch-action: none;
       }
       body.no-webgl {
         background: linear-gradient(200deg, #a8b8e8, #c5a8e0 30%, #e8a8b8 55%, #b3a4e4 80%, #a8b8e8);
@@ -42,21 +43,60 @@
         display: grid;
         place-items: center;
         pointer-events: none;
-        color: rgba(253, 252, 255, 0.94);
+        color: #fdfcff;
         font-size: clamp(1.05rem, 3vw, 2rem);
         font-weight: 300;
         letter-spacing: 0.42em;
         text-indent: 0.42em;
-        text-shadow: 0 0 24px rgba(80, 70, 140, 0.35);
-        animation: settle 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+        text-shadow:
+          0 1px 2px rgba(40, 30, 80, 0.35),
+          0 2px 36px rgba(60, 50, 120, 0.6);
       }
       .wordmark span { pointer-events: auto; user-select: text; }
-      @keyframes settle {
-        from { opacity: 0; letter-spacing: 0.58em; }
-        to { opacity: 1; letter-spacing: 0.42em; }
+      .actions {
+        position: fixed;
+        inset: auto 0 max(1.6rem, env(safe-area-inset-bottom));
+        display: flex;
+        justify-content: center;
+        gap: 2.2rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        text-indent: 0.28em;
       }
+      .actions button,
+      .actions a {
+        appearance: none;
+        background: none;
+        border: 0;
+        padding: 0.4rem 0.2rem;
+        font: inherit;
+        letter-spacing: inherit;
+        color: rgba(253, 252, 255, 0.72);
+        text-decoration: none;
+        text-shadow: 0 1px 2px rgba(40, 30, 80, 0.35), 0 1px 18px rgba(60, 50, 120, 0.55);
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+      .actions button:hover,
+      .actions a:hover,
+      .actions button:focus-visible,
+      .actions a:focus-visible {
+        color: #fdfcff;
+      }
+      .sizes {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        right: 0;
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 1.4rem;
+      }
+      .sizes[hidden] { display: none; }
+      .actions #save[aria-expanded="true"] { color: rgba(253, 252, 255, 0.95); }
+      body.no-webgl #save { display: none; }
       @media (prefers-reduced-motion: reduce) {
-        .wordmark { animation: none; }
         body.no-webgl { animation-duration: 120s; }
       }
     </style>
@@ -64,6 +104,16 @@
   <body>
     <canvas id="c" aria-hidden="true"></canvas>
     <h1 class="wordmark"><span>*blue red + purple/</span></h1>
+    <footer class="actions">
+      <div class="sizes" id="sizes" hidden>
+        <button type="button" data-size="screen">this screen</button>
+        <button type="button" data-size="1290x2796">phone</button>
+        <button type="button" data-size="2048x2732">tablet</button>
+        <button type="button" data-size="3840x2160">desktop</button>
+      </div>
+      <button id="save" type="button" aria-expanded="false" aria-controls="sizes">save wallpaper</button>
+      <a href="mailto:hi@blueredandpurple.com">contact</a>
+    </footer>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
