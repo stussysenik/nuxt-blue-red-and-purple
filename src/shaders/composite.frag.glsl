@@ -3,7 +3,7 @@ precision highp float;
 
 // Composite pass: crossfades two scene textures, layers interaction optics
 // (touch aura + water ripples), applies a cinematic grade (filmic S-curve,
-// vignette, rare heat-lightning pulses — deliberately no chromatic
+// vignette, instantaneous lightning strikes — deliberately no chromatic
 // aberration: the signal stays clean), and dithers (interleaved gradient
 // noise) so pastel gradients never band.
 
@@ -64,16 +64,24 @@ void main() {
   // Pastel lavender-pink lift under the aura and along ripple crests.
   col += aura * vec3(0.17, 0.11, 0.19) + ripLight * vec3(0.12, 0.09, 0.14);
 
-  // Heat lightning: a rare soft double-pulse glow blooming near the top —
-  // dramatic, never strobing (slow decay, small amplitude).
-  float cycle = floor(u_time / 19.0);
-  float since = fract(u_time / 19.0) * 19.0 - (4.0 + hash(vec2(cycle, 3.7)) * 12.0);
-  if (since > 0.0) {  // exp() must never see a negative `since` — it overflows to inf/NaN
-    float pulse = exp(-since * 7.0)
-                + 0.6 * exp(-max(since - 0.28, 0.0) * 9.0) * step(0.28, since);
-    vec2 fd = (uv - vec2(mix(0.2, 0.8, hash(vec2(cycle, 5.3))), 1.05)) * vec2(aspect, 1.0);
-    col += vec3(0.86, 0.80, 1.0) * exp(-dot(fd, fd) * 2.2)
-         * pulse * (0.35 + 0.65 * hash(vec2(cycle, 9.1))) * 0.22;
+  // Lightning: zero attack. Three strokes stutter inside ~120ms, each snapping
+  // to full brightness on a single frame and dying in ~15ms — the strike is over
+  // before the eye can track it, and only the afterglow proves it happened.
+  float cycle = floor(u_time / 9.0);
+  float since = fract(u_time / 9.0) * 9.0 - (2.0 + hash(vec2(cycle, 3.7)) * 5.0);
+  if (since > 0.0) {  // exp() must never see a negative arg — it overflows to inf/NaN
+    float strokes = 0.0;
+    for (int k = 0; k < 3; k++) {
+      float kf = float(k);
+      float t = since - kf * (0.045 + hash(vec2(cycle, 12.0 + kf)) * 0.035);
+      strokes += step(0.0, t) * exp(-max(t, 0.0) * 70.0)
+               * (0.45 + 0.55 * hash(vec2(cycle, 21.0 + kf)));
+    }
+    float after = exp(-since * 9.0);  // fast bloom: it reads as a flash, not a dropped frame
+    vec2 fd = (uv - vec2(mix(0.2, 0.8, hash(vec2(cycle, 5.3))), 1.02)) * vec2(aspect, 1.0);
+    float hot = exp(-dot(fd, fd) * 6.0);
+    // Hot core + a lift across the whole sky: real lightning lights everything at once.
+    col += vec3(0.86, 0.82, 1.0) * (hot * strokes * 0.5 + strokes * 0.09 + hot * after * 0.07);
   }
 
   // Star glitter: a fixed sky of sparse points at two scales, each twinkling
