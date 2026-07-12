@@ -4,6 +4,7 @@ import flakeBody from './shaders/scenes/flake.glsl?raw';
 import anisoBody from './shaders/scenes/aniso.glsl?raw';
 import oceanBody from './shaders/scenes/ocean.glsl?raw';
 import lifeBody from './shaders/scenes/life.glsl?raw';
+import signalBody from './shaders/scenes/signal.glsl?raw';
 
 export interface Scene {
   readonly id: string;
@@ -26,6 +27,7 @@ const assemble = (body: string): string => PRELUDE + commonSource + body;
 export const SCENES: readonly Scene[] = [
   { id: 'flake', fragSource: assemble(flakeBody), duration: 11 },
   { id: 'ocean', fragSource: assemble(oceanBody), duration: 10 },
+  { id: 'signal', fragSource: assemble(signalBody), duration: 11 },
   { id: 'life', fragSource: assemble(lifeBody), duration: 12 },
   { id: 'thin-film', fragSource: assemble(thinFilmBody), duration: 10 },
   { id: 'aniso', fragSource: assemble(anisoBody), duration: 11 },

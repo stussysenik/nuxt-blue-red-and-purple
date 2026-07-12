@@ -55,6 +55,9 @@ void main() {
     ripLight += amp;
   }
 
+  // Everything follows movement: a whisper of parallax toward the pointer.
+  suv += (u_pointer - 0.5) * 0.008;
+
   vec2 c = (uv - 0.5) * vec2(aspect, 1.0);
   vec3 col = scene(suv);
 
