@@ -48,14 +48,15 @@ execution, not decision-making.
 - [ ] 4.0 `scrape:works` script: Cargo API (`api.cargo.site/v1/sites/{id}`
       + `/css`) + og/meta + palette extraction → `works/*.json`;
       re-runnable for future batches (see works-survey.md finding)
-- [ ] 4.1 Works content collection: zod schema + smac + 17 sourced works
+- [x] 4.1 Works content collection: zod schema + smac + 17 sourced works
       from works-survey.md (all five categories); one curated
-      high-fidelity stock photo per work downloaded to `public/works/`
-      and committed; invalid-work build failure verified
-- [ ] 4.2 `project-index` island: pinned trigger → full-screen index
+      high-fidelity stock photo per work (Gratisography, free-to-use,
+      viewed + curated) downloaded to `public/works/` and committed;
+      invalid-work build failure verified (unit test on the shared schema)
+- [x] 4.2 `project-index` island: pinned trigger → full-screen index
       (big-type rows w/ `(N#)` superscripts, ghosted imagery behind),
       dot hover language, keyboard focus, focus trap
-- [ ] 4.3 `work-page` island: full-screen one-page layout per work,
+- [x] 4.3 `work-page` island: full-screen one-page layout per work,
       driven by collection data (hero, imagery, palette, mechanic —
       local assets only, no outbound requests), focus trap,
       `Esc` → index → site, focus return
