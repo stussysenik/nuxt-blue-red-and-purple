@@ -1,0 +1,33 @@
+/* Base tokens that never change with mode or theme (the two families) plus the
+   page ground. Everything else is set by the mode kernels in ./modes/*.css and
+   consumed through custom properties, so a mode switch is two attribute writes. */
+
+:root {
+  --font-display: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --transparent: transparent;
+  --inherit: inherit;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--wght-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    transition: none;
+  }
+}

@@ -1,6 +1,13 @@
 ---
 // Reset ships via the vendored Tachyons preflight (uno.config.ts) — no extra
-// reset import, so nothing fights the kernel.
+// reset import, so nothing fights the kernel. Fonts + base tokens + the four
+// mode kernels are the design truth loaded globally.
+import '../styles/fonts.css';
+import '../styles/base.css';
+import '../styles/modes/essential.css';
+import '../styles/modes/brutal.css';
+import '../styles/modes/clay.css';
+import '../styles/modes/generative.css';
 
 interface Props {
   title?: string;
@@ -24,6 +31,20 @@ const {
     <meta name="theme-color" content="#F7F3EC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#16130F" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="preload"
+      href="/fonts/archivo-wght.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/ibm-plex-mono-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <meta property="og:title" content="blue red + purple" />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -43,57 +64,6 @@ const {
       })();
     </script>
 
-    <!--
-      M1 baseline kernel bridge — the achromatic essential-light/dark token set,
-      enough for the static one-pager to render true. Milestone 2 replaces this
-      with the four full mode kernels in src/styles/modes/*.css.
-    -->
-    <style is:global>
-      :root {
-        --paper: #f7f3ec;
-        --paper-1: #efeae0;
-        --ink: #16130f;
-        --ink-1: #3d3a34;
-        --ink-2: #6e6a61;
-        --ink-3: #a8a399;
-        --line: #d7d0c4; /* hairline construction grid */
-        --spot: var(--ink); /* essential is achromatic — no riso spot */
-        --spot-2: var(--ink-2);
-        --transparent: transparent;
-        --inherit: inherit;
-        --font-display: 'Archivo', system-ui, -apple-system, sans-serif;
-        --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
-        --type-display: clamp(3rem, 9vw, 7.5rem);
-      }
-      :root[data-theme='dark'] {
-        --paper: #16130f;
-        --paper-1: #1e1a15;
-        --ink: #f7f3ec;
-        --ink-1: #d8d3c9;
-        --ink-2: #a8a399;
-        --ink-3: #6e6a61;
-        --line: #33302a;
-      }
-      html {
-        scrollbar-gutter: stable;
-      }
-      body {
-        background-color: var(--paper);
-        color: var(--ink);
-        font-family: var(--font-mono);
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-        transition:
-          background-color 0.5s ease,
-          color 0.5s ease;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        body {
-          transition: none;
-        }
-      }
-    </style>
   </head>
   <body>
     <slot />

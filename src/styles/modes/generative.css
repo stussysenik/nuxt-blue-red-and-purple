@@ -1,0 +1,47 @@
+/* generative — the shader scenes (src/scenes.ts) become this mode's background
+   (wired in M3); chrome goes minimal over the canvas. The color law extends to
+   the WebGL layer: scenes grade to an ink/paper duotone (endpoints below). */
+
+[data-mode='generative'] {
+  --border-w: 1px;
+  --radius: 0;
+  --shadow: none;
+  --surface: transparent; /* chrome floats over the canvas */
+
+  --type-display: clamp(3rem, 8vw, 6.5rem);
+  --wght-display: 340;
+  --wght-body: 360;
+  --wght-label: 440;
+  --tracking-display: 0;
+  --tracking-label: 0.3em;
+
+  --dur: 0.5s;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --spot: var(--ink);
+  --spot-2: var(--ink-2);
+
+  /* duotone grade endpoints for the shader (consumed by the canvas in M3) */
+  --duotone-shadow: var(--paper);
+  --duotone-highlight: var(--ink);
+}
+
+[data-mode='generative'][data-theme='light'] {
+  --paper: #ede8df;
+  --paper-1: #f5f1e9;
+  --ink: #16130f;
+  --ink-1: #3d3a34;
+  --ink-2: #6e6a61;
+  --ink-3: #a8a399;
+  --line: #cfc8bb;
+}
+
+[data-mode='generative'][data-theme='dark'] {
+  --paper: #0e0c0a;
+  --paper-1: #171410;
+  --ink: #f7f3ec;
+  --ink-1: #d8d3c9;
+  --ink-2: #a8a399;
+  --ink-3: #6e6a61;
+  --line: #2a2722;
+}

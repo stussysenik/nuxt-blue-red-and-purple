@@ -22,10 +22,10 @@ execution, not decision-making.
 
 ## 2. Design kernel
 
-- [ ] 2.1 Four mode kernels × light/dark in `src/styles/modes/` per
+- [x] 2.1 Four mode kernels × light/dark in `src/styles/modes/` per
       SPEC.md Design constants (paper/ink core, riso spots, Archivo +
       IBM Plex Mono self-hosted, `--type-display` per mode)
-- [ ] 2.2 State atom + reducer → `data-mode`/`data-theme` writes;
+- [x] 2.2 State atom + reducer → `data-mode`/`data-theme` writes;
       `theme-toggle` island with localStorage persistence
 - [x] 2.3 Layer truth-table function + unit tests (full mode × layer
       matrix); color-law unit test (every `uno.config.ts` token hue

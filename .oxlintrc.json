@@ -21,6 +21,12 @@
       "rules": {
         "no-unused-vars": "off"
       }
+    },
+    {
+      "files": ["**/*.astro"],
+      "rules": {
+        "import/no-unassigned-import": "off"
+      }
     }
   ]
 }

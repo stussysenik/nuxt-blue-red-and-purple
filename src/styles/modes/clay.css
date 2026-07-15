@@ -1,0 +1,45 @@
+/* clay — 3D playful. Soft depth, rounded geometry, springy overshoot motion.
+   Riso Green with a Sunflower Yellow highlight. Blur shadows are allowed here
+   (they are forbidden only in brutal). */
+
+[data-mode='clay'] {
+  --border-w: 0;
+  --radius: 1.25rem;
+  --shadow:
+    0 14px 34px -14px color-mix(in oklab, var(--ink) 40%, transparent),
+    inset 0 1px 0 color-mix(in oklab, var(--paper) 70%, transparent);
+  --surface: var(--paper-1);
+
+  --type-display: clamp(3rem, 9vw, 7rem);
+  --wght-display: 700;
+  --wght-body: 440;
+  --wght-label: 520;
+  --tracking-display: -0.015em;
+  --tracking-label: 0.14em;
+
+  --dur: 0.6s;
+  --ease: cubic-bezier(0.34, 1.56, 0.64, 1); /* springy */
+
+  --spot: #00a95c; /* Riso Green */
+  --spot-2: #ffe800; /* Sunflower Yellow highlight */
+}
+
+[data-mode='clay'][data-theme='light'] {
+  --paper: #f4eee4;
+  --paper-1: #fbf7f0;
+  --ink: #1b1712;
+  --ink-1: #423d36;
+  --ink-2: #736e64;
+  --ink-3: #aaa498;
+  --line: #e3dacb;
+}
+
+[data-mode='clay'][data-theme='dark'] {
+  --paper: #17140f;
+  --paper-1: #211d17;
+  --ink: #f6f1e8;
+  --ink-1: #d6d1c7;
+  --ink-2: #a6a196;
+  --ink-3: #6c6759;
+  --line: #2e2a23;
+}
