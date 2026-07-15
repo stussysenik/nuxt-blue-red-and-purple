@@ -1,0 +1,10 @@
+{
+  "slug": "after",
+  "title": "After",
+  "category": "music",
+  "year": 2025,
+  "image": "/works/after.jpg",
+  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. A pixel display face and a mono grotesk hold a dead-simple centered column together.",
+  "palette": ["#226bc9", "#4b7fe1"],
+  "mechanic": "Pixel display over mono grotesk on one centered column; a dated tour list as the whole index."
+}

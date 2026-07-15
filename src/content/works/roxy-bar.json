@@ -1,0 +1,11 @@
+{
+  "slug": "roxy-bar",
+  "title": "Roxy Bar",
+  "category": "restaurant",
+  "year": 2025,
+  "image": "/works/roxy-bar.jpg",
+  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. An editorial serif trio settles over warm cream neutrals, lifted by a single terracotta accent.",
+  "palette": ["#f1f0e9", "#da7250", "#2a2622"],
+  "mechanic": "A serif display trio over warm neutrals with exactly one terracotta accent.",
+  "source": "theroxyhotel.com"
+}

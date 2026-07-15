@@ -1,0 +1,12 @@
+{
+  "slug": "smac",
+  "title": "S'MAC",
+  "category": "restaurant",
+  "year": 2026,
+  "image": "/works/smac.jpg",
+  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. A warm counter concept where the menu reads as an editorial index and every order collapses to a single flow.",
+  "palette": ["#e8a13a", "#c8541f", "#f4ede0"],
+  "mechanic": "Menu-as-index: the mac-and-cheese board rendered as a warm editorial ledger, order flow reduced to one counter.",
+  "source": "smac.blueredandpurple.world",
+  "real": true
+}

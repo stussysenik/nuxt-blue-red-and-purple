@@ -1,0 +1,10 @@
+{
+  "slug": "d445",
+  "title": "D445",
+  "category": "books",
+  "year": 2022,
+  "image": "/works/d445.jpg",
+  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. A single footnoted column sits inside a drawn page border, image-zoom switched off for reading.",
+  "palette": ["#161616", "#f4f4f4"],
+  "mechanic": "A single footnoted column in a page-border frame with an image-zoom-off reading mode."
+}

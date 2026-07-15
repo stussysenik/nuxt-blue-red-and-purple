@@ -6,10 +6,21 @@
 export type Mode = 'essential' | 'brutal' | 'clay' | 'generative';
 export type Theme = 'light' | 'dark';
 
+/**
+ * The overlay is a three-level finite state machine, not a boolean: the site,
+ * the full-screen Project Index, and a single work page layered over it. Modeled
+ * as a tagged union so "a work is open with no index behind it" is unrepresentable
+ * (SPEC §4). Navigation is one step per intent — open descends, close ascends.
+ */
+export type Overlay =
+  | { readonly kind: 'none' }
+  | { readonly kind: 'index' }
+  | { readonly kind: 'work'; readonly slug: string };
+
 export interface AppState {
   readonly mode: Mode;
   readonly theme: Theme;
-  readonly activeWork: string | null;
+  readonly overlay: Overlay;
 }
 
 export type Intent =
@@ -17,8 +28,10 @@ export type Intent =
   | { readonly type: 'cycleMode'; readonly dir: 1 | -1 }
   | { readonly type: 'setTheme'; readonly theme: Theme }
   | { readonly type: 'toggleTheme' }
+  | { readonly type: 'openIndex' }
   | { readonly type: 'openWork'; readonly slug: string }
-  | { readonly type: 'closeWork' };
+  | { readonly type: 'closeWork' }
+  | { readonly type: 'closeIndex' };
 
 /** Wheel order — cycling wraps. `essential` leads (restraint greets first). */
 export const MODES: readonly Mode[] = ['essential', 'brutal', 'clay', 'generative'];
@@ -39,10 +52,18 @@ export function reduce(state: AppState, intent: Intent): AppState {
       return state.theme === intent.theme ? state : { ...state, theme: intent.theme };
     case 'toggleTheme':
       return { ...state, theme: state.theme === 'dark' ? 'light' : 'dark' };
+    case 'openIndex':
+      return state.overlay.kind === 'index' ? state : { ...state, overlay: { kind: 'index' } };
     case 'openWork':
-      return state.activeWork === intent.slug ? state : { ...state, activeWork: intent.slug };
+      return state.overlay.kind === 'work' && state.overlay.slug === intent.slug
+        ? state
+        : { ...state, overlay: { kind: 'work', slug: intent.slug } };
     case 'closeWork':
-      return state.activeWork === null ? state : { ...state, activeWork: null };
+      // A work ascends to the index it came from; anywhere else this is a no-op.
+      return state.overlay.kind === 'work' ? { ...state, overlay: { kind: 'index' } } : state;
+    case 'closeIndex':
+      // The index ascends to the bare site; from a work it is a no-op (close it first).
+      return state.overlay.kind === 'index' ? { ...state, overlay: { kind: 'none' } } : state;
   }
 }
 
@@ -61,7 +82,7 @@ function readInitialState(): AppState {
   const root = document.documentElement;
   const mode = (root.dataset.mode as Mode | undefined) ?? 'essential';
   const theme = root.dataset.theme === 'dark' ? 'dark' : 'light';
-  return { mode, theme, activeWork: null };
+  return { mode, theme, overlay: { kind: 'none' } };
 }
 
 /** Effectful projection of state onto the DOM (SPEC: two attribute writes). */
@@ -69,7 +90,9 @@ function commit(state: AppState): void {
   const root = document.documentElement;
   root.dataset.mode = state.mode;
   root.dataset.theme = state.theme;
-  root.dataset.overlay = state.activeWork === null ? 'closed' : 'open';
+  // 'none' | 'index' | 'work' — CSS keys the layered surfaces + body scroll-lock
+  // off this single attribute; islands read the tagged overlay from state directly.
+  root.dataset.overlay = state.overlay.kind;
   try {
     localStorage.setItem(THEME_KEY, state.theme);
   } catch {
