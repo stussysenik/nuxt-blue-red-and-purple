@@ -71,8 +71,8 @@ const {
   <body>
     <slot />
 
-    <!-- Lenis smooth scroll; native fallback under reduced-motion. GSAP
-         ScrollTrigger is wired onto this ticker in Milestone 5. -->
+    <!-- Lenis smooth scroll wired into the GSAP ScrollTrigger ticker; native
+         scroll + no reveals under reduced-motion. -->
     <script>
       import Lenis from 'lenis';
 
@@ -81,11 +81,32 @@ const {
       const lenis = reduced ? null : new Lenis({ smoothWheel: true });
 
       if (lenis) {
-        const raf = (time: number) => {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        };
-        requestAnimationFrame(raf);
+        // GSAP drives Lenis's rAF and Lenis's virtual scroll updates
+        // ScrollTrigger, so scroll-driven reveals read the smoothed position.
+        // GSAP loads only when motion is allowed (dynamic import, like the wheel).
+        void (async () => {
+          const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+            import('gsap'),
+            import('gsap/ScrollTrigger'),
+          ]);
+          gsap.registerPlugin(ScrollTrigger);
+          lenis.on('scroll', ScrollTrigger.update);
+          gsap.ticker.add((time) => lenis.raf(time * 1000)); // ticker seconds → Lenis ms
+          gsap.ticker.lagSmoothing(0);
+
+          // Content bands rise + fade as they enter — transform/opacity only
+          // (GPU-bound), once each. The default (no-JS / reduced-motion) state is
+          // fully visible, so this only ever adds motion, never hides content.
+          for (const band of document.querySelectorAll('.band')) {
+            gsap.from(band, {
+              opacity: 0,
+              y: 32,
+              duration: 0.8,
+              ease: 'power2.out',
+              scrollTrigger: { trigger: band, start: 'top 85%', once: true },
+            });
+          }
+        })();
       }
 
       // Lock page scroll while an overlay (index or work) is open. The store owns

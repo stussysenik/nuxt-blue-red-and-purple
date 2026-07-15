@@ -66,6 +66,6 @@ execution, not decision-making.
 
 ## 5. Polish
 
-- [ ] 5.1 Scroll reveals via ScrollTrigger on the Lenis ticker;
+- [x] 5.1 Scroll reveals via ScrollTrigger on the Lenis ticker;
       reduced-motion audit across all islands
-- [ ] 5.2 Regenerate and commit `DESIGN.mdx`; final `check` + `test` green
+- [x] 5.2 Regenerate and commit `DESIGN.mdx`; final `check` + `test` green
