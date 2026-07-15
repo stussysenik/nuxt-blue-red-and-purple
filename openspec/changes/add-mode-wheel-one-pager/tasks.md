@@ -27,9 +27,9 @@ execution, not decision-making.
       IBM Plex Mono self-hosted, `--type-display` per mode)
 - [ ] 2.2 State atom + reducer → `data-mode`/`data-theme` writes;
       `theme-toggle` island with localStorage persistence
-- [ ] 2.3 Layer truth-table function + unit tests (full mode × layer
+- [x] 2.3 Layer truth-table function + unit tests (full mode × layer
       matrix); color-law unit test (every `uno.config.ts` token hue
-      outside red 345–15° / blue 195–270° / purple 270–345°)
+      outside red 345–15° / blue 180–270° (cyan banned) / purple 270–345°)
 - [ ] 2.4 `design:doc` script generating `DESIGN.mdx` (Tachyons-docs-style
       tables per layer × kernel) from `uno.config.ts`; rendered at
       `/design` (noindex, the single routing exception)
