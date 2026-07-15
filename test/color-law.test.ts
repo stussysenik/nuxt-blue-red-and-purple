@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { hexToHsl, isForbiddenHue, isColorLawCompliant } from '../src/uno/hue';
-import { PALETTE } from '../uno.config';
+import { PALETTE } from '../src/uno/palette';
 
 describe('color law — the guard itself is real', () => {
   it('rejects blue, red, purple, and cyan', () => {

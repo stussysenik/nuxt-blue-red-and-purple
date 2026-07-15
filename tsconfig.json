@@ -6,6 +6,10 @@
     "exactOptionalPropertyTypes": true,
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
+    // The design-doc generator runs under Node, which needs explicit .ts
+    // extensions on relative imports; allow them (app code stays extensionless).
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     // oxlint (no-unused-vars) is the single authority on unused symbols so the
     // preserved scenes.ts (with its dormant scene sources, re-enabled in the
     // generative mode) stays byte-untouched. tsc keeps every other strict check.

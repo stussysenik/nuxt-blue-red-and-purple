@@ -30,7 +30,7 @@ execution, not decision-making.
 - [x] 2.3 Layer truth-table function + unit tests (full mode × layer
       matrix); color-law unit test (every `uno.config.ts` token hue
       outside red 345–15° / blue 180–270° (cyan banned) / purple 270–345°)
-- [ ] 2.4 `design:doc` script generating `DESIGN.mdx` (Tachyons-docs-style
+- [x] 2.4 `design:doc` script generating `DESIGN.md` (Tachyons-docs-style
       tables per layer × kernel) from `uno.config.ts`; rendered at
       `/design` (noindex, the single routing exception)
 

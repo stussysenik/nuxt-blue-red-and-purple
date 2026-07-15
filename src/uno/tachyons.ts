@@ -6,7 +6,7 @@ import type { Preset, Rule, Preflight } from 'unocss';
 // page with two attribute writes — no per-utility hex ever ships.
 
 /** Tachyons spacing / sizing step scale (rem). */
-const STEP: Record<string, string> = {
+export const STEP: Record<string, string> = {
   '0': '0',
   '1': '.25rem',
   '2': '.5rem',
@@ -18,7 +18,7 @@ const STEP: Record<string, string> = {
 };
 
 /** Type scale — Tachyons f1–f7 plus the two display steps. */
-const FONT: Record<string, string> = {
+export const FONT: Record<string, string> = {
   '1': '3rem',
   '2': '2.25rem',
   '3': '1.5rem',

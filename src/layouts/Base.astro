@@ -12,11 +12,13 @@ import '../styles/modes/generative.css';
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
   title = '*blue red + purple/',
   description = 'A design agency with one specialization: one-page systems. One fixed content structure, four interchangeable design systems — switched live.',
+  noindex = false,
 } = Astro.props;
 ---
 
@@ -27,6 +29,7 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <!-- theme-color follows the paper core, never a forbidden hue (color law) -->
     <meta name="theme-color" content="#F7F3EC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#16130F" media="(prefers-color-scheme: dark)" />

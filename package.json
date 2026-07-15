@@ -11,7 +11,8 @@
     "test": "vitest run",
     "lint": "oxlint",
     "typecheck": "astro sync && tsc --noEmit",
-    "check": "oxlint && astro sync && tsc --noEmit && astro check"
+    "check": "oxlint && astro sync && tsc --noEmit && astro check",
+    "design:doc": "node scripts/design-doc.ts"
   },
   "dependencies": {
     "@astrojs/lit": "4.3.0",
