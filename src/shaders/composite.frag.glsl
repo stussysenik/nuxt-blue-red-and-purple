@@ -15,6 +15,9 @@ uniform vec2 u_resolution;
 uniform vec2 u_pointer;  // smoothed pointer, normalized, y-up
 uniform float u_energy;  // interaction envelope 0..1
 uniform vec3 u_ripples[6];  // touch ripples: xy origin (normalized, y-up), z age in s (<0 inactive)
+uniform float u_duotone;    // 0 = full colour (wallpaper), 1 = ink/paper grade (generative mode)
+uniform vec3 u_shadow;      // duotone endpoint for image shadows (kernel --duotone-shadow)
+uniform vec3 u_highlight;   // duotone endpoint for image highlights (kernel --duotone-highlight)
 out vec4 fragColor;
 
 float ign(vec2 p) {
@@ -108,6 +111,15 @@ void main() {
   col = mix(vec3(luma), col, 1.06);
   float breathe = 0.16 + 0.02 * sin(u_time * 0.23);
   col *= 1.0 - breathe * smoothstep(0.35, 1.25, length(c));
+
+  // Generative-mode duotone: collapse the graded scene to luminance and remap
+  // onto the kernel's paper→ink endpoints, so the colour law extends to the
+  // WebGL layer (bright plasma → ink, shadow → paper — a print-shop register).
+  // Dither below then runs on the ramp, so the two-tone gradient never bands.
+  if (u_duotone > 0.5) {
+    float g = dot(clamp(col, 0.0, 1.0), vec3(0.2126, 0.7152, 0.0722));
+    col = mix(u_shadow, u_highlight, g);
+  }
 
   col = clamp(col, 0.06, 0.995);
 

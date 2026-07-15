@@ -18,6 +18,14 @@ const NAV = [
 ---
 
 <Base>
+  <!-- ── Generative-mode background: preserved shader scenes graded to the
+       kernel's ink/paper duotone. Fixed layer behind the chrome, shown only in
+       generative mode; the loop suspends elsewhere (src/gl/background.ts). A
+       paper veil keeps chrome legible over the scenes. ── -->
+  <div class="gen-bg" aria-hidden="true">
+    <canvas id="gen-canvas"></canvas>
+  </div>
+
   <!-- ── Construction grid (pinned decor; pinned elements may overlap it) ── -->
   <div class="grid-rig" aria-hidden="true">
     <span class="grid-rig__v grid-rig__v--1"></span>
@@ -147,9 +155,51 @@ const NAV = [
   <ProjectOverlay />
 </Base>
 
+<script>
+  // Generative-mode shader background. Loads on every page but stays inert
+  // (no WebGL context) until the wheel first selects generative mode.
+  import { mountGenerativeBackground } from '../gl/background';
+
+  const canvas = document.getElementById('gen-canvas');
+  if (canvas instanceof HTMLCanvasElement) mountGenerativeBackground(canvas);
+</script>
+
 <style>
   /* Structural styles compose only from kernel custom properties — the same
      escape hatch the Lit islands use. No rogue hex, no arbitrary utilities. */
+
+  /* Generative-mode background layer — behind content (z 1), above the body
+     paper. Hidden outside generative mode; the runner suspends its loop in
+     lockstep, so it costs nothing when unseen. */
+  .gen-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--dur) var(--ease),
+      visibility var(--dur) var(--ease);
+  }
+  :global(:root[data-mode='generative']) .gen-bg {
+    opacity: 1;
+    visibility: visible;
+  }
+  #gen-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  /* Legibility veil: softens the scenes toward paper so --ink chrome stays
+     readable over the moving background without hiding it. */
+  .gen-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--paper);
+    opacity: 0.28;
+  }
 
   /* Hairline construction grid — the engineering register from the comp. */
   .grid-rig {

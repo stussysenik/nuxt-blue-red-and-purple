@@ -36,10 +36,10 @@ execution, not decision-making.
 
 ## 3. Mode wheel
 
-- [ ] 3.1 Pure snap-to-nearest(angle, velocity) + unit tests
-- [ ] 3.2 `mode-wheel` island: drag/scroll/keyboard, GSAP inertia, dot
+- [x] 3.1 Pure snap-to-nearest(angle, velocity) + unit tests
+- [x] 3.2 `mode-wheel` island: drag/scroll/keyboard, GSAP inertia, dot
       states, a11y announcements, reduced-motion path
-- [ ] 3.3 Generative mode suspend/resume of shader loop + unit test on the
+- [x] 3.3 Generative mode suspend/resume of shader loop + unit test on the
       suspension state machine; ink/paper duotone grade applied over the
       canvas (kernel-level, `scenes.ts` untouched)
 

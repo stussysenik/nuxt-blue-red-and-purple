@@ -66,6 +66,9 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
     uPointer: gl.getUniformLocation(compositeProgram, 'u_pointer'),
     uEnergy: gl.getUniformLocation(compositeProgram, 'u_energy'),
     uRipples: gl.getUniformLocation(compositeProgram, 'u_ripples[0]'),
+    uDuotone: gl.getUniformLocation(compositeProgram, 'u_duotone'),
+    uShadow: gl.getUniformLocation(compositeProgram, 'u_shadow'),
+    uHighlight: gl.getUniformLocation(compositeProgram, 'u_highlight'),
   };
 
   const targets = [createTarget(gl), createTarget(gl)] as const;
@@ -102,6 +105,9 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
     width: number,
     height: number,
     pointer: { x: number; y: number; energy: number; ripples: Float32Array },
+    // Present only for the generative-mode background: paper→ink endpoints that
+    // grade the scene to a duotone. Absent → full-colour (u_duotone stays 0).
+    grade?: { readonly shadow: readonly [number, number, number]; readonly highlight: readonly [number, number, number] },
   ): void {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, width, height);
@@ -118,6 +124,11 @@ export function createPipeline(gl: WebGL2RenderingContext, sceneSources: readonl
     gl.uniform2f(composite.uPointer, pointer.x, pointer.y);
     gl.uniform1f(composite.uEnergy, pointer.energy);
     gl.uniform3fv(composite.uRipples, pointer.ripples);
+    gl.uniform1f(composite.uDuotone, grade ? 1 : 0);
+    if (grade) {
+      gl.uniform3f(composite.uShadow, grade.shadow[0], grade.shadow[1], grade.shadow[2]);
+      gl.uniform3f(composite.uHighlight, grade.highlight[0], grade.highlight[1], grade.highlight[2]);
+    }
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
