@@ -4,7 +4,11 @@
   "category": "vintage",
   "year": 2025,
   "image": "/works/warm-fuzzy.jpg",
-  "summary": "Lorem ipsum dolor sit amet. Confetti primaries and a hover-dense video grid ride a smooth Lenis scroll under a custom cursor.",
-  "palette": ["#f7dd47", "#190bb6", "#e74a27"],
+  "summary": "Confetti primaries and a hover-dense video grid ride a smooth Lenis scroll under a custom cursor.",
+  "palette": [
+    "#f7dd47",
+    "#190bb6",
+    "#e74a27"
+  ],
   "mechanic": "Confetti primaries on one clean typeface; a hover-dense video grid on Lenis with a custom cursor."
 }

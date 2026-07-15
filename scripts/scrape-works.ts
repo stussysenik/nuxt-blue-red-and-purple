@@ -13,8 +13,16 @@
 // review before a draft is promoted into src/content/works/. Collisions with an
 // already-curated work are flagged, not overwritten.
 //
-// Usage:  pnpm scrape:works <cargoId> [<cargoId> ...]
-//   e.g.  pnpm scrape:works 3347193 2657644
+// The API's `screenshot` (authoritative 1600px render of the live site) is the
+// real work imagery — downloaded and COMMITTED locally so the site never
+// hotlinks Cargo at runtime (SPEC 4.3 "local assets only") and we own every
+// asset. `source` stays attribution text; the eventual goal is to rebuild each
+// work in our own kernel, for which this owned screenshot is the reference.
+//
+// Usage:  pnpm scrape:works <cargoId>[:<slug>] [...]
+//   e.g.  pnpm scrape:works 3347193:h724 2657644:l384
+//   A `:slug` maps the draft onto an existing collection slug (the API title is
+//   e.g. "~Template H724", which would otherwise slugify to "template-h724").
 
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -24,6 +32,13 @@ import { hexToHsl } from '../src/uno/hue.ts';
 const here = dirname(fileURLToPath(import.meta.url));
 const stageDir = resolve(here, 'scraped');
 const collectionDir = resolve(here, '../src/content/works');
+const imageDir = resolve(here, '../public/works');
+const SHOT_WIDTH = 1600; // freight CDN width bucket for committed work imagery
+
+interface CargoScreenshot {
+  hash?: string;
+  name?: string;
+}
 
 interface CargoSite {
   website_title?: string;
@@ -31,6 +46,25 @@ interface CargoSite {
   domain?: string;
   site_url?: string;
   direct_link?: string;
+  screenshot?: CargoScreenshot | unknown[];
+}
+
+/** Cargo serves screenshots at freight.cargo.site/w/{width}/i/{hash}/{name}. */
+function screenshotUrl(shot: CargoSite['screenshot']): string | undefined {
+  if (!shot || Array.isArray(shot)) return undefined;
+  const { hash, name } = shot;
+  return hash && name ? `https://freight.cargo.site/w/${SHOT_WIDTH}/i/${hash}/${name}` : undefined;
+}
+
+/** Download the screenshot to public/works/{slug}.jpg — an owned local asset. */
+async function downloadImage(url: string, slug: string): Promise<boolean> {
+  const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 blueredandpurple/1' } });
+  if (!res.ok) return false;
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf.byteLength < 1024) return false; // guard against error-page stubs
+  mkdirSync(imageDir, { recursive: true });
+  writeFileSync(resolve(imageDir, `${slug}.jpg`), buf);
+  return true;
 }
 
 const slugify = (name: string): string =>
@@ -80,13 +114,15 @@ async function fetchText(url: string): Promise<string> {
   return res.ok ? res.text() : '';
 }
 
-async function scrape(id: string): Promise<void> {
+async function scrape(id: string, slugOverride?: string): Promise<void> {
   const site = await fetchJson(`https://api.cargo.site/v1/sites/${id}`);
   const title = site.website_title?.trim() || `Cargo ${id}`;
-  const slug = slugify(title) || `cargo-${id}`;
+  const slug = slugOverride || slugify(title) || `cargo-${id}`;
   const css = site.css_url ? await fetchText(site.css_url) : '';
   const palette = extractPalette(css);
   const source = site.domain || site.site_url || site.direct_link;
+  const shot = screenshotUrl(site.screenshot);
+  const gotImage = shot ? await downloadImage(shot, slug) : false;
 
   const draft = {
     slug,
@@ -106,24 +142,27 @@ async function scrape(id: string): Promise<void> {
   const collides = existsSync(resolve(collectionDir, `${slug}.json`));
   console.log(
     `  ${id} → ${slug}  palette=[${palette.join(', ') || '—'}]` +
-      (collides ? `  ⚠ already curated in collection — review before promoting` : ''),
+      `  image=${gotImage ? '✓ public/works/' + slug + '.jpg' : shot ? '✗ download failed' : '— no screenshot'}` +
+      (collides ? `  ⚠ already curated — image replaced, JSON untouched` : ''),
   );
 }
 
 async function main(): Promise<void> {
-  const ids = process.argv.slice(2).filter(Boolean);
-  if (ids.length === 0) {
-    console.error('Usage: pnpm scrape:works <cargoId> [<cargoId> ...]');
+  const args = process.argv.slice(2).filter(Boolean);
+  if (args.length === 0) {
+    console.error('Usage: pnpm scrape:works <cargoId>[:<slug>] [...]');
     process.exitCode = 1;
     return;
   }
-  console.log(`Scraping ${ids.length} site(s) → ${stageDir}`);
-  for (const id of ids) {
+  console.log(`Scraping ${args.length} site(s) → ${stageDir} + public/works/`);
+  for (const arg of args) {
+    const [id, slugOverride] = arg.split(':');
+    if (!id) continue;
     try {
       // Sequential on purpose: the Cargo API 503s under parallel load (survey
       // finding). Politeness beats speed for a re-runnable batch scraper.
       // oxlint-disable-next-line no-await-in-loop
-      await scrape(id);
+      await scrape(id, slugOverride);
     } catch (err) {
       console.error(`  ${id} → failed: ${(err as Error).message}`);
     }

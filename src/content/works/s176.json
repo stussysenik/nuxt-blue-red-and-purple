@@ -4,7 +4,10 @@
   "category": "music",
   "year": 2024,
   "image": "/works/s176.jpg",
-  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. A pinned Finder sidebar and an about-me.rtf overlay dress a six-column grid as a desktop.",
-  "palette": ["#0068ed", "#ffffff"],
+  "summary": "A pinned Finder sidebar and an about-me.rtf overlay dress a six-column grid as a desktop.",
+  "palette": [
+    "#0068ed",
+    "#ffffff"
+  ],
   "mechanic": "A mac-window Finder sidebar and an 'about me.rtf' file-metaphor overlay over a six-column grid."
 }

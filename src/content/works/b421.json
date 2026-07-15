@@ -4,7 +4,11 @@
   "category": "hotel",
   "year": 2024,
   "image": "/works/b421.jpg",
-  "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. A ratio-labeled gallery grid behaves like a proposal deck with a live A/B/C switcher.",
-  "palette": ["#0034ee", "#ffffff", "#111111"],
+  "summary": "A ratio-labeled gallery grid behaves like a proposal deck with a live A/B/C switcher.",
+  "palette": [
+    "#0034ee",
+    "#ffffff",
+    "#111111"
+  ],
   "mechanic": "A proposal-deck gallery grid (C1 1:1 … C8 4:1) with an A/B/C switcher under pinned chrome."
 }
