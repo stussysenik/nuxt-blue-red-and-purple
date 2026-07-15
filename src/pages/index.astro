@@ -1,0 +1,373 @@
+---
+import Base from '../layouts/Base.astro';
+// Wordmark is the vendored brand SVG; inlined so its fill follows the kernel
+// --ink token and re-skins with the active mode.
+import wordmark from '../../public/done.svg?raw';
+
+// The fixed content structure — page = mode(content). Modes re-skin these
+// sections; the structure never moves. Lorem copy in v1 (SPEC §1).
+const MODES = ['essential', 'brutal', 'clay', 'generative'] as const;
+
+const NAV = [
+  { id: 'works', label: 'Works' },
+  { id: 'philosophy', label: 'Philosophy' },
+  { id: 'about', label: 'About us' },
+  { id: 'contacts', label: 'Contacts' },
+] as const;
+---
+
+<Base>
+  <!-- ── Construction grid (pinned decor; pinned elements may overlap it) ── -->
+  <div class="grid-rig" aria-hidden="true">
+    <span class="grid-rig__v grid-rig__v--1"></span>
+    <span class="grid-rig__v grid-rig__v--2"></span>
+    <span class="grid-rig__v grid-rig__v--3"></span>
+    <span class="grid-rig__h grid-rig__h--1"></span>
+    <span class="grid-rig__h grid-rig__h--2"></span>
+  </div>
+
+  <!-- ── Pinned chrome: marks + dot-marked nav rail (island targets in M3–M4) ── -->
+  <header class="chrome">
+    <a href="#hero" class="slash-mark" aria-label="blue red + purple — home">
+      <span></span><span></span><span></span>
+    </a>
+    <nav aria-label="Sections" class="mt3">
+      <ul class="list ma0 pa0 font-mono">
+        {
+          NAV.map((item, i) => (
+            <li class="mb2">
+              <a href={`#${item.id}`} class="rail-link" data-active={i === 0}>
+                <span class="dot" data-on={i === 0} />
+                <span class="ttu tracked f7">{item.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <span class="corner-mark" aria-hidden="true">✳</span>
+  </header>
+
+  <!-- ── §00 Hero ── -->
+  <section id="hero" class="hero" data-section="00">
+    <h1 class="wordmark" set:html={wordmark} aria-label="blue red + purple" />
+    <!-- Static mode line — the mode-wheel island (M3) hydrates over this. -->
+    <div class="mode-line" id="mode-wheel-mount" data-current="essential">
+      <ol class="list flex items-center ma0 pa0 font-mono">
+        {
+          MODES.map((m, i) => (
+            <li class="mode-line__item">
+              <span class="dot" data-on={i === 0} />
+              <span class="ttu tracked f7" data-label>{m}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+    <p class="tagline font-mono ttu tracked">
+      Too much blue will never amount to any red
+    </p>
+  </section>
+
+  <!-- ── §01 Works ── -->
+  <section id="works" class="band" data-section="01">
+    <p class="band__index font-mono">(01)</p>
+    <h2 class="band__title">Works</h2>
+    <p class="band__lead measure-wide lh-copy">
+      Seventeen studies across five verticals — restaurants, hotels, music
+      venues, vintage, book stores — and one live client service. Each rebuilt
+      in our own kernel, never remixed.
+    </p>
+    <button type="button" class="index-trigger font-mono ttu tracked" id="project-index-trigger">
+      <span class="dot" data-on="true" /> Open project index
+    </button>
+  </section>
+
+  <!-- ── §02 Philosophy ── -->
+  <section id="philosophy" class="band" data-section="02">
+    <p class="band__index font-mono">(02)</p>
+    <h2 class="band__title">Philosophy</h2>
+    <p class="band__lead measure-wide lh-copy">
+      One fixed content structure, four interchangeable design systems. The
+      wheel is the parent function:
+      <code class="font-mono">page = mode(content)</code>. Consistency is
+      enforced at build — off-system CSS cannot compile.
+    </p>
+  </section>
+
+  <!-- ── §03 Approach ── -->
+  <section id="approach" class="band" data-section="03">
+    <p class="band__index font-mono">(03)</p>
+    <h2 class="band__title">Approach</h2>
+    <p class="band__lead measure-wide lh-copy">
+      We build one-page systems. Type scale, color pairs, line weight, motion
+      character — a complete token kernel per mode, four of them living on one
+      DOM. Any brand can see itself in the chrome; the works carry the color.
+    </p>
+  </section>
+
+  <!-- ── §04 About ── -->
+  <section id="about" class="band" data-section="04">
+    <p class="band__index font-mono">(04)</p>
+    <h2 class="band__title">About us</h2>
+    <p class="band__lead measure-wide lh-copy">
+      A New York studio with one specialization. Silent-luxury credibility, no
+      decoration for its own sake — evidence over ornament. The site is the
+      pitch: it demonstrates the capability it sells.
+    </p>
+  </section>
+
+  <!-- ── §05 Ledger (the checkable claim) ── -->
+  <section id="ledger" class="band" data-section="05">
+    <p class="band__index font-mono">(05)</p>
+    <h2 class="band__title">Ledger</h2>
+    <dl class="ledger font-mono">
+      <div class="ledger__row"><dt>Live client service</dt><dd>1</dd></div>
+      <div class="ledger__row"><dt>Researched works</dt><dd>17</dd></div>
+      <div class="ledger__row"><dt>Design systems on one DOM</dt><dd>4</dd></div>
+      <div class="ledger__row"><dt>Assured visual states</dt><dd>24</dd></div>
+    </dl>
+  </section>
+
+  <!-- ── §06 Contacts ── -->
+  <section id="contacts" class="band band--last" data-section="06">
+    <p class="band__index font-mono">(06)</p>
+    <h2 class="band__title">Contacts</h2>
+    <p class="band__lead measure lh-copy">
+      <a href="mailto:hi@blueredandpurple.world" class="contact-link">
+        hi@blueredandpurple.world
+      </a>
+    </p>
+    <p class="colophon font-mono ttu tracked f7 ink-2 mt5">
+      *blue red + purple/ — one-page systems
+    </p>
+  </section>
+</Base>
+
+<style>
+  /* Structural styles compose only from kernel custom properties — the same
+     escape hatch the Lit islands use. No rogue hex, no arbitrary utilities. */
+
+  /* Hairline construction grid — the engineering register from the comp. */
+  .grid-rig {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .grid-rig__v,
+  .grid-rig__h {
+    position: absolute;
+    background-color: var(--line);
+    opacity: 0.6;
+  }
+  .grid-rig__v {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+  .grid-rig__v--1 {
+    left: 8%;
+  }
+  .grid-rig__v--2 {
+    left: 20%;
+  }
+  .grid-rig__v--3 {
+    left: 30%;
+  }
+  .grid-rig__h {
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+  .grid-rig__h--1 {
+    top: 24%;
+  }
+  .grid-rig__h--2 {
+    top: 76%;
+  }
+
+  /* Pinned chrome. */
+  .chrome {
+    position: fixed;
+    top: max(1.4rem, env(safe-area-inset-top));
+    left: max(1.4rem, env(safe-area-inset-left));
+    z-index: 3;
+    color: var(--ink);
+  }
+  .slash-mark {
+    display: inline-flex;
+    gap: 0.28rem;
+  }
+  .slash-mark span {
+    display: block;
+    width: 0.55rem;
+    height: 1.5rem;
+    background-color: var(--ink);
+    transform: skewX(-20deg);
+  }
+  .rail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: var(--ink-2);
+    transition: color 0.3s ease;
+  }
+  .rail-link[data-active='true'],
+  .rail-link:hover,
+  .rail-link:focus-visible {
+    color: var(--ink);
+  }
+  .corner-mark {
+    position: fixed;
+    top: max(1.4rem, env(safe-area-inset-top));
+    right: max(1.4rem, env(safe-area-inset-right));
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--ink);
+  }
+
+  /* Dot language — filled = active/hovered, outline = idle. */
+  .dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 100%;
+    border: 1px solid currentColor;
+    background-color: transparent;
+    flex: none;
+    transition:
+      background-color 0.25s ease,
+      transform 0.25s ease;
+  }
+  .dot[data-on='true'] {
+    background-color: currentColor;
+  }
+  .rail-link:hover .dot,
+  .rail-link:focus-visible .dot,
+  .mode-line__item:hover .dot {
+    background-color: currentColor;
+  }
+
+  /* Hero. */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    gap: 1.6rem;
+    padding: 6rem clamp(1.4rem, 6vw, 8rem) 4rem;
+  }
+  .wordmark {
+    display: block;
+    width: min(78vw, 60rem);
+    margin: 0;
+  }
+  .wordmark :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    fill: var(--ink);
+  }
+  .mode-line {
+    color: var(--ink);
+  }
+  .mode-line ol {
+    gap: 1.6rem;
+    flex-wrap: wrap;
+  }
+  .mode-line__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink-2);
+    transition: color 0.3s ease;
+  }
+  .mode-line[data-current] .mode-line__item:first-child {
+    color: var(--ink);
+  }
+  .tagline {
+    color: var(--ink);
+    font-size: 0.82rem;
+  }
+
+  /* Content bands. */
+  .band {
+    position: relative;
+    z-index: 1;
+    padding: clamp(3rem, 12vh, 9rem) clamp(1.4rem, 6vw, 8rem);
+    border-top: 1px solid var(--line);
+  }
+  .band--last {
+    min-height: 60svh;
+  }
+  .band__index {
+    font-size: 0.75rem;
+    color: var(--ink-2);
+    letter-spacing: 0.1em;
+  }
+  .band__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    font-size: var(--type-display);
+    margin: 0.4rem 0 1.4rem;
+    color: var(--ink);
+  }
+  .band__lead {
+    font-size: 1.05rem;
+    color: var(--ink-1);
+  }
+  .band__lead code {
+    background-color: var(--paper-1);
+    padding: 0.1em 0.35em;
+    border-radius: 0.2rem;
+  }
+  .index-trigger,
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.8rem;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  .contact-link {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.4rem, 5vw, 3rem);
+    text-transform: none;
+  }
+  .contact-link:hover {
+    color: var(--spot);
+  }
+
+  /* Ledger. */
+  .ledger {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 34rem;
+  }
+  .ledger__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-1);
+  }
+  .ledger__row dd {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    color: var(--ink);
+  }
+</style>

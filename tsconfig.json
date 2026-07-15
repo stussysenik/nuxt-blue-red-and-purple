@@ -1,18 +1,17 @@
 {
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
-    "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "exactOptionalPropertyTypes": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    // oxlint (no-unused-vars) is the single authority on unused symbols so the
+    // preserved scenes.ts (with its dormant scene sources, re-enabled in the
+    // generative mode) stays byte-untouched. tsc keeps every other strict check.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   },
-  "include": ["src"]
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"]
 }

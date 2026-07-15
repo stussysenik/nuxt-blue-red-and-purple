@@ -8,5 +8,19 @@
     "pedantic": "off"
   },
   "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
-  "ignorePatterns": ["dist", "node_modules"]
+  "ignorePatterns": ["dist", "node_modules", ".astro"],
+  "overrides": [
+    {
+      "files": ["src/env.d.ts"],
+      "rules": {
+        "typescript/triple-slash-reference": "off"
+      }
+    },
+    {
+      "files": ["src/scenes.ts"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
 }

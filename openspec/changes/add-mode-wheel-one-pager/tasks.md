@@ -10,14 +10,14 @@ execution, not decision-making.
 
 ## 1. Scaffold (BREAKING: replaces Vite entry)
 
-- [ ] 1.1 Migrate to Astro 5 static output; hand-typed, exact-pinned
+- [x] 1.1 Migrate to Astro 5 static output; hand-typed, exact-pinned
       `package.json` (astro, lit, unocss, gsap, lenis, vitest only)
-- [ ] 1.2 `uno.config.ts` with vendored Tachyons table, attributify on,
+- [x] 1.2 `uno.config.ts` with vendored Tachyons table, attributify on,
       arbitrary values blocklisted
-- [ ] 1.3 `Base.astro`: metadata (preserved from current shell), no-FOUC
+- [x] 1.3 `Base.astro`: metadata (preserved from current shell), no-FOUC
       theme bootstrap, Lenis init
-- [ ] 1.4 Import `scenes.ts` untouched; verify build green
-- [ ] 1.5 Static sections §00–§06 per hero comp (staggered wordmark,
+- [x] 1.4 Import `scenes.ts` untouched; verify build green
+- [x] 1.5 Static sections §00–§06 per hero comp (staggered wordmark,
       tagline, dot-marked nav rail, hairline construction grid)
 
 ## 2. Design kernel

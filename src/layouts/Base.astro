@@ -1,0 +1,116 @@
+---
+// Reset ships via the vendored Tachyons preflight (uno.config.ts) — no extra
+// reset import, so nothing fights the kernel.
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = '*blue red + purple/',
+  description = 'A design agency with one specialization: one-page systems. One fixed content structure, four interchangeable design systems — switched live.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-mode="essential">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <!-- theme-color follows the paper core, never a forbidden hue (color law) -->
+    <meta name="theme-color" content="#F7F3EC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#16130F" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content="blue red + purple" />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://blueredandpurple.world/" />
+    <meta property="og:image" content="https://blueredandpurple.world/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- No-FOUC bootstrap: resolve theme before first paint (mode default = essential). -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const stored = localStorage.getItem('theme');
+        const dark =
+          stored === 'dark' ||
+          (!stored && matchMedia('(prefers-color-scheme: dark)').matches);
+        root.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
+
+    <!--
+      M1 baseline kernel bridge — the achromatic essential-light/dark token set,
+      enough for the static one-pager to render true. Milestone 2 replaces this
+      with the four full mode kernels in src/styles/modes/*.css.
+    -->
+    <style is:global>
+      :root {
+        --paper: #f7f3ec;
+        --paper-1: #efeae0;
+        --ink: #16130f;
+        --ink-1: #3d3a34;
+        --ink-2: #6e6a61;
+        --ink-3: #a8a399;
+        --line: #d7d0c4; /* hairline construction grid */
+        --spot: var(--ink); /* essential is achromatic — no riso spot */
+        --spot-2: var(--ink-2);
+        --transparent: transparent;
+        --inherit: inherit;
+        --font-display: 'Archivo', system-ui, -apple-system, sans-serif;
+        --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+        --type-display: clamp(3rem, 9vw, 7.5rem);
+      }
+      :root[data-theme='dark'] {
+        --paper: #16130f;
+        --paper-1: #1e1a15;
+        --ink: #f7f3ec;
+        --ink-1: #d8d3c9;
+        --ink-2: #a8a399;
+        --ink-3: #6e6a61;
+        --line: #33302a;
+      }
+      html {
+        scrollbar-gutter: stable;
+      }
+      body {
+        background-color: var(--paper);
+        color: var(--ink);
+        font-family: var(--font-mono);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        transition:
+          background-color 0.5s ease,
+          color 0.5s ease;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        body {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <slot />
+
+    <!-- Lenis smooth scroll; native fallback under reduced-motion. GSAP
+         ScrollTrigger is wired onto this ticker in Milestone 5. -->
+    <script>
+      import Lenis from 'lenis';
+
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const lenis = new Lenis({ smoothWheel: true });
+        const raf = (time: number) => {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+      }
+    </script>
+  </body>
+</html>
