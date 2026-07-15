@@ -12,7 +12,8 @@
     "lint": "oxlint",
     "typecheck": "astro sync && tsc --noEmit",
     "check": "oxlint && astro sync && tsc --noEmit && astro check",
-    "design:doc": "node scripts/design-doc.ts"
+    "design:doc": "node scripts/design-doc.ts",
+    "scrape:works": "node scripts/scrape-works.ts"
   },
   "dependencies": {
     "@astrojs/lit": "4.3.0",

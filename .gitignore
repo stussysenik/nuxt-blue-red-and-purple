@@ -6,3 +6,6 @@ dist/
 .vercel/
 .DS_Store
 .vercel
+
+# scrape:works drafts — staging for human review, promoted by hand into src/content/works
+scripts/scraped/

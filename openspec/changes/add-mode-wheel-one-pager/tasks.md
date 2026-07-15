@@ -45,9 +45,12 @@ execution, not decision-making.
 
 ## 4. Project Index
 
-- [ ] 4.0 `scrape:works` script: Cargo API (`api.cargo.site/v1/sites/{id}`
-      + `/css`) + og/meta + palette extraction → `works/*.json`;
-      re-runnable for future batches (see works-survey.md finding)
+- [x] 4.0 `scrape:works` script: Cargo API (`api.cargo.site/v1/sites/{id}`
+      + `/css`) + og/meta + palette extraction → staging drafts;
+      re-runnable for future batches (see works-survey.md finding).
+      Non-clobbering by construction (writes scripts/scraped/, flags
+      collisions, TODO placeholders for human-only fields); palette
+      extractor verified on chromatic CSS
 - [x] 4.1 Works content collection: zod schema + smac + 17 sourced works
       from works-survey.md (all five categories); one curated
       high-fidelity stock photo per work (Gratisography, free-to-use,
