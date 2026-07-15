@@ -107,7 +107,14 @@
   </head>
   <body>
     <canvas id="c" aria-hidden="true"></canvas>
-    <h1 class="wordmark"><span>*blue red + purple/</span></h1>
+    <h1 class="wordmark">
+      <div style="width: 100%; max-width: 1200px; margin: 0 auto;">
+        <svg viewBox="0 0 1920 1080" width="100%" height="100%" style="display: block; width: 100%; height: auto;">
+        <!-- References the asset from your public directory root -->
+          <use href="/public/done.svg" />
+        </svg>
+      </div>
+    </h1>
     <footer class="actions">
       <div class="sizes" id="sizes" hidden>
         <button type="button" data-size="screen">this screen</button>
@@ -116,6 +123,7 @@
         <button type="button" data-size="3840x2160">desktop</button>
       </div>
       <button id="save" type="button" aria-expanded="false" aria-controls="sizes">save wallpaper</button>
+      <a href="">works</a>
       <a href="mailto:hi@blueredandpurple.com">contact</a>
     </footer>
     <script type="module" src="/src/main.ts"></script>

@@ -25,10 +25,10 @@ const assemble = (body: string): string => PRELUDE + commonSource + body;
 // Flake leads: it is the loading default. Short holds keep the loop lively —
 // a new scene is always seconds away (tap/swipe skips ahead anytime).
 export const SCENES: readonly Scene[] = [
-  { id: 'flake', fragSource: assemble(flakeBody), duration: 11 },
-  { id: 'ocean', fragSource: assemble(oceanBody), duration: 10 },
-  { id: 'signal', fragSource: assemble(signalBody), duration: 11 },
+  // { id: 'flake', fragSource: assemble(flakeBody), duration: 11 },
+  // { id: 'ocean', fragSource: assemble(oceanBody), duration: 10 },
+  // { id: 'signal', fragSource: assemble(signalBody), duration: 11 },
   { id: 'life', fragSource: assemble(lifeBody), duration: 12 },
-  { id: 'thin-film', fragSource: assemble(thinFilmBody), duration: 10 },
-  { id: 'aniso', fragSource: assemble(anisoBody), duration: 11 },
+  // { id: 'thin-film', fragSource: assemble(thinFilmBody), duration: 10 },
+  // { id: 'aniso', fragSource: assemble(anisoBody), duration: 11 },
 ];
