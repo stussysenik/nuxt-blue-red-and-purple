@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { ThemeToggle } from '../components/theme-toggle';
 import { ModeWheel } from '../components/mode-wheel';
+import ProjectOverlay from '../components/ProjectOverlay.astro';
 // Wordmark is the vendored brand SVG; inlined so its fill follows the kernel
 // --ink token and re-skins with the active mode.
 import wordmark from '../../public/done.svg?raw';
@@ -72,7 +73,12 @@ const NAV = [
       venues, vintage, book stores — and one live client service. Each rebuilt
       in our own kernel, never remixed.
     </p>
-    <button type="button" class="index-trigger font-mono ttu tracked" id="project-index-trigger">
+    <button
+      type="button"
+      class="index-trigger font-mono ttu tracked"
+      id="project-index-trigger"
+      aria-haspopup="dialog"
+    >
       <span class="dot" data-on="true" /> Open project index
     </button>
   </section>
@@ -136,6 +142,9 @@ const NAV = [
       *blue red + purple/ — one-page systems
     </p>
   </section>
+
+  <!-- Pinned overlays: Project Index + data-driven work pages (islands). -->
+  <ProjectOverlay />
 </Base>
 
 <style>

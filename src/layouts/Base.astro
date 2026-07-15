@@ -76,14 +76,34 @@ const {
     <script>
       import Lenis from 'lenis';
 
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const lenis = new Lenis({ smoothWheel: true });
+      const root = document.documentElement;
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const lenis = reduced ? null : new Lenis({ smoothWheel: true });
+
+      if (lenis) {
         const raf = (time: number) => {
           lenis.raf(time);
           requestAnimationFrame(raf);
         };
         requestAnimationFrame(raf);
       }
+
+      // Lock page scroll while an overlay (index or work) is open. The store owns
+      // the truth and projects it to data-overlay; Lenis stays encapsulated here
+      // and reacts to that single attribute — no cross-island coupling.
+      const syncScrollLock = () => {
+        const open = root.dataset.overlay === 'index' || root.dataset.overlay === 'work';
+        if (lenis) {
+          if (open) lenis.stop();
+          else lenis.start();
+        }
+        root.style.overflow = open ? 'hidden' : '';
+      };
+      new MutationObserver(syncScrollLock).observe(root, {
+        attributes: true,
+        attributeFilter: ['data-overlay'],
+      });
+      syncScrollLock();
     </script>
   </body>
 </html>
