@@ -1,14 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { ThemeToggle } from '../components/theme-toggle';
+import { ModeWheel } from '../components/mode-wheel';
 // Wordmark is the vendored brand SVG; inlined so its fill follows the kernel
 // --ink token and re-skins with the active mode.
 import wordmark from '../../public/done.svg?raw';
 
 // The fixed content structure — page = mode(content). Modes re-skin these
 // sections; the structure never moves. Lorem copy in v1 (SPEC §1).
-const MODES = ['essential', 'brutal', 'clay', 'generative'] as const;
-
 const NAV = [
   { id: 'works', label: 'Works' },
   { id: 'philosophy', label: 'Philosophy' },
@@ -56,19 +55,9 @@ const NAV = [
   <!-- ── §00 Hero ── -->
   <section id="hero" class="hero" data-section="00">
     <h1 class="wordmark" set:html={wordmark} aria-label="blue red + purple" />
-    <!-- Static mode line — the mode-wheel island (M3) hydrates over this. -->
-    <div class="mode-line" id="mode-wheel-mount" data-current="essential">
-      <ol class="list flex items-center ma0 pa0 font-mono">
-        {
-          MODES.map((m, i) => (
-            <li class="mode-line__item">
-              <span class="dot" data-on={i === 0} />
-              <span class="ttu tracked f7" data-label>{m}</span>
-            </li>
-          ))
-        }
-      </ol>
-    </div>
+    <!-- The mode wheel — the parent function `page = mode(content)`. SSR renders
+         the four-slot row (declarative shadow DOM); the island adds interaction. -->
+    <ModeWheel client:load />
     <p class="tagline font-mono ttu tracked">
       Too much blue will never amount to any red
     </p>
@@ -250,8 +239,7 @@ const NAV = [
     background-color: currentColor;
   }
   .rail-link:hover .dot,
-  .rail-link:focus-visible .dot,
-  .mode-line__item:hover .dot {
+  .rail-link:focus-visible .dot {
     background-color: currentColor;
   }
 
@@ -275,23 +263,6 @@ const NAV = [
     width: 100%;
     height: auto;
     fill: var(--ink);
-  }
-  .mode-line {
-    color: var(--ink);
-  }
-  .mode-line ol {
-    gap: 1.6rem;
-    flex-wrap: wrap;
-  }
-  .mode-line__item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--ink-2);
-    transition: color 0.3s ease;
-  }
-  .mode-line[data-current] .mode-line__item:first-child {
-    color: var(--ink);
   }
   .tagline {
     color: var(--ink);
