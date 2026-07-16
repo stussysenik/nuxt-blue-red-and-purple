@@ -1,0 +1,171 @@
+---
+// The Project Index — a standalone, white-label concept page. Full-screen,
+// centered, scrollable: big display-type title rows with (N#) superscripts over
+// a blurred ghost of the hovered work. Driven entirely by the works collection
+// (no hardcoded brand), so any set of works populates it. Each row navigates to
+// its routed /works/[slug] page. Same deterministic sort as everywhere else —
+// live client first, then newest, then alphabetical — so (N#) numbering is stable.
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const works = (await getCollection('works'))
+  .map((entry) => entry.data)
+  .toSorted(
+    (a, b) =>
+      Number(b.real ?? false) - Number(a.real ?? false) ||
+      b.year - a.year ||
+      a.title.localeCompare(b.title),
+  );
+---
+
+<Base title="Project index — *blue red + purple/" chrome="close">
+  <main class="index" data-lenis-prevent>
+    <span class="index__ghost" aria-hidden="true"></span>
+
+    <h1 class="visually-hidden">Project index</h1>
+    <ul class="index__list">
+      {
+        works.map((w, i) => (
+          <li>
+            <a class="row" href={`/works/${w.slug}`} data-image={w.image}>
+              <span class="row__num font-mono" aria-hidden="true">
+                (N{i + 1})
+              </span>
+              <span class="row__title">{w.title}</span>
+              <span class="row__meta font-mono ttu tracked">
+                {w.category} · {w.year}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </main>
+</Base>
+
+<script>
+  // The hovered/focused row drives the ghost backdrop — the only behavior this
+  // page needs; the rows are plain links, so navigation is native.
+  const ghost = document.querySelector<HTMLElement>('.index__ghost');
+  const rows = document.querySelectorAll<HTMLElement>('.row');
+  const paint = (url: string | null) => {
+    if (ghost) ghost.style.backgroundImage = url ? `url("${url}")` : '';
+  };
+  for (const row of rows) {
+    const show = () => paint(row.dataset.image ?? null);
+    row.addEventListener('pointerenter', show);
+    row.addEventListener('focus', show);
+  }
+  paint(rows[0]?.dataset.image ?? null);
+</script>
+
+<style>
+  /* Composes only from kernel custom properties — the same escape hatch the
+     rest of the site uses. No rogue hex, no arbitrary utilities. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .index {
+    position: relative;
+    z-index: 1;
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    color: var(--ink);
+  }
+
+  /* Ghost backdrop — the hovered work's image, blurred and faint. */
+  .index__ghost {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-position: center;
+    background-size: cover;
+    filter: blur(56px) saturate(1.1);
+    opacity: 0.22;
+    transform: scale(1.15);
+    transition: opacity 0.5s var(--ease);
+    pointer-events: none;
+  }
+
+  .index__list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    margin: 0;
+    /* Top/bottom padding clears the pinned chrome: the CLOSE anchor (top) and
+       the theme toggle (bottom). When the list outgrows the viewport it
+       top-anchors, so without this the first row tucks under CLOSE. */
+    padding: clamp(4.5rem, 11vh, 7rem) 1rem clamp(4rem, 9vh, 5.5rem);
+    list-style: none;
+  }
+
+  /* Idle title stays centered; category · year is revealed out-of-flow to the
+     right on hover/focus, so the composition never shifts. */
+  .row {
+    position: relative;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.1rem 0.6rem;
+    text-decoration: none;
+    color: var(--ink-2);
+    transition: color 0.25s var(--ease);
+  }
+  .row:hover,
+  .row:focus-visible {
+    color: var(--ink);
+    outline: none;
+  }
+  .row__num {
+    font-size: clamp(0.7rem, 1.6vw, 1.1rem);
+    color: var(--ink-2);
+    line-height: 1;
+    padding-top: 0.35em;
+  }
+  .row__title {
+    font-family: var(--font-display);
+    font-weight: var(--wght-display);
+    font-size: clamp(1.8rem, 5.5vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: var(--tracking-display);
+    color: inherit;
+  }
+  .row__meta {
+    position: absolute;
+    left: calc(100% + 0.4rem);
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-size: clamp(0.5rem, 1.2vw, 0.7rem);
+    color: var(--ink-2);
+    opacity: 0;
+    transition: opacity 0.2s var(--ease);
+  }
+  .row:hover .row__meta,
+  .row:focus-visible .row__meta {
+    opacity: 1;
+  }
+  @media (max-width: 40em) {
+    .row__meta {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .index__ghost,
+    .row,
+    .row__meta {
+      transition: none;
+    }
+  }
+</style>

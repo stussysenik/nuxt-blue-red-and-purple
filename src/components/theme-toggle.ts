@@ -1,6 +1,11 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, svg } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { getStore, type Theme } from '../state/store';
+
+// Bare glyphs — no chrome, no fill; stroke follows currentColor (--ink). The
+// icon shows the *current* theme; the label describes the *action*.
+const sunIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.1" /><path d="M12 2.6v2.4M12 19v2.4M4.3 4.3l1.7 1.7M18 18l1.7 1.7M2.6 12H5M19 12h2.4M4.3 19.7l1.7-1.7M18 6l1.7-1.7" /></svg>`;
+const moonIcon = svg`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.4A8 8 0 1 1 9.6 4 6.2 6.2 0 0 0 20 14.4z" /></svg>`;
 
 // Pinned island (SPEC layer table): always visible, re-skins with the kernel
 // via inherited custom properties, persists through the store's commit. Browser
@@ -31,41 +36,30 @@ export class ThemeToggle extends LitElement {
   static override styles = css`
     :host {
       position: fixed;
-      right: max(1.4rem, env(safe-area-inset-right));
-      bottom: max(1.4rem, env(safe-area-inset-bottom));
+      right: max(var(--chrome-inset, 1.4rem), env(safe-area-inset-right));
+      bottom: max(var(--chrome-inset, 1.4rem), env(safe-area-inset-bottom));
       z-index: 4;
     }
+    /* Minimal: a single icon, no border/radius/shadow/surface — just the glyph. */
     button {
       display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0.8rem;
-      font-family: var(--font-mono);
-      font-weight: var(--wght-label);
-      font-size: 0.72rem;
-      letter-spacing: var(--tracking-label);
-      text-transform: uppercase;
+      padding: 0;
+      background: none;
+      border: none;
       color: var(--ink);
-      background-color: var(--surface);
-      border: var(--border-w) solid var(--ink);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
       cursor: pointer;
       transition: color var(--dur) var(--ease);
+      -webkit-tap-highlight-color: transparent;
     }
     button:hover,
     button:focus-visible {
       color: var(--spot);
+      outline: none;
     }
-    .dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 100%;
-      border: 1px solid currentColor;
-      background-color: transparent;
-    }
-    .dot[data-on='true'] {
-      background-color: currentColor;
+    svg {
+      display: block;
+      width: 1.15rem;
+      height: 1.15rem;
     }
     @media (prefers-reduced-motion: reduce) {
       button {
@@ -83,8 +77,7 @@ export class ThemeToggle extends LitElement {
         aria-label=${isDark ? 'Switch to light theme' : 'Switch to dark theme'}
         @click=${this.toggle}
       >
-        <span class="dot" data-on=${isDark ? 'true' : 'false'}></span>
-        <span>${isDark ? 'Dark' : 'Light'}</span>
+        ${isDark ? moonIcon : sunIcon}
       </button>
     `;
   }

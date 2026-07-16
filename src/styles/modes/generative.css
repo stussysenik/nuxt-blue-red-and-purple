@@ -27,13 +27,13 @@
 }
 
 [data-mode='generative'][data-theme='light'] {
-  --paper: #ede8df;
-  --paper-1: #f5f1e9;
+  --paper: #ffffff; /* white background — also the shader's duotone shadow (paper) */
+  --paper-1: #f4f1ea; /* elevation inverts: a soft recessed tint separates panels from the white field (shadow is none here) */
   --ink: #16130f;
   --ink-1: #3d3a34;
   --ink-2: #6e6a61;
   --ink-3: #a8a399;
-  --line: #cfc8bb;
+  --line: #e4ded3; /* eased lighter to hold a barely-there divider weight against pure white */
 }
 
 [data-mode='generative'][data-theme='dark'] {

@@ -8,22 +8,28 @@ import '../styles/modes/essential.css';
 import '../styles/modes/brutal.css';
 import '../styles/modes/clay.css';
 import '../styles/modes/generative.css';
+import { ThemeToggle } from '../components/theme-toggle';
 
 interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  // Top-centre chrome slot. 'index' → the "Template index" pill that opens the
+  // full-screen Project Index (/works). 'close' → the same slot as a plain Close
+  // (→ home), used by /works itself so the label swaps in place.
+  chrome?: 'index' | 'close';
 }
 
 const {
   title = '*blue red + purple/',
   description = 'A design agency with one specialization: one-page systems. One fixed content structure, four interchangeable design systems — switched live.',
   noindex = false,
+  chrome = 'index',
 } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" data-mode="essential">
+<html lang="en" data-mode="generative">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -55,7 +61,7 @@ const {
     <meta property="og:image" content="https://blueredandpurple.world/og.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- No-FOUC bootstrap: resolve theme before first paint (mode default = essential). -->
+    <!-- No-FOUC bootstrap: resolve theme before first paint (mode default = generative). -->
     <script is:inline>
       (() => {
         const root = document.documentElement;
@@ -69,6 +75,33 @@ const {
 
   </head>
   <body>
+    <!-- ── Global pinned chrome. The centred slot is the wayfinding anchor: the
+         "Template index" pill (→ /works) on content pages, or Close (→ home) on
+         the index itself, swapping in place. The corner mark stays; the home
+         slash-mark is archived (below). ── -->
+    <header class="chrome">
+      <!-- Archived: the top-left /// home mark. Restore by uncommenting — it was
+           the link back to `/`. Wayfinding now runs through the centred index
+           pill and the index's Close, so a persistent home mark is redundant.
+      <a href="/" class="slash-mark" aria-label="blue red + purple — home">
+        <span></span><span></span><span></span>
+      </a>
+      -->
+      {
+        chrome === 'close' ? (
+          <a href="/" class="chrome-index chrome-index--close font-mono">
+            Close
+          </a>
+        ) : (
+          <a href="/works" class="chrome-index font-mono">
+            Template index
+          </a>
+        )
+      }
+      <span class="corner-mark" aria-hidden="true">✳</span>
+    </header>
+    <ThemeToggle client:load />
+
     <slot />
 
     <!-- Lenis smooth scroll wired into the GSAP ScrollTrigger ticker; native
@@ -76,7 +109,6 @@ const {
     <script>
       import Lenis from 'lenis';
 
-      const root = document.documentElement;
       const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const lenis = reduced ? null : new Lenis({ smoothWheel: true });
 
@@ -108,23 +140,88 @@ const {
           }
         })();
       }
-
-      // Lock page scroll while an overlay (index or work) is open. The store owns
-      // the truth and projects it to data-overlay; Lenis stays encapsulated here
-      // and reacts to that single attribute — no cross-island coupling.
-      const syncScrollLock = () => {
-        const open = root.dataset.overlay === 'index' || root.dataset.overlay === 'work';
-        if (lenis) {
-          if (open) lenis.stop();
-          else lenis.start();
-        }
-        root.style.overflow = open ? 'hidden' : '';
-      };
-      new MutationObserver(syncScrollLock).observe(root, {
-        attributes: true,
-        attributeFilter: ['data-overlay'],
-      });
-      syncScrollLock();
     </script>
+
+    <style>
+      /* Global pinned chrome (moved out of the home page so work pages inherit
+         the identical nav). Composes only from kernel custom properties, and
+         snaps to the shared layout tokens (--chrome-inset). A full-viewport,
+         click-through overlay: children opt back into pointer events. Sits above
+         the theme toggle (z 4). */
+      .chrome {
+        position: fixed;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+        color: var(--ink);
+      }
+      .chrome a,
+      .chrome > span {
+        pointer-events: auto;
+      }
+
+      /* Centred index anchor. On content pages: a filled-ink callout chip with a
+         blueprint speech-bubble tail — the one deliberate emphasis, kept inside
+         the ink/paper duotone (colour law) by inverting fill/text rather than
+         introducing a hue. On the index: plain Close text (--close modifier). */
+      .chrome-index {
+        position: absolute;
+        top: max(var(--chrome-inset), env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-2) var(--space-3);
+        font-size: 0.72rem;
+        line-height: 1;
+        letter-spacing: 0.04em;
+        color: var(--paper);
+        background-color: var(--ink);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: opacity var(--dur) var(--ease);
+      }
+      .chrome-index::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 1.6rem;
+        border: 0.4rem solid transparent;
+        border-bottom: 0;
+        border-top-color: var(--ink);
+      }
+      .chrome-index:hover,
+      .chrome-index:focus-visible {
+        opacity: 0.82;
+        outline: none;
+      }
+      /* Index → Close: plain tracked text, no chip, no tail. */
+      .chrome-index--close {
+        padding: var(--space-2) var(--space-3);
+        color: var(--ink);
+        background: none;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        transition: color var(--dur) var(--ease);
+      }
+      .chrome-index--close::after {
+        display: none;
+      }
+      .chrome-index--close:hover,
+      .chrome-index--close:focus-visible {
+        opacity: 1;
+        color: var(--spot);
+      }
+
+      .corner-mark {
+        position: absolute;
+        top: max(var(--chrome-inset), env(safe-area-inset-top));
+        right: max(var(--chrome-inset), env(safe-area-inset-right));
+        font-family: var(--font-display);
+        font-weight: var(--wght-display);
+        font-size: 1.4rem;
+        color: var(--ink);
+      }
+    </style>
   </body>
 </html>

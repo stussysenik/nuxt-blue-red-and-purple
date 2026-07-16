@@ -13,6 +13,10 @@ import { snapToNearest, slotsFromPx, clampPosition } from '../wheel';
 
 type Gsap = typeof import('gsap').gsap;
 
+// Below this pointer travel (px) a press is a tap, not a drag — it selects the
+// slot under the pointer rather than coasting to the nearest one.
+const TAP_SLOP_PX = 6;
+
 @customElement('mode-wheel')
 export class ModeWheel extends LitElement {
   @state() private active: Mode = 'essential';
@@ -164,8 +168,22 @@ export class ModeWheel extends LitElement {
     if (!this.dragging || event.pointerId !== this.pointerId) return;
     this.dragging = false;
     this.track.releasePointerCapture(event.pointerId);
+    // Pointer capture retargets the slot's click to the track, so a tap can't
+    // rely on the button's @click — resolve the tapped slot here directly.
+    // (Keyboard Enter/Space still fires the real click, unaffected by capture.)
+    if (Math.abs(event.clientX - this.startX) < TAP_SLOP_PX) {
+      this.goTo(this.slotAtX(event.clientX));
+      return;
+    }
     const index = snapToNearest(this.motion.pos, this.velocity, MODES.length);
     this.goTo(index, this.reduced ? 0 : this.velocity);
+  }
+
+  /** Which slot sits under an absolute x — the strip is `MODES.length` equal cells. */
+  private slotAtX(clientX: number): number {
+    const rect = this.track.getBoundingClientRect();
+    const raw = Math.floor(((clientX - rect.left) / rect.width) * MODES.length);
+    return Math.min(Math.max(raw, 0), MODES.length - 1);
   }
 
   private onWheel(event: WheelEvent): void {

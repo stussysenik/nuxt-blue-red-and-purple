@@ -1,20 +1,22 @@
 ---
 import Base from '../layouts/Base.astro';
-import { ThemeToggle } from '../components/theme-toggle';
-import { ModeWheel } from '../components/mode-wheel';
-import ProjectOverlay from '../components/ProjectOverlay.astro';
+import { getCollection } from 'astro:content';
 // Wordmark is the vendored brand SVG; inlined so its fill follows the kernel
-// --ink token and re-skins with the active mode.
+// --ink token and re-skins with the active mode. The pinned chrome (home mark,
+// menu-is-index island, theme toggle) now lives globally in Base.astro.
 import wordmark from '../../public/done.svg?raw';
 
-// The fixed content structure — page = mode(content). Modes re-skin these
-// sections; the structure never moves. Lorem copy in v1 (SPEC §1).
-const NAV = [
-  { id: 'works', label: 'Works' },
-  { id: 'philosophy', label: 'Philosophy' },
-  { id: 'about', label: 'About us' },
-  { id: 'contacts', label: 'Contacts' },
-] as const;
+// The Project Index — rendered inline in §01 as a collapsible disclosure. Same
+// deterministic sort as Base's menu payload (live client first, then newest,
+// then alphabetical) so the (N#) numbering is stable across every surface.
+const works = (await getCollection('works'))
+  .map((entry) => entry.data)
+  .toSorted(
+    (a, b) =>
+      Number(b.real ?? false) - Number(a.real ?? false) ||
+      b.year - a.year ||
+      a.title.localeCompare(b.title),
+  );
 ---
 
 <Base>
@@ -35,44 +37,24 @@ const NAV = [
     <span class="grid-rig__h grid-rig__h--2"></span>
   </div>
 
-  <!-- ── Pinned chrome: marks + dot-marked nav rail (island targets in M3–M4) ── -->
-  <header class="chrome">
-    <a href="#hero" class="slash-mark" aria-label="blue red + purple — home">
-      <span></span><span></span><span></span>
-    </a>
-    <nav aria-label="Sections" class="mt3">
-      <ul class="list ma0 pa0 font-mono">
-        {
-          NAV.map((item, i) => (
-            <li class="mb2">
-              <a href={`#${item.id}`} class="rail-link" data-active={i === 0}>
-                <span class="dot" data-on={i === 0} />
-                <span class="ttu tracked f7">{item.label}</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </nav>
-    <span class="corner-mark" aria-hidden="true">✳</span>
-  </header>
-
-  <!-- Pinned theme toggle (island): always visible, persists to localStorage. -->
-  <ThemeToggle client:load />
-
-
   <!-- ── §00 Hero ── -->
   <section id="hero" class="hero" data-section="00">
     <h1 class="wordmark" set:html={wordmark} aria-label="blue red + purple" />
-    <!-- The mode wheel — the parent function `page = mode(content)`. SSR renders
-         the four-slot row (declarative shadow DOM); the island adds interaction. -->
-    <ModeWheel client:load />
+    <!-- The mode wheel is archived, not deleted: the site now ships generative
+         as the sole default. The four-mode selector (`page = mode(content)`) is
+         preserved as a concept — the component lives in
+         `src/components/mode-wheel.ts`, the four kernels in `src/styles/modes/`,
+         and all four render live at /design. To restore the live switcher, import
+         ModeWheel again and drop `<ModeWheel client:load />` back in here. -->
     <p class="tagline font-mono ttu tracked">
       Too much blue will never amount to any red
     </p>
   </section>
 
-  <!-- ── §01 Works ── -->
+  <!-- ── §01 Works — the entry to the Project Index. The index itself is a
+       standalone white-label page (src/pages/works/index.astro): a full-screen,
+       centered, scrollable list driven by the works collection. This CTA simply
+       routes there, so there is one source of the concept, not a duplicate. ── -->
   <section id="works" class="band" data-section="01">
     <p class="band__index font-mono">(01)</p>
     <h2 class="band__title">Works</h2>
@@ -81,18 +63,16 @@ const NAV = [
       venues, vintage, book stores — and one live client service. Each rebuilt
       in our own kernel, never remixed.
     </p>
-    <button
-      type="button"
-      class="index-trigger font-mono ttu tracked"
-      id="project-index-trigger"
-      aria-haspopup="dialog"
-    >
-      <span class="dot" data-on="true" /> Open project index
-    </button>
+
+    <a class="index-trigger font-mono ttu tracked" href="/works">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Project index</span>
+      <span class="index-trigger__count">({works.length})</span>
+    </a>
   </section>
 
   <!-- ── §02 Philosophy ── -->
-  <section id="philosophy" class="band" data-section="02">
+  <!-- <section id="philosophy" class="band" data-section="02">
     <p class="band__index font-mono">(02)</p>
     <h2 class="band__title">Philosophy</h2>
     <p class="band__lead measure-wide lh-copy">
@@ -101,10 +81,10 @@ const NAV = [
       <code class="font-mono">page = mode(content)</code>. Consistency is
       enforced at build — off-system CSS cannot compile.
     </p>
-  </section>
+  </section> -->
 
   <!-- ── §03 Approach ── -->
-  <section id="approach" class="band" data-section="03">
+  <!-- <section id="approach" class="band" data-section="03">
     <p class="band__index font-mono">(03)</p>
     <h2 class="band__title">Approach</h2>
     <p class="band__lead measure-wide lh-copy">
@@ -112,21 +92,19 @@ const NAV = [
       character — a complete token kernel per mode, four of them living on one
       DOM. Any brand can see itself in the chrome; the works carry the color.
     </p>
-  </section>
+  </section> -->
 
   <!-- ── §04 About ── -->
   <section id="about" class="band" data-section="04">
     <p class="band__index font-mono">(04)</p>
     <h2 class="band__title">About us</h2>
     <p class="band__lead measure-wide lh-copy">
-      A New York studio with one specialization. Silent-luxury credibility, no
-      decoration for its own sake — evidence over ornament. The site is the
-      pitch: it demonstrates the capability it sells.
+     We are a multidisciplinary design studio that connects the unconnected by creating communicative and intuitive design. Every great idea begins with something fragile. Whether an idea is just beginning, taking shape, or ready to grow, we partner with our clients to build thoughtful work that feel intuitive, memorable and true to their vision. Our Formula: –1 → 0 Discovering possibilities through curiosity, research, and brainstorming. 0 → 1 Bringing ideas to life through thoughtful design and technology. 1+ Helping brands grow through continued creativity, refinement, and evolution.
     </p>
   </section>
 
   <!-- ── §05 Ledger (the checkable claim) ── -->
-  <section id="ledger" class="band" data-section="05">
+  <!-- <section id="ledger" class="band" data-section="05">
     <p class="band__index font-mono">(05)</p>
     <h2 class="band__title">Ledger</h2>
     <dl class="ledger font-mono">
@@ -135,7 +113,7 @@ const NAV = [
       <div class="ledger__row"><dt>Design systems on one DOM</dt><dd>4</dd></div>
       <div class="ledger__row"><dt>Assured visual states</dt><dd>24</dd></div>
     </dl>
-  </section>
+  </section> -->
 
   <!-- ── §06 Contacts ── -->
   <section id="contacts" class="band band--last" data-section="06">
@@ -151,8 +129,6 @@ const NAV = [
     </p>
   </section>
 
-  <!-- Pinned overlays: Project Index + data-driven work pages (islands). -->
-  <ProjectOverlay />
 </Base>
 
 <script>
@@ -162,6 +138,9 @@ const NAV = [
 
   const canvas = document.getElementById('gen-canvas');
   if (canvas instanceof HTMLCanvasElement) mountGenerativeBackground(canvas);
+
+  // The Project Index is a routed page (/works) now — the §01 CTA is a plain
+  // link, so no controller lives here.
 </script>
 
 <style>
@@ -220,13 +199,13 @@ const NAV = [
     width: 1px;
   }
   .grid-rig__v--1 {
-    left: 8%;
+    left: var(--rig-v-1);
   }
   .grid-rig__v--2 {
-    left: 20%;
+    left: var(--rig-v-2);
   }
   .grid-rig__v--3 {
-    left: 30%;
+    left: var(--rig-v-3);
   }
   .grid-rig__h {
     left: 0;
@@ -234,51 +213,10 @@ const NAV = [
     height: 1px;
   }
   .grid-rig__h--1 {
-    top: 24%;
+    top: var(--rig-h-1);
   }
   .grid-rig__h--2 {
-    top: 76%;
-  }
-
-  /* Pinned chrome. */
-  .chrome {
-    position: fixed;
-    top: max(1.4rem, env(safe-area-inset-top));
-    left: max(1.4rem, env(safe-area-inset-left));
-    z-index: 3;
-    color: var(--ink);
-  }
-  .slash-mark {
-    display: inline-flex;
-    gap: 0.28rem;
-  }
-  .slash-mark span {
-    display: block;
-    width: 0.55rem;
-    height: 1.5rem;
-    background-color: var(--ink);
-    transform: skewX(-20deg);
-  }
-  .rail-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    color: var(--ink-2);
-    transition: color 0.3s ease;
-  }
-  .rail-link[data-active='true'],
-  .rail-link:hover,
-  .rail-link:focus-visible {
-    color: var(--ink);
-  }
-  .corner-mark {
-    position: fixed;
-    top: max(1.4rem, env(safe-area-inset-top));
-    right: max(1.4rem, env(safe-area-inset-right));
-    font-family: var(--font-display);
-    font-weight: var(--wght-display);
-    font-size: 1.4rem;
-    color: var(--ink);
+    top: var(--rig-h-2);
   }
 
   /* Dot language — filled = active/hovered, outline = idle. */
@@ -297,10 +235,6 @@ const NAV = [
   .dot[data-on='true'] {
     background-color: currentColor;
   }
-  .rail-link:hover .dot,
-  .rail-link:focus-visible .dot {
-    background-color: currentColor;
-  }
 
   /* Hero. */
   .hero {
@@ -310,7 +244,7 @@ const NAV = [
     display: grid;
     align-content: center;
     gap: 1.6rem;
-    padding: 6rem clamp(1.4rem, 6vw, 8rem) 4rem;
+    padding: 6rem var(--edge) 4rem;
   }
   .wordmark {
     display: block;
@@ -332,7 +266,7 @@ const NAV = [
   .band {
     position: relative;
     z-index: 1;
-    padding: clamp(3rem, 12vh, 9rem) clamp(1.4rem, 6vw, 8rem);
+    padding: clamp(3rem, 12vh, 9rem) var(--edge);
     border-top: 1px solid var(--line);
   }
   .band--last {
@@ -362,8 +296,9 @@ const NAV = [
     padding: 0.1em 0.35em;
     border-radius: 0.2rem;
   }
-  /* The index trigger wears the active kernel: essential = thin outline,
-     brutal = heavy border + hard offset shadow, clay = rounded soft depth. */
+  /* ── Project Index trigger (§01) ──────────────────────────────────────────
+     Routes to the /works index page. Wears the active kernel (essential = thin
+     outline, brutal = heavy border + hard offset shadow, clay = rounded depth). */
   .index-trigger {
     display: inline-flex;
     align-items: center;
@@ -378,13 +313,22 @@ const NAV = [
     cursor: pointer;
     font-size: 0.8rem;
     transition:
-      transform var(--dur) var(--ease),
+      color var(--dur) var(--ease),
       box-shadow var(--dur) var(--ease);
   }
   .index-trigger:hover,
   .index-trigger:focus-visible {
     color: var(--spot);
   }
+  .index-trigger:hover .dot,
+  .index-trigger:focus-visible .dot {
+    background-color: currentColor;
+  }
+  .index-trigger__count {
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+
   .contact-link {
     display: inline-flex;
     align-items: center;

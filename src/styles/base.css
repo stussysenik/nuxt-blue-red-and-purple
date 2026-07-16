@@ -7,10 +7,62 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
   --transparent: transparent;
   --inherit: inherit;
+
+  /* ── Layout grid & spacing (the engineering register) ──────────────────────
+     One place to retune the page's rhythm. Content edges, the pinned chrome,
+     and the visible construction grid (index.astro .grid-rig) all snap to these
+     tokens, so moving one value moves the whole system together. */
+  --edge: clamp(1.4rem, 6vw, 8rem); /* page horizontal margin = grid gutter */
+  --chrome-inset: 1.4rem; /* pinned-chrome offset from the viewport edge */
+
+  /* Spacing scale — 0.4rem base step. Used by the chrome/new UI; extend freely. */
+  --space-1: 0.4rem;
+  --space-2: 0.8rem;
+  --space-3: 1.2rem;
+  --space-4: 1.8rem;
+  --space-5: 2.6rem;
+  --space-6: 4rem;
+
+  /* Construction-grid line positions. The first vertical snaps to the content
+     gutter (--edge) so display type starts on a visible grid line; the rest are
+     tunable percentages. index.astro .grid-rig reads these directly. */
+  --rig-v-1: var(--edge);
+  --rig-v-2: 20%;
+  --rig-v-3: 30%;
+  --rig-h-1: 24%;
+  --rig-h-2: 76%;
 }
 
 html {
   scrollbar-gutter: stable;
+}
+
+/* Cross-document view transitions (same-origin MPA): a full-screen animation
+   when routing between the index and a work page, or between works. Pure CSS —
+   browsers without support just navigate normally (progressive enhancement).
+   Reduced-motion gets the instant snap (no @keyframes applied). */
+@view-transition {
+  navigation: auto;
+}
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: brp-vt-out 0.28s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  ::view-transition-new(root) {
+    animation: brp-vt-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes brp-vt-out {
+    to {
+      opacity: 0;
+      transform: scale(0.99);
+    }
+  }
+  @keyframes brp-vt-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.2rem);
+    }
+  }
 }
 
 body {
@@ -21,13 +73,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  transition:
-    background-color var(--dur) var(--ease),
-    color var(--dur) var(--ease);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body {
-    transition: none;
-  }
+  /* Mode/theme is a hard swap: the palette flips the instant the wheel commits
+     `data-mode`, no crossfade. One click → immediate visual change. */
 }

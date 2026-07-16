@@ -1,0 +1,413 @@
+---
+// S'MAC — bespoke white-label reconstruction (the live client service).
+//
+// This is NOT the generic case-study template ([slug].astro): it is a hand-built
+// homage to the source's *signature layout* — a fixed cream rail of nav + meta
+// pinned beside a full-bleed hero, with a slide indicator and a scroll cue. The
+// mechanic ("menu-as-index") is expressed literally: the rail IS the index, and
+// scrolling reveals the editorial ledger below.
+//
+// De-branded into our kernel: everything composes from kernel custom properties,
+// the single exception being --work-accent (the work's own colour, grafted inline
+// and exempt from the colour law — "artwork carries colour"). Content stays
+// single-sourced from the collection entry; only the layout is bespoke here, so
+// a static /works/smac wins over the dynamic [slug] route.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const entry = await getEntry('works', 'smac');
+const w = entry!.data;
+const [amber, orange] = w.palette ?? [];
+
+// The rail's index — the site's real nav, reconstructed. Anchors that have a
+// live target on this page resolve; the rest are structural echoes of the source.
+const index = [
+  { label: 'Hours & Location', href: undefined },
+  { label: 'Our Story', href: undefined },
+  { label: 'Menu', href: '#ledger' },
+  { label: 'Catering', href: undefined },
+  { label: 'Press', href: '#colophon' },
+];
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <article
+    class="smac"
+    style={`--work-accent:${orange ?? 'var(--ink)'};--work-amber:${amber ?? 'var(--ink)'}`}
+  >
+    <!-- ── Hero: fixed cream rail + full-bleed reference plate ── -->
+    <section class="hero">
+      <aside class="rail">
+        <p class="rail__logo">{w.title}</p>
+
+        <p class="rail__addr font-mono">
+          197 1st Avenue<span>New York, NY 10003</span><span>212 · 358 · 7912</span>
+        </p>
+
+        <a class="rail__cta" href="#ledger">Menu</a>
+
+        <nav class="rail__nav font-mono ttu tracked" aria-label="Sections">
+          {
+            index.map((item) =>
+              item.href ? (
+                <a href={item.href}>{item.label}</a>
+              ) : (
+                <span aria-disabled="true">{item.label}</span>
+              ),
+            )
+          }
+        </nav>
+
+        <a class="rail__signup font-mono ttu tracked" href="#colophon">Email signup</a>
+
+        <p class="rail__foot font-mono">Reconstructed in-kernel</p>
+      </aside>
+
+      <div class="plate">
+        <img src={w.image} alt={`${w.title} — reference plate`} />
+        <div class="plate__scrim" aria-hidden="true"></div>
+        <div class="plate__dots" aria-hidden="true">
+          {Array.from({ length: 9 }, (_, i) => <span data-on={i === 0}></span>)}
+        </div>
+        <a class="plate__scroll" href="#ledger" aria-label="Scroll to the menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+        <span class="plate__bar" aria-hidden="true"></span>
+      </div>
+    </section>
+
+    <!-- ── Menu-as-index: the mechanic made literal — the counter reduced to one
+         editorial ledger. Reveals on scroll (inherits the .band ticker). ── -->
+    <section id="ledger" class="ledger band">
+      <p class="ledger__eyebrow font-mono ttu tracked">The menu, as an index</p>
+      <p class="ledger__lead">{w.summary}</p>
+
+      {
+        w.mechanic && (
+          <dl class="ledger__mechanic">
+            <dt class="font-mono ttu tracked">Mechanic</dt>
+            <dd>{w.mechanic}</dd>
+          </dl>
+        )
+      }
+
+      {
+        w.palette?.length && (
+          <ul class="ledger__palette font-mono" aria-label="Palette">
+            {w.palette.map((c) => (
+              <li>
+                <span class="chip" style={`background-color:${c}`} />
+                {c}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+
+    <footer id="colophon" class="colophon band">
+      <p class="colophon__meta font-mono ttu tracked">
+        {w.category} · {w.year}{w.real && ' · live client'}
+      </p>
+      {w.source && <p class="colophon__src font-mono">Reference — {w.source}</p>}
+      <a class="colophon__back font-mono ttu tracked" href="/works">← Project index</a>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  /* --accent is the work's own orange, exempt from the colour law; everything
+     else stays inside the kernel's ink/paper duotone. */
+  .smac {
+    --accent: var(--work-accent, var(--ink));
+    --amber: var(--work-amber, var(--accent));
+    position: relative;
+    z-index: 1;
+    color: var(--ink);
+  }
+
+  /* ── Hero: the signature split — rail beside a full-bleed plate. ── */
+  .hero {
+    display: grid;
+    grid-template-columns: clamp(17rem, 26vw, 22rem) 1fr;
+    min-height: 100svh;
+  }
+
+  .rail {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: clamp(3.5rem, 8vh, 5.5rem) 1.6rem 2rem;
+    background-color: var(--paper-1);
+    border-right: 3px solid var(--accent);
+    text-align: center;
+  }
+  .rail__logo {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 3vw, 2.6rem);
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: var(--amber);
+    margin: 0;
+  }
+  .rail__addr {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--ink-1);
+    margin: 0;
+  }
+  .rail__cta {
+    padding: 0.55rem 1.8rem;
+    border-radius: 2rem;
+    background-color: var(--accent);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity var(--dur) var(--ease);
+  }
+  .rail__cta:hover,
+  .rail__cta:focus-visible {
+    opacity: 0.82;
+    outline: none;
+  }
+  .rail__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    font-size: 0.72rem;
+  }
+  .rail__nav a,
+  .rail__nav span {
+    color: var(--ink-1);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+  .rail__nav a:hover,
+  .rail__nav a:focus-visible {
+    color: var(--accent);
+    outline: none;
+  }
+  .rail__nav span[aria-disabled] {
+    color: var(--ink-3);
+    cursor: default;
+  }
+  .rail__signup {
+    padding: 0.5rem 1.4rem;
+    border: 1px solid var(--accent);
+    border-radius: 2rem;
+    color: var(--accent);
+    font-size: 0.68rem;
+    text-decoration: none;
+    transition:
+      background-color var(--dur) var(--ease),
+      color var(--dur) var(--ease);
+  }
+  .rail__signup:hover,
+  .rail__signup:focus-visible {
+    background-color: var(--accent);
+    color: var(--paper);
+    outline: none;
+  }
+  .rail__foot {
+    margin-top: auto;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }
+
+  /* ── Plate: the full-bleed reference render + slide/scroll cues. ── */
+  .plate {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--paper-1);
+  }
+  .plate img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* A faint paper scrim floors the photo into the kernel without hiding it. */
+  .plate__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 55%,
+      color-mix(in srgb, var(--paper) 40%, transparent)
+    );
+    pointer-events: none;
+  }
+  .plate__dots {
+    position: absolute;
+    left: 50%;
+    bottom: 2.6rem;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.6rem;
+  }
+  .plate__dots span {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 100%;
+    background-color: color-mix(in srgb, var(--paper) 60%, transparent);
+  }
+  .plate__dots span[data-on='true'] {
+    background-color: var(--accent);
+  }
+  .plate__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 0.7rem;
+    transform: translateX(-50%);
+    color: var(--paper);
+    opacity: 0.9;
+    transition: transform var(--dur) var(--ease);
+  }
+  .plate__scroll svg {
+    display: block;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  .plate__scroll:hover,
+  .plate__scroll:focus-visible {
+    transform: translateX(-50%) translateY(0.2rem);
+    outline: none;
+  }
+  .plate__bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 0.5rem;
+    background-color: var(--accent);
+  }
+
+  /* ── Ledger: the menu rendered as an editorial index. ── */
+  .ledger {
+    max-width: 54rem;
+    margin: 0 auto;
+    padding: clamp(4rem, 12vh, 8rem) var(--edge);
+    border-top: none;
+  }
+  .ledger__eyebrow {
+    font-size: 0.72rem;
+    color: var(--accent);
+    margin: 0 0 1.2rem;
+  }
+  .ledger__lead {
+    font-family: var(--font-display);
+    font-weight: var(--wght-display);
+    font-size: clamp(1.6rem, 4vw, 2.8rem);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-display);
+    margin: 0 0 2.6rem;
+  }
+  .ledger__mechanic {
+    display: grid;
+    gap: 0.6rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent);
+    margin: 0 0 2.6rem;
+  }
+  .ledger__mechanic dt {
+    font-size: 0.7rem;
+    color: var(--ink-2);
+  }
+  .ledger__mechanic dd {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: var(--ink-1);
+  }
+  .ledger__palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ledger__palette li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.72rem;
+    color: var(--ink-1);
+  }
+  .chip {
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 100%;
+    border: 1px solid var(--line);
+    flex: none;
+  }
+
+  /* ── Colophon: attribution + return. ── */
+  .colophon {
+    max-width: 54rem;
+    margin: 0 auto;
+    padding: 0 var(--edge) clamp(4rem, 12vh, 7rem);
+    display: grid;
+    gap: 0.8rem;
+    border-top: 1px solid var(--line);
+    padding-top: 2.4rem;
+  }
+  .colophon__meta {
+    font-size: 0.7rem;
+    color: var(--ink-2);
+  }
+  .colophon__src {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-3);
+  }
+  .colophon__back {
+    justify-self: start;
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+  .colophon__back:hover,
+  .colophon__back:focus-visible {
+    color: var(--accent);
+  }
+
+  /* ── Stack the rail above the plate on narrow viewports. ── */
+  @media (max-width: 46em) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .rail {
+      position: static;
+      min-height: 0;
+      border-right: none;
+      border-bottom: 3px solid var(--accent);
+      padding-top: clamp(4rem, 10vh, 6rem);
+    }
+    .rail__foot {
+      margin-top: 1rem;
+    }
+    .plate {
+      min-height: 78svh;
+    }
+  }
+</style>
