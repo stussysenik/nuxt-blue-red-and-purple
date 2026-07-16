@@ -5,5 +5,7 @@
   "year": 2025,
   "image": "/works/z922.jpg",
   "summary": "A faux desktop operating system: a wallpaper, draggable windows, and a tabular index of every work.",
-  "mechanic": "A faux desktop OS — window overlays over wallpaper and a tabular # / Name / Type / Year index."
+  "mechanic": "A faux desktop OS — window overlays over wallpaper and a tabular # / Name / Type / Year index.",
+  "hidden": true
 }
+

@@ -9,5 +9,6 @@
     "#0068ed",
     "#ffffff"
   ],
-  "mechanic": "A mac-window Finder sidebar and an 'about me.rtf' file-metaphor overlay over a six-column grid."
+  "mechanic": "A mac-window Finder sidebar and an 'about me.rtf' file-metaphor overlay over a six-column grid.",
+  "hidden": true
 }

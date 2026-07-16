@@ -93,8 +93,8 @@ const {
             Close
           </a>
         ) : (
-          <a href="/works" class="chrome-index font-mono">
-            Template index
+          <a href="/works" class="chrome-index">
+            Project Index
           </a>
         )
       }
@@ -160,10 +160,10 @@ const {
         pointer-events: auto;
       }
 
-      /* Centred index anchor. On content pages: a filled-ink callout chip with a
-         blueprint speech-bubble tail — the one deliberate emphasis, kept inside
-         the ink/paper duotone (colour law) by inverting fill/text rather than
-         introducing a hue. On the index: plain Close text (--close modifier). */
+      /* Centred index anchor. On content pages: clean plain-text wayfinding —
+         the label in --ink display type, no chip, no tail, staying inside the
+         ink/paper duotone (colour law). On the index: plain Close text
+         (--close modifier). */
       .chrome-index {
         position: absolute;
         top: max(var(--chrome-inset), env(safe-area-inset-top));
@@ -171,28 +171,20 @@ const {
         transform: translateX(-50%);
         display: inline-flex;
         align-items: center;
-        padding: var(--space-2) var(--space-3);
-        font-size: 0.72rem;
+        padding: var(--space-1) var(--space-2);
+        font-family: var(--font-display);
+        font-weight: var(--wght-body);
+        font-size: var(--type-meta);
         line-height: 1;
-        letter-spacing: 0.04em;
-        color: var(--paper);
-        background-color: var(--ink);
+        letter-spacing: 0.01em;
+        color: var(--ink);
         text-decoration: none;
         white-space: nowrap;
         transition: opacity var(--dur) var(--ease);
       }
-      .chrome-index::after {
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 1.6rem;
-        border: 0.4rem solid transparent;
-        border-bottom: 0;
-        border-top-color: var(--ink);
-      }
       .chrome-index:hover,
       .chrome-index:focus-visible {
-        opacity: 0.82;
+        opacity: 0.6;
         outline: none;
       }
       /* Index → Close: plain tracked text, no chip, no tail. */

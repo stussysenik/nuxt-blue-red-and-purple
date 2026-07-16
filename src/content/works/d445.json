@@ -9,5 +9,6 @@
     "#161616",
     "#f4f4f4"
   ],
-  "mechanic": "A single footnoted column in a page-border frame with an image-zoom-off reading mode."
+  "mechanic": "A single footnoted column in a page-border frame with an image-zoom-off reading mode.",
+  "hidden": true
 }

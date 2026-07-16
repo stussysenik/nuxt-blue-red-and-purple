@@ -10,5 +10,6 @@
     "#190bb6",
     "#e74a27"
   ],
-  "mechanic": "Confetti primaries on one clean typeface; a hover-dense video grid on Lenis with a custom cursor."
+  "mechanic": "Confetti primaries on one clean typeface; a hover-dense video grid on Lenis with a custom cursor.",
+  "hidden": true
 }

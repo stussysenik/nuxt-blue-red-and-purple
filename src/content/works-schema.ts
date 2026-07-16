@@ -24,6 +24,9 @@ export const workSchema = z.object({
   source: z.string().optional(),
   /** True for live client services (smac); studies omit it. */
   real: z.boolean().optional(),
+  /** Hidden from the Project Index list; its /works/<slug> page still builds so
+      the work can be refined privately before it's surfaced. Studies omit it. */
+  hidden: z.boolean().optional(),
 });
 
 export type Work = z.infer<typeof workSchema>;

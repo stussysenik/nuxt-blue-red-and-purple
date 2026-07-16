@@ -10,6 +10,7 @@ import { getCollection } from 'astro:content';
 
 const works = (await getCollection('works'))
   .map((entry) => entry.data)
+  .filter((w) => !w.hidden)
   .toSorted(
     (a, b) =>
       Number(b.real ?? false) - Number(a.real ?? false) ||
@@ -128,7 +129,7 @@ const works = (await getCollection('works'))
     outline: none;
   }
   .row__num {
-    font-size: clamp(0.7rem, 1.6vw, 1.1rem);
+    font-size: clamp(0.82rem, 1.6vw, 1.1rem);
     color: var(--ink-2);
     line-height: 1;
     padding-top: 0.35em;
@@ -147,7 +148,7 @@ const works = (await getCollection('works'))
     top: 50%;
     transform: translateY(-50%);
     white-space: nowrap;
-    font-size: clamp(0.5rem, 1.2vw, 0.7rem);
+    font-size: var(--type-label);
     color: var(--ink-2);
     opacity: 0;
     transition: opacity 0.2s var(--ease);

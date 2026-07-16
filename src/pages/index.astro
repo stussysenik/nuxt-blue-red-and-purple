@@ -11,6 +11,7 @@ import wordmark from '../../public/done.svg?raw';
 // then alphabetical) so the (N#) numbering is stable across every surface.
 const works = (await getCollection('works'))
   .map((entry) => entry.data)
+  .filter((w) => !w.hidden)
   .toSorted(
     (a, b) =>
       Number(b.real ?? false) - Number(a.real ?? false) ||
@@ -55,7 +56,7 @@ const works = (await getCollection('works'))
        standalone white-label page (src/pages/works/index.astro): a full-screen,
        centered, scrollable list driven by the works collection. This CTA simply
        routes there, so there is one source of the concept, not a duplicate. ── -->
-  <section id="works" class="band" data-section="01">
+  <!-- <section id="works" class="band" data-section="01">
     <p class="band__index font-mono">(01)</p>
     <h2 class="band__title">Works</h2>
     <p class="band__lead measure-wide lh-copy">
@@ -69,7 +70,7 @@ const works = (await getCollection('works'))
       <span>Project index</span>
       <span class="index-trigger__count">({works.length})</span>
     </a>
-  </section>
+  </section> -->
 
   <!-- ── §02 Philosophy ── -->
   <!-- <section id="philosophy" class="band" data-section="02">
@@ -99,7 +100,10 @@ const works = (await getCollection('works'))
     <p class="band__index font-mono">(04)</p>
     <h2 class="band__title">About us</h2>
     <p class="band__lead measure-wide lh-copy">
-     We are a multidisciplinary design studio that connects the unconnected by creating communicative and intuitive design. Every great idea begins with something fragile. Whether an idea is just beginning, taking shape, or ready to grow, we partner with our clients to build thoughtful work that feel intuitive, memorable and true to their vision. Our Formula: –1 → 0 Discovering possibilities through curiosity, research, and brainstorming. 0 → 1 Bringing ideas to life through thoughtful design and technology. 1+ Helping brands grow through continued creativity, refinement, and evolution.
+     We are a multi-disciplinary design communication studio that connects the unconnected by creating coherent and intuitive design. Every great idea begins with something fragile. Whether an idea is just at the beginning, taking shape, or ready to scale, we partner with our clients to build thoughtful work that feel intuitive, memorable and true to your vision. <br>
+    </p>
+    <p class="band__lead measure-wide lh-copy">
+      <br> Our Formula:<br> –1 → 0 <br> Discovering possibilities through curiosity, research, and brainstorming. <br> 0 → 1 <br> Bringing ideas to life through thoughtful design and technology. <br>1+<br> Helping brands grow through continued creativity, refinement, and evolution.
     </p>
   </section>
 
@@ -123,9 +127,6 @@ const works = (await getCollection('works'))
       <a href="mailto:hi@blueredandpurple.world" class="contact-link">
         hi@blueredandpurple.world
       </a>
-    </p>
-    <p class="colophon font-mono ttu tracked f7 ink-2 mt5">
-      *blue red + purple/ — one-page systems
     </p>
   </section>
 
@@ -259,7 +260,7 @@ const works = (await getCollection('works'))
   }
   .tagline {
     color: var(--ink);
-    font-size: 0.82rem;
+    font-size: var(--type-label);
   }
 
   /* Content bands. */
@@ -273,7 +274,7 @@ const works = (await getCollection('works'))
     min-height: 60svh;
   }
   .band__index {
-    font-size: 0.75rem;
+    font-size: var(--type-label);
     color: var(--ink-2);
     letter-spacing: 0.1em;
   }
@@ -288,7 +289,8 @@ const works = (await getCollection('works'))
     color: var(--ink);
   }
   .band__lead {
-    font-size: 1.05rem;
+    font-size: var(--type-body);
+    line-height: 1.55;
     color: var(--ink-1);
   }
   .band__lead code {
@@ -318,7 +320,9 @@ const works = (await getCollection('works'))
   }
   .index-trigger:hover,
   .index-trigger:focus-visible {
-    color: var(--spot);
+    /* Canonical Riso Green — mode-independent, and legible on both the light
+       (#f7f3ec) and dark (#16130f) papers (same green clay uses in both themes). */
+    color: #00a95c;
   }
   .index-trigger:hover .dot,
   .index-trigger:focus-visible .dot {
@@ -341,7 +345,10 @@ const works = (await getCollection('works'))
     text-transform: none;
   }
   .contact-link:hover {
-    color: var(--spot);
+    /* Canonical Riso Green — mode-independent, legible on both papers (the same
+       green the Project Index trigger uses). --spot resolves to --ink in
+       generative mode, so this is the deliberate hover accent. */
+    color: #00a95c;
   }
 
   /* Ledger. */

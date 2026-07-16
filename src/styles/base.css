@@ -8,6 +8,13 @@
   --transparent: transparent;
   --inherit: inherit;
 
+  /* ── Type ladder (body & labels). The hero/title size (--type-display) is set
+     per mode; these steps are mode-independent so every surface sizes text on
+     one ladder and nothing drops below a legible floor (~0.82rem). ──────────── */
+  --type-label: 0.82rem; /* tracked eyebrows, section indices, tags, keys, meta */
+  --type-meta: 0.95rem; /* persistent chrome nav, secondary readable text */
+  --type-body: 1.2rem; /* body copy, band leads, work descriptions */
+
   /* ── Layout grid & spacing (the engineering register) ──────────────────────
      One place to retune the page's rhythm. Content edges, the pinned chrome,
      and the visible construction grid (index.astro .grid-rig) all snap to these
