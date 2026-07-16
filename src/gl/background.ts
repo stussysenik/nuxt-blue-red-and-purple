@@ -24,6 +24,13 @@ const NEUTRAL_POINTER = {
   ripples: new Float32Array(18).fill(-1), // 6 × vec3; z < 0 = inactive
 } as const;
 
+// Reduced-motion still frame: generations to mature the Game-of-Life before the
+// single draw (≈ the density the animated loop settles into), and the fixed
+// scene/composite phase to sample. Warmed in one synchronous burst so no
+// intermediate frame is ever presented — the reduced-motion contract holds.
+const STILL_GENERATIONS = 28;
+const STILL_TIME = 8;
+
 interface Runtime {
   readonly surface: GlSurface;
   readonly pipeline: ReturnType<typeof createPipeline>;
@@ -33,13 +40,13 @@ interface Runtime {
 }
 
 export function mountGenerativeBackground(canvas: HTMLCanvasElement): void {
-  // Honour reduced motion by not mounting the WebGL layer at all — generative
-  // mode then renders as its flat paper/ink kernel (no animated background).
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    canvas.remove();
-    return;
-  }
-  canvas.addEventListener('webglcontextlost', () => showFallback());
+  // Reduced motion keeps the WebGL layer but never animates it: instead of
+  // dropping the generative identity entirely (leaving reduce-motion devices on
+  // a flat kernel while everyone else got the shader), we draw ONE static,
+  // matured frame — same duotone backdrop on every device, zero motion. One
+  // source of truth for the look; the loop below is the only thing gated off.
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  canvas.addEventListener('webglcontextlost', () => showFallback(canvas));
 
   const store = getStore();
   let runtime: Runtime | null = null;
@@ -73,7 +80,7 @@ export function mountGenerativeBackground(canvas: HTMLCanvasElement): void {
     const surface = createSurface(canvas);
     if (!surface) {
       dead = true;
-      showFallback();
+      showFallback(canvas);
       return false;
     }
     runtime = {
@@ -106,7 +113,27 @@ export function mountGenerativeBackground(canvas: HTMLCanvasElement): void {
     rafId = requestAnimationFrame(frame);
   }
 
+  // Reduced-motion path: mature the sim off-screen once, then paint a single
+  // still. No rAF loop is ever started, so this is a frozen image, not animation.
+  let warmed = false;
+  function renderStill(): void {
+    if (!runtime) return;
+    if (!warmed) {
+      for (let i = 0; i < STILL_GENERATIONS; i++) {
+        runtime.life.step(1 / 8, NEUTRAL_POINTER.x, NEUTRAL_POINTER.y, NEUTRAL_POINTER.energy);
+      }
+      warmed = true;
+    }
+    const { width, height } = runtime.surface.size();
+    runtime.pipeline.drawScene(state.active, 0, STILL_TIME, width, height, runtime.life.texture());
+    runtime.pipeline.drawComposite(state.mix, STILL_TIME, width, height, NEUTRAL_POINTER, grade);
+  }
+
   const start = (): void => {
+    if (reducedMotion) {
+      renderStill(); // single static frame instead of the animation loop
+      return;
+    }
     if (rafId) return;
     last = 0;
     rafId = requestAnimationFrame(frame);
@@ -140,13 +167,23 @@ export function mountGenerativeBackground(canvas: HTMLCanvasElement): void {
     }
     if (s.theme !== lastTheme) {
       lastTheme = s.theme;
-      // A live theme flip swaps the duotone endpoints under a running loop.
-      if (runtime && fsm.phase === 'running') grade = readGrade();
+      // A live theme flip swaps the duotone endpoints. The running loop picks
+      // this up on its next frame; the static frame must be repainted by hand.
+      if (runtime && fsm.phase === 'running') {
+        grade = readGrade();
+        if (reducedMotion) renderStill();
+      }
     }
   });
 
   document.addEventListener('visibilitychange', () => {
     dispatch({ type: 'visibility', visible: !document.hidden });
+  });
+
+  // The static frame doesn't self-repaint, so redraw it after an orientation /
+  // viewport change (deferred a frame so the surface's own resize runs first).
+  window.addEventListener('resize', () => {
+    if (reducedMotion && runtime && fsm.phase === 'running') requestAnimationFrame(renderStill);
   });
 
   // Reconcile against the state already committed by the no-FOUC bootstrap.

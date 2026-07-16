@@ -37,7 +37,9 @@ export function createSurface(canvas: HTMLCanvasElement): GlSurface | null {
   };
 }
 
-export function showFallback(): void {
-  document.body.classList.add('no-webgl');
-  document.getElementById('c')?.remove();
+/** WebGL2 unavailable / context lost — drop the caller's canvas so generative
+    mode renders as its flat paper/ink kernel. The caller owns its own DOM node;
+    this stays id-agnostic so it is the single fallback path for any mount point. */
+export function showFallback(canvas: HTMLCanvasElement): void {
+  canvas.remove();
 }
