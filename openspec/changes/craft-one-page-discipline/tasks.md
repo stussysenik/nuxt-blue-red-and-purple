@@ -44,7 +44,8 @@ all 8 subtasks below applied at once). A page is checked only when it passes the
 full contract + `pnpm check` + build:
 
 - [x] d445 — reading page; lens plate, reading-progress rule (commit)
-- [ ] f853 — index/CV; the `2138`-under-`← Index` collision reference bug
+- [x] f853 — index/CV; clock anchored to --chrome-band (collision fixed),
+      index resolves into a past-the-fold plate (commit)
 - [ ] b374
 - [ ] b421
 - [ ] b508

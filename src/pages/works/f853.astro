@@ -2,17 +2,23 @@
 // F853 — bespoke in-kernel reconstruction.
 //
 // The page IS the recreation: the reference's signature layout fills the
-// viewport edge-to-edge, exactly as the source frames itself. The homepage IS
-// the index — a single column of eighteen-plus text links set in one size of one
-// grotesk face, flush against the top-left corner with almost no margin, beside
-// a digital clock keeping real time. No nav, no images, no grid: line-height is
-// the only layout system, and titles that wrap take a hanging indent so the
-// numbered left edge stays clean. The clock is live — real seconds, not
-// pictured; the links are echoed dead (this is a study, the index has nowhere to
-// go). List entries are de-branded structural echoes of the source's ragged
-// right edge, not the client's titles. The list runs past the fold, cut mid-line
-// exactly as the reference is. All spacing/type composes from kernel custom
-// properties.
+// viewport, exactly as the source frames itself. The homepage IS the index — a
+// single column of eighteen-plus text links set in one size of one grotesk face,
+// flush against the top-left corner with almost no margin, beside a digital clock
+// keeping real time. No grid: line-height is the only layout system, and titles
+// that wrap take a hanging indent so the numbered left edge stays clean. The
+// clock is live — real seconds, not pictured; the links are echoed dead (this is
+// a study, the index has nowhere to go). List entries are de-branded structural
+// echoes of the source's ragged right edge, not the client's titles.
+//
+// One route, one continuous composition: the list runs past the fold as the
+// source does, but the fold is no longer a wall — you scroll, and the index
+// resolves into its single held plate (No. 18, "Past the Fold"). The flush
+// top-left list is preserved untouched; the ONE piece of content that used to
+// collide with the pinned ← Index mark — the top-right clock — now clears the
+// chrome band (var(--chrome-band)). That collision was the reference bug: the
+// clock numeral rendering through the ← INDEX letters. All spacing/type composes
+// from kernel custom properties.
 //
 // Reference (internal, never shipped): refs/works/f853.jpg, 1600×1000, ground
 // L=255. ref-geometry merges this page's bands (the rows sit inside its
@@ -80,6 +86,19 @@ const TITLES = [
       {TITLES.map((t, i) => <li>No. {String(i + 1).padStart(2, '0')}—{t}</li>)}
     </ul>
     <time class="site__clock font-mono" aria-label="Current time">00:00:00</time>
+
+    <figure class="site__plate">
+      <img
+        class="site__plate-img"
+        src={w.image}
+        alt={`${w.title} plate`}
+        width="1600"
+        height="1000"
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="site__plate-cap font-mono">No. 18 — Past the Fold</figcaption>
+    </figure>
   </main>
 </Base>
 
@@ -96,15 +115,15 @@ const TITLES = [
 </script>
 
 <style>
-  /* The rebuilt room, now the whole page. The page is its own query container —
+  /* The rebuilt room, now a continuous page. The page is its own query container —
      the stage used to provide one, so cq* units would otherwise resolve against
-     the viewport. The list is in flow (not absolute) so the room's paper follows
-     it past the fold; the fold itself is just where 100dvh lands, which is what
-     cuts the reference's last line in half. */
+     the viewport. The list is in flow so the room's paper follows it past the
+     fold; min-height keeps the room at least one screen tall, and it grows with
+     the list and the plate below it — natural scroll, no clipped last line. */
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
     background-color: var(--paper);
     color: var(--ink);
     /* Reference cap height 57px ÷ Archivo cap 0.686em = 83.1px type at 1600 =
@@ -142,22 +161,70 @@ const TITLES = [
     text-indent: -1.58em;
   }
 
-  /* The clock sits beside the list, on its second line — the reference crop is
-     the top-left corner and excludes it, so scale and placement follow the
-     source's "beside a clock" reading. The second baseline is the one the
-     pinned ← INDEX chrome (top-right) leaves free, and "C.V." leaves the whole
-     right of that line empty. Sized and offset off --type so its cap top lands
-     on the list's own y88 grid line at every width. Mono, tabular so seconds
-     don't jitter. */
+  /* The clock sits beside the list, top-right — but below the pinned chrome band
+     so it clears the ← INDEX mark at every width. Tying its top to --type (as it
+     once did) put it back under the mark at phone widths where --type floors: the
+     reference bug. Anchoring to var(--chrome-band) removes the collision by
+     construction while keeping the "beside a clock" reading. Mono, tabular so
+     seconds don't jitter. */
   .site__clock {
     position: absolute;
-    top: calc(var(--type) * 0.991);
+    top: var(--chrome-band);
     right: 0.81cqw;
     font-size: calc(var(--type) * 0.385);
     line-height: 1;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.06em;
     color: var(--ink-1, var(--ink));
+  }
+
+  /* The index resolves, past the fold, into its single held plate — the one image
+     the study keeps. Flush-left to the list's own edge; a paper-tint skeleton
+     holds the 16:10 box so nothing jumps, and the image fades in over it on first
+     render (no JS — @starting-style). A second movement, not a gallery: one plate,
+     captioned as the list's last line. */
+  .site__plate {
+    max-width: 92cqw;
+    margin: var(--space-6) 0.81cqw var(--type);
+  }
+  .site__plate-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    background-color: var(--paper-1, var(--paper));
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  .site__plate-cap {
+    margin-top: var(--space-2);
+    font-size: var(--type-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-1, var(--ink));
+  }
+  @starting-style {
+    .site__plate-img {
+      opacity: 0;
+    }
+  }
+  /* Scroll-driven reveal — the plate rises as it enters, compositor-only, beyond
+     the shared band reveal. Static/instant where unsupported or reduced-motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      @keyframes f853-plate-rise {
+        from {
+          opacity: 0;
+          transform: translateY(2.5rem);
+        }
+      }
+      .site__plate {
+        animation: f853-plate-rise both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 50%;
+      }
+    }
   }
 
   /* Phone: the source layout adapting, not a second design. A 0.81cqw margin is
@@ -173,6 +240,10 @@ const TITLES = [
     .site__clock {
       right: 4cqw;
       font-size: 0.85rem;
+    }
+    .site__plate {
+      max-width: none;
+      margin-inline: 4cqw;
     }
   }
 </style>
