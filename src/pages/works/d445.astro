@@ -1,15 +1,18 @@
 ---
 // D445 — bespoke in-kernel reconstruction.
 //
-// The page IS the recreation: a book page, not a screen. A drawn border frames
-// the viewport, a single justified column of running text holds the centre with
-// footnote markers threaded through it, and the notes themselves hang on a short
-// rule at the foot of the frame — the printed page's own apparatus. The one live
-// mechanic is the reading control: image-zoom is OFF by default (the signature
-// state — a page you read, not a gallery you pinch), and a lone toggle lets a
-// curious reader switch zoom ON, at which point the specimen plate becomes a
-// lens. De-branded: the source's plate is a kernel specimen, not the client's
-// artwork, and the only spot of colour marks where that artwork sat.
+// The page IS the recreation: a book page, not a screen. A double-ruled border
+// frames the composition, a single ragged-right column of running text holds the
+// centre with footnote markers threaded through it, and the notes hang on a short
+// rule at the foot of the frame — the printed page's own apparatus. The specimen
+// plate is a real image sized to the measure; its one live mechanic is a lens —
+// click to magnify in place, click to release. The affordance is the cursor, not
+// a labelled control: the page never narrates its own switches.
+//
+// One route, one continuous composition: the frame is an object with a top and a
+// foot, not a locked viewport. It stands at least one screen tall and grows with
+// its content — a tall broadsheet is still one page. A slim reading-progress rule
+// runs the inner margin, filling with scroll (CSS scroll-driven, progressive).
 //
 // No reference render exists for this work (refs/works/d445.jpg was never
 // captured), so — unlike the measured pages in this set — the geometry here is
@@ -45,108 +48,102 @@ const w = entry!.data;
 <Base title={`${w.title} — *blue red + purple/`} chrome="work">
   <main class="site">
     <div class="page">
+      <span class="reader__progress" aria-hidden="true"></span>
       <article class="reader">
         <header class="reader__head">
-          <p class="reader__folio font-mono">{w.title} · fol. 1</p>
-          <h1 class="reader__title">A Page, Read Rather Than Pinched</h1>
+          <p class="reader__folio font-mono">{w.title} · {w.category} · {w.year}</p>
+          <h1 class="reader__title">Lorem Ipsum Dolor, Legere Non Videre</h1>
         </header>
 
         <div class="reader__col">
           <p>
-            A page is a room entered through the left margin, and this one draws its own walls so
-            the text sits inside an object rather than floating in a window.<sup
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+            tempor incididunt ut labore et dolore magna aliqua.<sup
               ><a id="ref1" href="#fn1">1</a></sup
-            > The measure is the first and only real decision; once the line length is set to a
-            comfortable span, the inner margins, the footnote size, and the frame all fall out of it
-            without further argument.
+            > Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi
+            ut aliquip ex ea commodo consequat, duis aute irure in reprehenderit.
           </p>
 
-          <figure class="plate" aria-describedby="plate-cap">
-            <span class="plate__mark font-mono">fig. i</span>
-            <figcaption id="plate-cap" class="plate__cap font-mono">specimen · zoom disabled</figcaption>
+          <figure class="plate">
+            <button class="plate__btn" type="button" aria-label="Magnify specimen plate">
+              <img
+                class="plate__img"
+                src={w.image}
+                alt={`${w.title} specimen plate`}
+                width="600"
+                height="400"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+            <figcaption class="plate__cap font-mono">fig. i</figcaption>
           </figure>
 
           <p>
-            Zoom is withheld here on purpose, because zoom is a way of not reading — a hover that
-            magnifies the plate would fire every time the eye crossed it on the way down the
-            column.<sup><a id="ref2" href="#fn2">2</a></sup> The control still exists, bottom-right, but
-            the page opens in the state that trusts the reader, and the lens only arms once the reader
-            explicitly asks for it. Until then the specimen is simply an illustration, sized to the
-            measure and left alone.
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+            deserunt mollit anim id est laborum.<sup><a id="ref2" href="#fn2">2</a></sup>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium
+            doloremque laudantium, totam rem aperiam eaque ipsa quae ab illo inventore
+            veritatis et quasi architecto beatae vitae dicta sunt explicabo.
           </p>
         </div>
 
         <footer class="reader__notes">
           <ol class="reader__fn">
             <li id="fn1">
-              The border is double-ruled — an outer line with an inset companion — the oldest way to
-              say “this is a page, and it ends here.” <a href="#ref1" aria-label="Back to reference 1">↩</a>
+              Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur.
+              <a href="#ref1" aria-label="Back to reference 1">↩</a>
             </li>
             <li id="fn2">
-              Reading mode = zoom off. Toggle it on and the plate becomes a lens; click the plate to
-              magnify, click again to release. <a href="#ref2" aria-label="Back to reference 2">↩</a>
+              Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit.
+              <a href="#ref2" aria-label="Back to reference 2">↩</a>
             </li>
           </ol>
         </footer>
-
-        <button class="reader__toggle font-mono" type="button" aria-pressed="false">
-          Zoom · Off
-        </button>
       </article>
     </div>
   </main>
 </Base>
 
 <script>
-  // The one live mechanic: reading mode defaults to zoom OFF. The toggle flips a
-  // data-zoom flag on the reader; only while it is set does the plate arm as a
-  // lens, and only a click (never a hover) magnifies it — a hover would fire on
-  // every pass of the eye, which is the behaviour the default exists to prevent.
-  const reader = document.querySelector<HTMLElement>('.reader');
-  const toggle = reader?.querySelector<HTMLButtonElement>('.reader__toggle');
-  const plate = reader?.querySelector<HTMLElement>('.plate');
-
-  toggle?.addEventListener('click', () => {
-    const on = reader!.toggleAttribute('data-zoom');
-    toggle.textContent = on ? 'Zoom · On' : 'Zoom · Off';
-    toggle.setAttribute('aria-pressed', String(on));
-    if (!on) plate?.removeAttribute('data-lens'); // leaving reading mode releases the lens
-  });
-
-  plate?.addEventListener('click', () => {
-    if (reader?.hasAttribute('data-zoom')) plate.toggleAttribute('data-lens');
-  });
+  // The one live mechanic: the specimen plate is a lens. A click magnifies it in
+  // place; a second click releases it. Never a hover — a hover-zoom would fire on
+  // every pass of the eye down the column, the opposite of reading. The plate is a
+  // real button (keyboard-operable, aria-labelled) styled as bare artwork, so the
+  // affordance is the cursor and focus ring, never a printed toggle.
+  const plate = document.querySelector<HTMLElement>('.plate');
+  const btn = plate?.querySelector<HTMLButtonElement>('.plate__btn');
+  btn?.addEventListener('click', () => plate?.toggleAttribute('data-lens'));
 </script>
 
 <style>
-  /* The rebuilt room, now the whole page. One viewport tall, the frame inset from
-     every edge, and the column cropped at the fold if it runs long — the page is
-     an object with a bottom, not an endless scroll.
+  /* The rebuilt room, now a continuous page. min-height keeps the frame at least
+     one screen tall; it grows with content instead of clipping at the fold — the
+     page is an object with a foot, not a locked viewport.
 
      The page is its own query container: cq* units below resolve against the
      viewport width, since no stage wraps a work page any more. */
   .site {
     container-type: inline-size;
     display: grid;
-    place-items: stretch;
-    min-height: 100dvh;
-    max-height: 100dvh;
-    padding: clamp(1rem, 3.2cqw, 3.5rem);
+    align-items: stretch;
+    min-height: 100svh;
+    /* Top pad clears the pinned chrome band (← Index); sides/foot are the frame
+       inset. This is the shared chrome-band opt-in — no page content under chrome. */
+    padding: var(--chrome-band) clamp(1rem, 3.2cqw, 3.5rem) clamp(1rem, 3.2cqw, 3.5rem);
     background-color: var(--paper);
     color: var(--ink);
-    overflow: hidden;
   }
 
   /* The drawn page border: an outer rule plus an inset companion rule (::after),
-     the printed page's oldest frame. Not a box around content — the object the
-     text lives inside. */
+     the printed page's oldest frame. A flex column so the footnotes hang at the
+     foot when the text is short, and flow with it when the page runs tall. */
   .page {
     position: relative;
+    display: flex;
+    flex-direction: column;
     border: 1px solid var(--line, var(--ink-2));
-    padding: clamp(1.4rem, 3cqw, 3.2rem);
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    overflow: hidden;
+    padding: clamp(1.6rem, 3cqw, 3.2rem);
   }
   .page::after {
     content: '';
@@ -156,12 +153,42 @@ const w = entry!.data;
     pointer-events: none;
   }
 
+  /* Reading-progress rule: a slim mark on the inner margin that fills with scroll.
+     Exists only where it can animate (scroll-driven timeline + motion allowed) —
+     elsewhere it is simply absent, never a broken static bar. */
+  .reader__progress {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .reader__progress {
+        display: block;
+        position: absolute;
+        left: clamp(6px, 0.8cqw, 12px);
+        top: clamp(6px, 0.8cqw, 12px);
+        bottom: clamp(6px, 0.8cqw, 12px);
+        width: 2px;
+        background-color: var(--spot, var(--ink));
+        opacity: 0.5;
+        transform-origin: top;
+        scale: 1 0;
+        animation: read-progress linear both;
+        animation-timeline: scroll(root);
+      }
+      @keyframes read-progress {
+        to {
+          scale: 1 1;
+        }
+      }
+    }
+  }
+
   .reader {
     display: contents;
   }
 
-  /* Masthead: a mono folio line above a single display title, both hung on the
-     column's own left edge (the measure is centred by margin below). */
+  /* Masthead: a mono folio line (real metadata) above a single display title,
+     hung on the column's own left edge. */
   .reader__head {
     width: min(64ch, 100%);
     margin-inline: auto;
@@ -174,23 +201,24 @@ const w = entry!.data;
     color: var(--ink-1, var(--ink));
   }
   .reader__title {
-    margin: 0.5cqw 0 0;
+    margin: var(--space-1) 0 0;
     font-family: var(--font-display);
     font-weight: var(--wght-display, 700);
     font-size: clamp(1.6rem, 4cqw, 3.4rem);
     line-height: 1.04;
     letter-spacing: var(--tracking-display, -0.02em);
+    text-wrap: balance;
   }
 
-  /* The single measure: the whole design decision. ~62ch, centred, justified the
-     way set type is, hyphenation on so the ragged edge does not fight the frame. */
+  /* The single measure: the whole design decision. ~62ch, centred, ragged-right
+     (set type reads better on an even left edge than a justified river), with
+     hyphenation on so the ragged edge stays gentle. */
   .reader__col {
     width: min(62ch, 100%);
-    margin: clamp(1.2rem, 3.4cqw, 3rem) auto 0;
-    align-self: start;
+    margin: var(--space-5) auto 0;
     font-size: clamp(1rem, 1.35cqw, 1.4rem);
     line-height: 1.55;
-    text-align: justify;
+    text-align: left;
     text-wrap: pretty;
     hyphens: auto;
   }
@@ -211,56 +239,71 @@ const w = entry!.data;
     color: var(--spot, var(--ink));
   }
 
-  /* The specimen. Inert while reading (default cursor, no scale). When zoom is
-     armed it becomes a lens: cursor invites the click, and a lensed click scales
-     it in place above the text. The spot ink marks where the artwork sat. */
+  /* The specimen. A real plate sized to the measure, sitting on a paper-tint
+     skeleton so nothing jumps before the bytes arrive; the image fades in over
+     the skeleton on first render (no JS — @starting-style entry). A click makes
+     it a lens; the cursor is the only invitation. */
   .plate {
     position: relative;
-    width: min(22ch, 70%);
+    width: min(22ch, 60%);
+    margin: var(--space-4) auto;
+  }
+  .plate__btn {
+    display: block;
+    width: 100%;
     aspect-ratio: 3 / 2;
-    margin: clamp(1rem, 2.4cqw, 2rem) auto;
-    display: grid;
-    place-items: center;
-    gap: 0.4em;
+    padding: 0;
     background-color: var(--paper-1, var(--paper));
     border: 1px solid var(--line, var(--ink-2));
+    cursor: zoom-in;
     transition: scale var(--dur, 0.3s) var(--ease, ease);
     transform-origin: center;
     z-index: 0;
   }
-  .plate__mark {
-    font-size: clamp(0.8rem, 1.6cqw, 1.4rem);
-    letter-spacing: 0.08em;
-    color: var(--spot, var(--ink));
+  .plate__btn:focus-visible {
+    outline: 2px solid var(--spot, var(--ink));
+    outline-offset: 3px;
   }
-  .plate__cap {
-    font-size: var(--type-label);
-    letter-spacing: 0.06em;
-    color: var(--ink-1, var(--ink));
+  .plate__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
   }
-  .reader[data-zoom] .plate {
-    cursor: zoom-in;
+  @starting-style {
+    .plate__img {
+      opacity: 0;
+    }
   }
-  .reader[data-zoom] .plate[data-lens] {
-    scale: 1.8;
+  .plate[data-lens] .plate__btn {
+    scale: 1.4;
     cursor: zoom-out;
     z-index: 3;
     box-shadow: var(--shadow, 0 1cqw 3cqw rgb(0 0 0 / 0.18));
   }
+  .plate__cap {
+    margin-top: var(--space-1);
+    text-align: center;
+    font-size: var(--type-label);
+    letter-spacing: 0.06em;
+    color: var(--ink-1, var(--ink));
+  }
 
-  /* Footnotes: a step down, hung on a short rule at the foot of the frame — where
-     footnotes belong. The rule is short and left-set, the printed convention. */
+  /* Footnotes: a step down, hung on a short rule at the foot of the frame. flex
+     margin-top:auto floats them to the foot when the text is short. */
   .reader__notes {
     width: min(62ch, 100%);
-    margin-inline: auto;
-    padding-top: clamp(0.8rem, 1.6cqw, 1.4rem);
+    margin: auto auto 0;
+    padding-top: var(--space-3);
   }
   .reader__notes::before {
     content: '';
     display: block;
     width: 8ch;
     border-top: 1px solid var(--line, var(--ink-2));
-    margin-bottom: clamp(0.5rem, 1cqw, 0.9rem);
+    margin-bottom: var(--space-2);
   }
   .reader__fn {
     margin: 0;
@@ -281,56 +324,25 @@ const w = entry!.data;
     color: var(--spot, var(--ink));
   }
 
-  /* The reading control: the page's only interactive chrome, tucked bottom-right
-     inside the frame, clear of the ← INDEX mark. Reads as a marginal switch, not
-     a button-button. */
-  .reader__toggle {
-    position: absolute;
-    right: clamp(1.4rem, 3cqw, 3.2rem);
-    bottom: clamp(1.4rem, 3cqw, 3.2rem);
-    padding: 0.4em 0.7em;
-    font-size: var(--type-label);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: none;
-    border: 1px solid var(--line, var(--ink-2));
-    cursor: pointer;
-    transition: color var(--dur, 0.3s) var(--ease, ease);
-    z-index: 4;
-  }
-  .reader__toggle:hover,
-  .reader__toggle:focus-visible {
-    color: var(--spot, var(--ink));
-    outline: none;
-  }
-  .reader[data-zoom] .reader__toggle {
-    color: var(--spot, var(--ink));
-  }
-
   /* Motion is a nicety, not the mechanic — reduced-motion keeps the lens instant. */
   @media (prefers-reduced-motion: reduce) {
-    .plate,
-    .reader__toggle {
+    .plate__btn,
+    .plate__img {
       transition: none;
     }
   }
 
   /* Phone: the source page adapting, not a second design. A reading column is
      already single-measure, so it just narrows to the device; the frame's inset
-     tightens and the type rides its rem floors. */
+     tightens and the plate stays clear of the viewport edge even when magnified. */
   @container (max-width: 40rem) {
     .reader__col,
     .reader__head,
     .reader__notes {
       width: 100%;
     }
-    .reader__col {
-      text-align: left;
-      hyphens: manual;
-    }
     .plate {
-      width: min(24ch, 80%);
+      width: min(22ch, 62%);
     }
   }
 </style>
