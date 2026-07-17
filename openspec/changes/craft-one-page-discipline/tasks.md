@@ -59,7 +59,8 @@ pages". The original §4 list dropped it.)
 - [ ] h724
 - [ ] l384
 - [ ] p673
-- [ ] skrillex
+- [x] skrillex — full-bleed art page; photo becomes the artwork, rail clears
+      the band, arrival mechanic kept; single-screen by concept (commit)
 - [ ] smac — already renders its photo; still needs trap/overflow retire + band
 
 The 8 subtasks, applied per page (checked when ALL 14 pages satisfy each — the

@@ -48,7 +48,15 @@ const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
 
 <Base title={`${w.title} — *blue red + purple/`} chrome="work">
   <main class="site">
-    <div class="art" aria-hidden="true"></div>
+    <img
+      class="art"
+      src={w.image}
+      alt={`${w.title} artwork`}
+      width="1600"
+      height="1000"
+      decoding="async"
+    />
+    <div class="scrim" aria-hidden="true"></div>
 
     <!-- Lines ship arrived (data-on) so the rail survives without JS; the
          script strips and replays them on load. -->
@@ -88,15 +96,15 @@ const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
     /* This room's ground is the artwork, not the paper, and the reference's
        ground is dark (L=45). So the room inverts the kernel duotone: the field
-       is ink-weight and every mark on it is paper. Without this the promoted
-       page would ground itself in --paper (white in the light theme) and the
-       rail would invert against the reference. */
+       is ink-weight and every mark on it is paper. The ink ground also serves as
+       the image's load-in skeleton — the photo fades in over it. Without this the
+       promoted page would ground itself in --paper (white in the light theme)
+       and the rail would invert against the reference. */
     background-color: var(--ink);
     color: var(--paper);
-    overflow: hidden;
   }
 
   /* The lone chrome mark inverts with the room, or it lands ink-on-ink. */
@@ -104,17 +112,45 @@ const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
     color: var(--paper);
   }
 
-  /* The artwork, de-branded: a full-bleed specimen field standing in for the
-     photograph, and the room's only colour source. In generative mode --spot /
-     --spot-2 ARE the ink pair, so the field runs --ink-2 (L≈110) → --ink
-     (L≈20), bracketing the reference's detected ground (L=45). 115deg puts the
-     light end at the top-left, so the rail's local backdrop lightens at its
-     head and darkens toward the wordmark — the source's wall→hair fall
-     (measured L≈186 at MUSIC → L≈127 at SKRILLEX), rebuilt in ink. */
+  /* The artwork, now the committed photograph itself: full-bleed, covering every
+     edge — the room's only colour source, exactly as the concept intended when it
+     stood a gradient field in for the photo. Fades in over the ink ground on first
+     render (no JS — @starting-style), so there is no white flash before the bytes. */
   .art {
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(115deg, var(--spot-2, var(--spot)) 0%, var(--spot) 62%);
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .art {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .art {
+      transition: none;
+    }
+  }
+
+  /* A soft ink scrim at the top-left, under the rail only: the reference's rail
+     sat on a darker fall of the photo, so this keeps the paper rail legible over
+     any brightness of the committed image without tinting the rest of the field.
+     Ink-based, so it stays inside the duotone (colour law). */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      115deg,
+      color-mix(in oklab, var(--ink) 62%, transparent),
+      transparent 55%
+    );
   }
 
   /* One rail, one typeface, one weight, one size — the entire type system. Set
@@ -131,7 +167,10 @@ const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
      at y≈4 (reference y=3). */
   .rail {
     position: absolute;
-    inset: 0 auto auto 0;
+    /* The art bleeds full to every edge; only the rail (text) opts into the
+       chrome band, so its head clears the pinned ← Index instead of climbing into
+       the reserved strip. The shared band opt-in for a full-bleed page. */
+    inset: var(--chrome-band) auto auto 0;
     writing-mode: vertical-rl;
     rotate: 180deg;
     display: flex;
