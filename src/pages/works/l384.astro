@@ -8,11 +8,14 @@
 // at a time: a hanging gutter number, twin headings over meta stacks, and a
 // plate that bleeds off the bottom edge. The mechanic is live, not pictured —
 // clicking an index line swaps the entry inline, and the plate is split into two
-// cursor zones that hard-cut through that entry's numbered slides. Paragraph
-// copy is echoed as text-bar strokes (structure, not words); plates are
-// de-branded kernel specimens: we rebuild the room, not the client's artwork.
-// The frozen 17:44:55 clock is transcribed from the reference. All spacing/type
-// composes from kernel custom properties.
+// cursor zones that hard-cut through that entry's numbered slides (the slide
+// counter is the live feedback). Paragraph copy is echoed as text-bar strokes
+// (structure, not words); the plate that bleeds off the bottom is the committed
+// photo itself — the artwork the column presents — ghost-loaded over the ink
+// field it used to be. The frozen 17:44:55 clock is transcribed from the
+// reference. Both top regions (index, right column) opt into --chrome-band so
+// nothing sits under the pinned ← Index. All spacing/type composes from kernel
+// custom properties.
 //
 // Reference (internal, never shipped): refs/works/l384.jpg, 1600×1000, ground
 // L=255. ref-geometry merges this page's bands (rows sit inside the 8-blank-row
@@ -89,7 +92,14 @@ const SLIDES = 3;
         </div>
         <div class="bars" style="--n: 6"></div>
         <figure class="plate">
-          <span class="plate__num font-mono" data-plate>01.01</span>
+          <img
+            class="plate__img"
+            src={w.image}
+            alt={`${w.title} plate`}
+            width="948"
+            height="608"
+            decoding="async"
+          />
           <span class="plate__cur font-mono"><span data-cur>1</span> / {SLIDES}</span>
           <button class="zone zone--prev" type="button" aria-label="Previous slide"></button>
           <button class="zone zone--next" type="button" aria-label="Next slide"></button>
@@ -139,7 +149,7 @@ const SLIDES = 3;
        its own query container, so .site cannot be restyled by @container. */
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
+    min-height: 100svh;
     background-color: var(--paper);
     color: var(--ink);
     line-height: 1.31; /* reference line pitch 18.4px over 14px type */
@@ -205,11 +215,15 @@ const SLIDES = 3;
     color: var(--ink-1, var(--ink));
   }
 
-  /* ── Right column — the only dense region of the page. x1108→1582 at 1600,
-     top ink y19. Flow is a column so the plate can claim what is left. ── */
+  /* ── Right column — the only dense region of the page, and it lands in the
+     top-right corner exactly where the pinned ← Index sits, so its top opts into
+     the chrome band: max(1.9%, --chrome-band) drops its first stroke below the
+     reserved strip (the reference's y19 top holds on tall screens where the band
+     is the smaller of the two). x1108→1582 at 1600. Flow is a column so the plate
+     can claim what is left. ── */
   .detail {
     position: absolute;
-    inset: 1.9% 1.12% 0 69.25%;
+    inset: max(1.9%, var(--chrome-band)) 1.12% 0 69.25%;
     display: flex;
     flex-direction: column;
   }
@@ -264,9 +278,10 @@ const SLIDES = 3;
     color: var(--ink-2);
   }
 
-  /* Plate: an ink field starting y526 (1.68em under the bars) and running to the
-     room's bottom edge — the crop IS the layout, so it takes the remaining
-     height rather than an invented aspect. Hard cut, no transition. */
+  /* Plate: the committed photo, starting y526 (1.68em under the bars) and running
+     to the room's bottom edge — the crop IS the layout, so it takes the remaining
+     height rather than an invented aspect. The ink field it used to be is now the
+     ghost skeleton the photo fades in over (@starting-style, no JS). */
   .plate {
     position: relative;
     flex: 1;
@@ -276,10 +291,26 @@ const SLIDES = 3;
     place-items: center;
     background-color: var(--ink);
   }
-  .plate__num {
-    font-size: clamp(1.6rem, 3.4cqw, 4rem);
-    letter-spacing: 0.04em;
-    color: var(--spot, var(--paper));
+  /* Fills the plate; object-fit crops within its own box so nothing bleeds past
+     the frame's sides — only the bottom edge is a deliberate crop. */
+  .plate__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .plate__img {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plate__img {
+      transition: none;
+    }
   }
   .plate__cur {
     position: absolute;
@@ -328,7 +359,9 @@ const SLIDES = 3;
     }
     .idx {
       order: 1;
-      margin-top: 8cqw;
+      /* Stacked full-width now, so its box would run under the top-right ← Index;
+         clear the chrome band (never less than the reference's 8cqw breath). */
+      margin-top: max(8cqw, var(--chrome-band));
     }
     .detail {
       order: 2;
