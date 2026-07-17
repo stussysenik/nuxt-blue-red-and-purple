@@ -1,0 +1,231 @@
+---
+// B374 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: the
+// viewport is an open book spread. A full-bleed plate owns the verso, the
+// recto stays near-empty except one portrait plate tucked high against the
+// gutter, nav sits on the top margin, and strips of highlight and shadow fake
+// a fold down the centre. The mechanic is live, not pictured — spreads
+// scroll-snap through the window while the crease stays pinned, and a script
+// deepens the fold shade mid-scroll so the turn reads as a page lifting.
+// Plates are de-branded kernel specimens: we rebuild the room, not the
+// client's artwork. All spacing/type composes from kernel custom properties.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'b374');
+const w = entry!.data;
+const SPREADS = 4;
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, scroll-turned spreads">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The screen is set as an open book. The left page carries a full-bleed plate edge to
+          edge; the right page stays white except for one portrait plate tucked high against the
+          gutter; the wordmark and index links hold the top margin like running heads. The fold is
+          the whole trick — pinned strips of shadow sinking into a thin centre highlight make two
+          ordinary columns read as verso and recto, so scrolling stops feeling like a webpage and
+          starts feeling like turning spreads.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site">
+      <header class="site__nav">
+        <span class="site__wordmark">{w.title} Press</span>
+        <span class="site__links" aria-hidden="true">Information, Index</span>
+      </header>
+
+      <div class="book" tabindex="0" aria-label="Book spreads — scroll to turn" data-lenis-prevent>
+        {
+          Array.from({ length: SPREADS }, (_, i) => (
+            <section class="spread" aria-label={`Spread ${i + 1} of ${SPREADS}`}>
+              <figure class="page page--verso">
+                <span class="page__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+              </figure>
+              <figure class="page page--recto">
+                <span class="plate">
+                  <span class="plate__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+                </span>
+                <span class="folio font-mono">{String(i * 2 + 3).padStart(2, '0')}</span>
+              </figure>
+            </section>
+          ))
+        }
+      </div>
+
+      <div class="crease" aria-hidden="true"></div>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          The asymmetry is doing the composing: a dense verso against a recto that is four-fifths
+          empty, with the single plate hung from the gutter rather than centred in its page.
+          Because the crease is pinned, every spread inherits the same spine — margins, plate
+          offsets, and running heads never move while content changes underneath, which is exactly
+          what lets the eye accept the fold as physical. The white of the right page reads as
+          paper, not absence, and that is why this study rebuilds the spacing instead of
+          screenshotting it.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // Pinned-crease spreads: the fold shade deepens mid-scroll, like a page
+  // lifting, then relaxes as the next spread snaps flat.
+  const site = document.querySelector<HTMLElement>('.site');
+  const book = site?.querySelector<HTMLElement>('.book');
+  book?.addEventListener(
+    'scroll',
+    () => {
+      const pos = book.scrollTop / book.clientHeight;
+      const turn = Math.min(1, Math.abs(pos - Math.round(pos)) * 2);
+      site?.style.setProperty('--turn', turn.toFixed(3));
+    },
+    { passive: true }
+  );
+</script>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference: running
+     heads on the top margin, fold at dead centre, verso full-bleed, recto
+     plate hung high off the gutter at roughly half the page width. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  .site__nav {
+    position: absolute;
+    inset: 2% 2% auto;
+    display: flex;
+    justify-content: space-between;
+    font-size: clamp(0.7rem, 1.4vw, 1rem);
+    letter-spacing: 0.01em;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .site__wordmark {
+    font-weight: 600;
+  }
+  .site__links {
+    color: var(--ink-1, var(--ink));
+  }
+
+  /* The book: spreads snap through the window; the crease never moves. */
+  .book {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+  }
+  .book:focus-visible {
+    outline: var(--border-w, 2px) solid var(--spot, var(--ink));
+    outline-offset: -2px;
+  }
+
+  .spread {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .page {
+    position: relative;
+    margin: 0;
+  }
+  /* Verso: the artwork page — a full-bleed kernel specimen. */
+  .page--verso {
+    display: grid;
+    place-items: center;
+    background-color: var(--paper-1, var(--paper));
+  }
+  .page__num {
+    font-size: clamp(2.5rem, 10cqw, 6rem);
+    color: var(--ink-3, var(--ink-2));
+    letter-spacing: 0.04em;
+  }
+  /* One spread carries the spot colour — "artwork carries colour". */
+  .spread:nth-of-type(3) .page__num {
+    color: var(--spot, var(--ink));
+  }
+
+  /* Recto: white page, one portrait plate hung high against the gutter. */
+  .page--recto {
+    padding: 4.5% 0 0 4%;
+  }
+  .plate {
+    display: grid;
+    place-items: center;
+    width: 48%;
+    aspect-ratio: 2 / 3;
+    background-color: var(--paper-1, var(--paper));
+    border: 1px solid var(--line, var(--ink-2));
+    box-shadow: var(--shadow, none);
+  }
+  .plate__num {
+    font-size: clamp(0.9rem, 2.4cqw, 1.4rem);
+    color: var(--ink-2);
+    letter-spacing: 0.06em;
+  }
+  .folio {
+    position: absolute;
+    right: 5%;
+    bottom: 4%;
+    font-size: var(--type-meta, 0.7rem);
+    color: var(--ink-2);
+  }
+
+  /* The fake fold: shadow strips sinking to a thin paper highlight. Pinned
+     over the scrolling spreads; --turn (set by the script) deepens it. */
+  .crease {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 16%;
+    translate: -50% 0;
+    pointer-events: none;
+    z-index: 2;
+    background-image: linear-gradient(
+      90deg,
+      transparent calc(50% - 1px),
+      var(--paper) calc(50% - 1px) calc(50% + 1px),
+      transparent calc(50% + 1px)
+    );
+  }
+  .crease::before,
+  .crease::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+  }
+  .crease::before {
+    left: 0;
+    right: 50%;
+    background-image: linear-gradient(90deg, transparent, var(--ink));
+    opacity: calc(0.24 + var(--turn, 0) * 0.22);
+  }
+  .crease::after {
+    left: 50%;
+    right: 0;
+    background-image: linear-gradient(90deg, var(--ink), transparent);
+    opacity: calc(0.16 + var(--turn, 0) * 0.18);
+  }
+</style>

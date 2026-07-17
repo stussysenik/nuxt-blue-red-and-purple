@@ -17,7 +17,10 @@ interface Props {
   // Top-centre chrome slot. 'index' → the "Template index" pill that opens the
   // full-screen Project Index (/works). 'close' → the same slot as a plain Close
   // (→ home), used by /works itself so the label swaps in place.
-  chrome?: 'index' | 'close';
+  // 'work' → a single fixed mono `← INDEX` link, top-left, and nothing else: a
+  // work page IS the recreation, so every other portfolio mark (corner mark,
+  // theme toggle, centred pill) is withheld rather than laid over the artwork.
+  chrome?: 'index' | 'close' | 'work';
 }
 
 const {
@@ -88,7 +91,11 @@ const {
       </a>
       -->
       {
-        chrome === 'close' ? (
+        chrome === 'work' ? (
+          <a href="/works" class="chrome-back font-mono">
+            ← Index
+          </a>
+        ) : chrome === 'close' ? (
           <a href="/" class="chrome-index chrome-index--close font-mono">
             Close
           </a>
@@ -98,9 +105,9 @@ const {
           </a>
         )
       }
-      <span class="corner-mark" aria-hidden="true">✳</span>
+      {chrome !== 'work' && <span class="corner-mark" aria-hidden="true">✳</span>}
     </header>
-    <ThemeToggle client:load />
+    {chrome !== 'work' && <ThemeToggle client:load />}
 
     <slot />
 
@@ -203,6 +210,26 @@ const {
       .chrome-index--close:focus-visible {
         opacity: 1;
         color: var(--spot);
+      }
+
+      /* Work pages: the lone mark the portfolio leaves on a recreation. Sits in
+         the corner-mark slot (the reserved chrome corner sitewide) so it clears
+         the source navs, which are top-left in nearly every reconstruction. */
+      .chrome-back {
+        position: absolute;
+        top: max(var(--chrome-inset), env(safe-area-inset-top));
+        right: max(var(--chrome-inset), env(safe-area-inset-right));
+        font-size: var(--type-label);
+        line-height: 1;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--ink);
+        text-decoration: none;
+        transition: opacity var(--dur) var(--ease);
+      }
+      .chrome-back:hover,
+      .chrome-back:focus-visible {
+        opacity: 0.6;
       }
 
       .corner-mark {

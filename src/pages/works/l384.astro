@@ -1,0 +1,287 @@
+---
+// L384 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: the whole
+// site is a numbered index pinned top-left on an otherwise empty page, with a
+// timestamp footer bottom-left and a narrow right column carrying everything
+// else — intro copy, a profile block, then one entry at a time: a hanging
+// gutter number, twin headings over meta stacks, and a plate that bleeds off
+// the bottom edge. The mechanic is live, not pictured — clicking an index line
+// swaps the entry inline, and the plate is split into two cursor zones that
+// hard-cut through that entry's numbered slides. Paragraph copy is echoed as
+// text-bar strokes (structure, not words); plates are de-branded kernel
+// specimens. The frozen 17:44:55 clock is transcribed from the reference.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'l384');
+const w = entry!.data;
+const ENTRIES = 6;
+const SLIDES = 3;
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, index-driven inline slideshows">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The homepage is the table of contents. A numbered index sits top-left on a page that is
+          mostly void, a timestamp keeps the bottom corner, and every piece of content — copy,
+          credits, plates — is squeezed into one narrow column on the right. Selecting an index
+          line doesn't navigate anywhere; the entry unfolds in place, its number hanging in the
+          gutter, its plate cut by two invisible cursor zones and cropped by the fold as a promise
+          that the column keeps going.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site">
+      <aside class="idx">
+        <p class="idx__head">Index</p>
+        <ol class="idx__list">
+          <li class="idx__row">
+            <span class="idx__num font-mono">00.</span><span>Information</span>
+          </li>
+          {
+            Array.from({ length: ENTRIES }, (_, i) => (
+              <li>
+                <button class="idx__row idx__item" type="button" data-on={i === 0 ? '' : undefined}>
+                  <span class="idx__num font-mono">{String(i + 1).padStart(2, '0')}.</span>
+                  <span class="idx__label">Entry {String.fromCharCode(65 + i)}</span>
+                </button>
+              </li>
+            ))
+          }
+        </ol>
+      </aside>
+
+      <p class="site__clock font-mono">17:44:55&ensp;&ensp;{w.title}</p>
+
+      <section class="detail">
+        <div class="bars" style="--n: 6"></div>
+        <p class="detail__profile">Profile</p>
+        <p class="detail__contact">Mail<br />Instagram</p>
+
+        <article class="entry">
+          <span class="entry__gutter font-mono" data-num>01.</span>
+          <div class="entry__grid">
+            <div>
+              <p class="entry__h" data-title>Entry A</p>
+              <p class="entry__meta">Paper / ink<br />Mono grid</p>
+            </div>
+            <div>
+              <p class="entry__h">Specimen</p>
+              <p class="entry__meta font-mono">235 × 324 mm<br />{SLIDES} plates</p>
+            </div>
+          </div>
+          <div class="bars" style="--n: 4"></div>
+          <figure class="plate">
+            <span class="plate__num font-mono" data-plate>01.01</span>
+            <span class="plate__cur font-mono"><span data-cur>1</span> / {SLIDES}</span>
+            <button class="zone zone--prev" type="button" aria-label="Previous slide"></button>
+            <button class="zone zone--next" type="button" aria-label="Next slide"></button>
+          </figure>
+        </article>
+      </section>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          Two vertical rules do all the work: the index numbers hang left of their labels, and the
+          entry number hangs left of the content column in exactly the same relationship — so the
+          near-empty left half and the dense right column read as one system, not two pages. The
+          void in between is the margin that makes a thirty-percent column feel generous, and the
+          plate breaking the bottom edge is the only cue the page scrolls. None of it survives
+          sloppy alignment, which is why this study rebuilds the grid rather than screenshots it.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // Index → inline entry swap; cursor zones hard-cut through the entry's slides.
+  const site = document.querySelector<HTMLElement>('.site');
+  const items = [...(site?.querySelectorAll<HTMLElement>('.idx__item') ?? [])];
+  const q = (s: string) => site?.querySelector<HTMLElement>(s);
+  const num = q('[data-num]');
+  const title = q('[data-title]');
+  const plate = q('[data-plate]');
+  const cur = q('[data-cur]');
+  const SLIDES = 3; // keep in lockstep with the frontmatter constant
+  let e = 1;
+  let s = 0;
+  const render = () => {
+    items.forEach((el, i) => el.toggleAttribute('data-on', i + 1 === e));
+    const id = String(e).padStart(2, '0');
+    if (num) num.textContent = `${id}.`;
+    if (title) title.textContent = `Entry ${String.fromCharCode(64 + e)}`;
+    if (plate) plate.textContent = `${id}.${String(s + 1).padStart(2, '0')}`;
+    if (cur) cur.textContent = String(s + 1);
+  };
+  items.forEach((el, i) => el.addEventListener('click', () => ((e = i + 1), (s = 0), render())));
+  q('.zone--prev')?.addEventListener('click', () => ((s = (s + SLIDES - 1) % SLIDES), render()));
+  q('.zone--next')?.addEventListener('click', () => ((s = (s + 1) % SLIDES), render()));
+</script>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference: index block
+     top-left, clock bottom-left, all content in a right column from 69% in,
+     the plate cropped by the room's bottom edge. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-size: clamp(0.55rem, 1vw, 0.95rem);
+    line-height: 1.5;
+  }
+
+  /* ── Index — numbers hang left of the labels, "Index" aligns with labels ── */
+  .idx {
+    position: absolute;
+    inset: 2.4% auto auto 1.2%;
+    width: 32%;
+  }
+  .idx__head {
+    margin: 0 0 1.3em 3.6em;
+  }
+  .idx__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .idx__row {
+    display: grid;
+    grid-template-columns: 3.6em 1fr;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    line-height: 1.85;
+  }
+  .idx__item {
+    cursor: pointer;
+  }
+  .idx__item:hover .idx__label {
+    text-decoration: underline;
+  }
+  .idx__item[data-on] .idx__num {
+    color: var(--spot, var(--ink));
+  }
+  .idx__item:focus-visible {
+    outline: var(--border-w, 2px) solid var(--spot, var(--ink));
+    outline-offset: 2px;
+  }
+  .idx__num {
+    color: var(--ink-2);
+  }
+
+  .site__clock {
+    position: absolute;
+    inset: auto auto 2.4% 1.2%;
+    margin: 0;
+    color: var(--ink-1, var(--ink));
+  }
+
+  /* ── Right column — the only dense region of the page ── */
+  .detail {
+    position: absolute;
+    inset: 2% 1.6% 0 69%;
+  }
+  .detail__profile {
+    margin: 1.5em 0 0;
+  }
+  .detail__contact {
+    margin: 0;
+    color: var(--ink-2);
+  }
+
+  /* Echoed paragraphs: text-bar strokes keep the copy's mass without words. */
+  .bars {
+    height: calc(var(--n) * 1.35em - 0.75em);
+    background-image: repeating-linear-gradient(
+      180deg,
+      var(--ink-3, var(--ink-2)) 0 0.6em,
+      transparent 0.6em 1.35em
+    );
+  }
+
+  /* ── One entry at a time; its number hangs into the void, same rule as the
+     index. The gutter offset lands the number at ~59% of the room. ── */
+  .entry {
+    position: relative;
+    margin-top: 2.6em;
+  }
+  .entry__gutter {
+    position: absolute;
+    top: 0;
+    left: -34%;
+  }
+  .entry__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 0 1em;
+    margin-bottom: 1.3em;
+  }
+  .entry__h {
+    margin: 0 0 1.3em;
+    font-weight: 500;
+  }
+  .entry__meta {
+    margin: 0;
+    color: var(--ink-2);
+  }
+
+  /* Plate: ink field, specimen number, deliberately taller than the room —
+     the bottom-edge crop is part of the layout. Hard cut, no transition. */
+  .plate {
+    position: relative;
+    margin: 1.6em 0 0;
+    aspect-ratio: 1 / 1.15;
+    display: grid;
+    place-items: center;
+    background-color: var(--ink);
+  }
+  .plate__num {
+    font-size: clamp(1.6rem, 3.4vw, 3.2rem);
+    letter-spacing: 0.04em;
+    color: var(--spot, var(--paper));
+  }
+  .plate__cur {
+    position: absolute;
+    top: 5%;
+    right: 6%;
+    color: var(--paper-1, var(--paper));
+  }
+
+  /* The invisible interface: two halves of the plate, two cursors. */
+  .zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .zone--prev {
+    left: 0;
+    cursor: w-resize;
+  }
+  .zone--next {
+    right: 0;
+    cursor: e-resize;
+  }
+  .zone:focus-visible {
+    outline: var(--border-w, 2px) solid var(--spot, var(--paper));
+    outline-offset: -4px;
+  }
+</style>

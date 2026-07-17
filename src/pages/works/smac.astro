@@ -1,17 +1,55 @@
 ---
-// S'MAC — bespoke white-label reconstruction (the live client service).
+// S'MAC — the live client engagement, promoted to a full-page before/after contrast.
 //
-// This is NOT the generic case-study template ([slug].astro): it is a hand-built
-// homage to the source's *signature layout* — a fixed cream rail of nav + meta
-// pinned beside a full-bleed hero, with a slide indicator and a scroll cue. The
-// mechanic ("menu-as-index") is expressed literally: the rail IS the index, and
-// scrolling reveals the editorial ledger below.
+// The page IS the contrast: a draggable seam between the site **as found** (a
+// floating cream rail over a full-bleed hero) and the **delivered** redesign now
+// running at smac.blueredandpurple.world (concept ribbon → sticky nav → hero).
+// Drag, arrow-key or tab to the seam; with no JS the seam never appears and the
+// page rests on the delivered half, which is the half we are selling.
 //
-// De-branded into our kernel: everything composes from kernel custom properties,
-// the single exception being --work-accent (the work's own colour, grafted inline
-// and exempt from the colour law — "artwork carries colour"). Content stays
-// single-sourced from the collection entry; only the layout is bespoke here, so
-// a static /works/smac wins over the dynamic [slug] route.
+// Provenance — both halves are rebuilt in-kernel; neither is a screenshot:
+//   • As found is a reconstruction. The client's original is not ours to ship.
+//   • Delivered is our own design, transcribed from its source of truth at
+//     ../blue-red-and-purple/S'MAC (Svelte 5 + UnoCSS + GSAP). Its photography is
+//     ©S'MAC NYC, so it is deliberately NOT copied here. Both halves instead
+//     share our licensed Gratisography specimen — which is the honest comparison
+//     anyway: one photo, two designs, so the seam isolates the design change and
+//     nothing else.
+//
+// Reference (internal, never shipped): refs/works/smac.jpg, 3200×2000 = a 2×
+// render of a 1600px stage. ref-geometry.py degenerates on it (full-bleed photo,
+// ground L=155 → one band), so per design.md the rail was transcribed by eye.
+// Measured on the 2000px-wide read, as ratios (cqw), which hold at either scale:
+//   rail        x62→352 + an 8px stripe   → inset 3.1cqw, 14.5cqw wide, stripe .4cqw
+//   mark        centre x207 y145, ⌀110    → 5.5cqw
+//   address     y240→292, ~17px           → .85cqw
+//   MENU pill   x163→250, y337→372
+//   nav         7 rows, y416→608, step 32, ~14px → .7cqw
+//   signup      x128→285, y655→688 (filled, not outlined — the old build had it outlined)
+//   socials     y745 (×5) and y788 (×2), ⌀24
+//   dots        y1075, 13 dots, centred x1180 — i.e. centred on the photo
+//               right of the rail ((360+2000)/2), not on the page
+//   base bar    y1195→1250, full width
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   This is NOT the generic case-study template ([slug].astro): the hero is a
+//   hand-built reconstruction of the site *as found* — a fixed cream rail of nav
+//   + meta pinned beside a full-bleed hero, with a slide indicator and a scroll
+//   cue. Scrolling reveals the designed solution: the menu-as-index concept that
+//   runs live at smac.blueredandpurple.world.
+//
+//   The designed solution —
+//   A warm counter concept where the menu reads as an editorial index and every
+//   order collapses to a single flow.
+//
+//   Study notes —
+//   De-branded into our kernel: everything composes from kernel custom
+//   properties, the single exception being --work-accent (the work's own colour,
+//   grafted inline and exempt from the colour law — "artwork carries colour").
+//   Content stays single-sourced from the collection entry; only the layout is
+//   bespoke here, so a static /works/smac wins over the dynamic [slug] route.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 
@@ -19,395 +57,591 @@ const entry = await getEntry('works', 'smac');
 const w = entry!.data;
 const [amber, orange] = w.palette ?? [];
 
-// The rail's index — the site's real nav, reconstructed. Anchors that have a
-// live target on this page resolve; the rest are structural echoes of the source.
-const index = [
-  { label: 'Hours & Location', href: undefined },
-  { label: 'Our Story', href: undefined },
-  { label: 'Menu', href: '#ledger' },
-  { label: 'Catering', href: undefined },
-  { label: 'Press', href: '#colophon' },
+// The as-found rail's index — the source's real nav, reconstructed. Nothing here
+// resolves: the "before" is a portrait of a site we did not build, so its links
+// are structural echoes, not affordances.
+const asFoundNav = [
+  'Hours & Location',
+  'Our Story',
+  'Community Fridge',
+  'Catering',
+  'Gift Cards',
+  'Online Orders',
+  'Press',
 ];
+
+// Delivered copy, verbatim from the shipped site's content.ts — S'MAC's own
+// words, not invention.
+const delivered = {
+  ribbon: 'Concept by ',
+  studio: 'BLUE RED + PURPLE',
+  label: 'Est. 2006 · East Village, NYC',
+  headline: 'Macaroni & cheese, elevated to a meal',
+  cta: 'Order Pickup & Delivery',
+};
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <article
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main
     class="smac"
     style={`--work-accent:${orange ?? 'var(--ink)'};--work-amber:${amber ?? 'var(--ink)'}`}
   >
-    <!-- ── Hero: fixed cream rail + full-bleed reference plate ── -->
-    <section class="hero">
-      <aside class="rail">
-        <p class="rail__logo">{w.title}</p>
+    <div class="contrast">
+      <!-- ── Delivered: the half that ships. First in the DOM and unclipped, so
+           it is what a no-JS / no-pointer visitor gets. ── -->
+      <section class="pane pane--after" aria-label="The delivered redesign">
+        <p class="made__ribbon">{delivered.ribbon}<b>{delivered.studio}</b></p>
 
-        <p class="rail__addr font-mono">
-          197 1st Avenue<span>New York, NY 10003</span><span>212 · 358 · 7912</span>
-        </p>
-
-        <a class="rail__cta" href="#ledger">Menu</a>
-
-        <nav class="rail__nav font-mono ttu tracked" aria-label="Sections">
-          {
-            index.map((item) =>
-              item.href ? (
-                <a href={item.href}>{item.label}</a>
-              ) : (
-                <span aria-disabled="true">{item.label}</span>
-              ),
-            )
-          }
+        <nav class="made__nav" aria-label="Delivered navigation">
+          <span class="made__mark" aria-hidden="true">
+            <span class="made__markDisc"></span>{w.title}
+          </span>
+          <span class="made__navCta">{delivered.cta}</span>
         </nav>
 
-        <a class="rail__signup font-mono ttu tracked" href="#colophon">Email signup</a>
+        <header class="made__hero">
+          <img class="pane__photo" src={w.image} alt="" />
+          <div class="made__scrim" aria-hidden="true"></div>
+          <div class="made__inner">
+            <span class="made__label">{delivered.label}</span>
+            <h1 class="made__h1">{delivered.headline}</h1>
+            <span class="made__btn">{delivered.cta}</span>
+          </div>
+        </header>
 
-        <p class="rail__foot font-mono">Reconstructed in-kernel</p>
-      </aside>
+        <a class="made__live font-mono" href={`https://${w.source}`}>Live — {w.source} ↗</a>
+      </section>
 
-      <div class="plate">
-        <img src={w.image} alt={`${w.title} — reference plate`} />
-        <div class="plate__scrim" aria-hidden="true"></div>
-        <div class="plate__dots" aria-hidden="true">
-          {Array.from({ length: 9 }, (_, i) => <span data-on={i === 0}></span>)}
-        </div>
-        <a class="plate__scroll" href="#ledger" aria-label="Scroll to the menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-            <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </a>
-        <span class="plate__bar" aria-hidden="true"></span>
-      </div>
-    </section>
+      <!-- ── As found: overlaid and clipped to the seam. ── -->
+      <section class="pane pane--before" aria-label={`${w.title} as found`}>
+        <img class="pane__photo" src={w.image} alt="" />
+        <span class="found__base" aria-hidden="true"></span>
 
-    <!-- ── Menu-as-index: the mechanic made literal — the counter reduced to one
-         editorial ledger. Reveals on scroll (inherits the .band ticker). ── -->
-    <section id="ledger" class="ledger band">
-      <p class="ledger__eyebrow font-mono ttu tracked">The menu, as an index</p>
-      <p class="ledger__lead">{w.summary}</p>
+        <aside class="found__rail">
+          <span class="found__mark" aria-hidden="true">{w.title}</span>
 
-      {
-        w.mechanic && (
-          <dl class="ledger__mechanic">
-            <dt class="font-mono ttu tracked">Mechanic</dt>
-            <dd>{w.mechanic}</dd>
-          </dl>
-        )
-      }
+          <p class="found__addr">
+            197 1st Avenue<span>New York, NY 10003</span><span>212-358-7912</span>
+          </p>
 
-      {
-        w.palette?.length && (
-          <ul class="ledger__palette font-mono" aria-label="Palette">
-            {w.palette.map((c) => (
-              <li>
-                <span class="chip" style={`background-color:${c}`} />
-                {c}
-              </li>
-            ))}
+          <span class="found__cta">Menu</span>
+
+          <nav class="found__nav ttu" aria-label="As-found navigation">
+            {asFoundNav.map((label) => <span aria-disabled="true">{label}</span>)}
+          </nav>
+
+          <span class="found__signup ttu">Email signup</span>
+
+          <ul class="found__social" aria-hidden="true">
+            {Array.from({ length: 7 }, () => <li></li>)}
           </ul>
-        )
-      }
-    </section>
 
-    <footer id="colophon" class="colophon band">
-      <p class="colophon__meta font-mono ttu tracked">
-        {w.category} · {w.year}{w.real && ' · live client'}
-      </p>
-      {w.source && <p class="colophon__src font-mono">Reference — {w.source}</p>}
-      <a class="colophon__back font-mono ttu tracked" href="/works">← Project index</a>
-    </footer>
-  </article>
+          <p class="found__vendor font-mono">As found — reconstructed in-kernel</p>
+        </aside>
+
+        <div class="found__dots" aria-hidden="true">
+          {Array.from({ length: 13 }, (_, i) => <span data-on={i === 12 ? '' : undefined}></span>)}
+        </div>
+
+        <span class="found__cue" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </span>
+      </section>
+
+      <!-- The seam. A real range input owns the interaction, so drag, touch and
+           arrow keys all come free from the platform; it is pointer-transparent
+           except at the thumb, and the thumb is invisible because .contrast__seam
+           paints the grip it sits exactly on top of. -->
+      <input
+        class="contrast__range"
+        type="range"
+        min="0"
+        max="100"
+        step="0.1"
+        value="50"
+        aria-label="Reveal the site as found"
+      />
+      <span class="contrast__seam" aria-hidden="true"></span>
+    </div>
+  </main>
 </Base>
 
+<script>
+  // Progressive enhancement: the seam only exists once JS is here to move it.
+  // Until then --pos stays 0% and the delivered half owns the page.
+  const contrast = document.querySelector<HTMLElement>('.contrast');
+  const range = contrast?.querySelector<HTMLInputElement>('.contrast__range');
+  if (contrast && range) {
+    const put = () => contrast.style.setProperty('--pos', `${range.value}%`);
+    put();
+    contrast.dataset.js = '';
+    range.addEventListener('input', put);
+  }
+</script>
+
 <style>
-  /* --accent is the work's own orange, exempt from the colour law; everything
-     else stays inside the kernel's ink/paper duotone. */
+  /* --accent is the work's own orange and --amber its brighter gold, both
+     exempt from the colour law ("artwork carries colour"). --serif is the
+     delivered design's own declared fallback stack: that site sets Merriweather
+     with Georgia behind it, and the serif IS part of the artwork, so the half
+     would misrepresent itself set in the kernel's Archivo. No webfont is added
+     to do it — this is the same graft as the colour, one step further. */
   .smac {
     --accent: var(--work-accent, var(--ink));
     --amber: var(--work-amber, var(--accent));
+    --serif: Georgia, 'Times New Roman', serif;
+    /* Load-bearing: the panes size themselves in cqw, and without a container
+       here every cq* unit would silently re-resolve against the viewport. */
+    container-type: inline-size;
     position: relative;
-    z-index: 1;
+    height: 100dvh;
+    overflow: hidden;
     color: var(--ink);
   }
 
-  /* ── Hero: the signature split — rail beside a full-bleed plate. ── */
-  .hero {
-    display: grid;
-    grid-template-columns: clamp(17rem, 26vw, 22rem) 1fr;
-    min-height: 100svh;
-  }
-
-  .rail {
-    position: sticky;
-    top: 0;
-    align-self: start;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    padding: clamp(3.5rem, 8vh, 5.5rem) 1.6rem 2rem;
-    background-color: var(--paper-1);
-    border-right: 3px solid var(--accent);
-    text-align: center;
-  }
-  .rail__logo {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: clamp(2rem, 3vw, 2.6rem);
-    line-height: 1;
-    letter-spacing: 0.01em;
-    color: var(--amber);
-    margin: 0;
-  }
-  .rail__addr {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    font-size: var(--type-label);
-    line-height: 1.5;
-    color: var(--ink-1);
-    margin: 0;
-  }
-  .rail__cta {
-    padding: 0.55rem 1.8rem;
-    border-radius: 2rem;
-    background-color: var(--accent);
-    color: var(--paper);
-    font-family: var(--font-mono);
-    font-size: var(--type-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: opacity var(--dur) var(--ease);
-  }
-  .rail__cta:hover,
-  .rail__cta:focus-visible {
-    opacity: 0.82;
-    outline: none;
-  }
-  .rail__nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-    font-size: var(--type-label);
-  }
-  .rail__nav a,
-  .rail__nav span {
-    color: var(--ink-1);
-    text-decoration: none;
-    transition: color var(--dur) var(--ease);
-  }
-  .rail__nav a:hover,
-  .rail__nav a:focus-visible {
-    color: var(--accent);
-    outline: none;
-  }
-  .rail__nav span[aria-disabled] {
-    color: var(--ink-3);
-    cursor: default;
-  }
-  .rail__signup {
-    padding: 0.5rem 1.4rem;
-    border: 1px solid var(--accent);
-    border-radius: 2rem;
-    color: var(--accent);
-    font-size: var(--type-label);
-    text-decoration: none;
-    transition:
-      background-color var(--dur) var(--ease),
-      color var(--dur) var(--ease);
-  }
-  .rail__signup:hover,
-  .rail__signup:focus-visible {
-    background-color: var(--accent);
-    color: var(--paper);
-    outline: none;
-  }
-  .rail__foot {
-    margin-top: auto;
-    font-size: var(--type-label);
-    letter-spacing: 0.08em;
-    color: var(--ink-3);
-  }
-
-  /* ── Plate: the full-bleed reference render + slide/scroll cues. ── */
-  .plate {
+  .contrast {
     position: relative;
-    overflow: hidden;
-    background-color: var(--paper-1);
+    height: 100%;
   }
-  .plate img {
+
+  .pane {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  /* clip-path never touches layout, so the clipped half stays full-width and
+     its cqw rules keep resolving against the whole page — the seam reveals a
+     correctly-built page, not a squeezed one. Default 0% = fully clipped. */
+  .pane--before {
+    clip-path: inset(0 calc(100% - var(--pos, 0%)) 0 0);
+  }
+  .pane__photo {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  /* A faint paper scrim floors the photo into the kernel without hiding it. */
-  .plate__scrim {
+
+  /* ══ As found ══════════════════════════════════════════════════════════════
+     A floating cream rail over a full-bleed photo. The rail does not touch any
+     edge — the photo bleeds behind it on all four sides. */
+  .found__rail {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 55%,
-      color-mix(in srgb, var(--paper) 40%, transparent)
-    );
-    pointer-events: none;
-  }
-  .plate__dots {
-    position: absolute;
-    left: 50%;
-    bottom: 2.6rem;
-    transform: translateX(-50%);
+    left: 3.1cqw;
+    top: 4.6%;
+    bottom: 7.4%;
+    width: 14.5cqw;
     display: flex;
-    gap: 0.6rem;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.65cqw 1cqw 1.4cqw;
+    background-color: var(--paper-1, var(--paper));
+    border-right: 0.4cqw solid var(--amber);
+    text-align: center;
+    z-index: 2;
   }
-  .plate__dots span {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 100%;
-    background-color: color-mix(in srgb, var(--paper) 60%, transparent);
-  }
-  .plate__dots span[data-on='true'] {
-    background-color: var(--accent);
-  }
-  .plate__scroll {
-    position: absolute;
-    left: 50%;
-    bottom: 0.7rem;
-    transform: translateX(-50%);
+
+  /* The skillet mark rebuilt as a kernel specimen: the source's logo is the
+     client's artwork, so we take its shape (a filled disc carrying the name)
+     and not its file. */
+  .found__mark {
+    display: grid;
+    place-items: center;
+    width: 5.5cqw;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--amber);
     color: var(--paper);
-    opacity: 0.9;
-    transition: transform var(--dur) var(--ease);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(0.5rem, 1.15cqw, 1.5rem);
+    letter-spacing: 0.01em;
   }
-  .plate__scroll svg {
+
+  .found__addr {
+    display: flex;
+    flex-direction: column;
+    margin: 2cqw 0 0;
+    font-size: clamp(0.55rem, 0.85cqw, 1.2rem);
+    line-height: 1.5;
+    color: var(--ink-1, var(--ink));
+  }
+
+  .found__cta {
+    margin-top: 2.25cqw;
+    padding: 0.35cqw 1.1cqw;
+    border-radius: 2em;
+    background-color: var(--amber);
+    color: var(--paper);
+    font-size: clamp(0.5rem, 0.68cqw, 0.95rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .found__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55cqw;
+    margin-top: 2.2cqw;
+    font-size: clamp(0.5rem, 0.7cqw, 1rem);
+    letter-spacing: 0.04em;
+  }
+  .found__nav span {
+    color: var(--ink-1, var(--ink));
+  }
+
+  /* Filled, not outlined — the reference's signup carries the same weight as
+     MENU, which is the whole reason the as-found rail reads as a stack of
+     competing shouts. */
+  .found__signup {
+    margin-top: 2.35cqw;
+    padding: 0.32cqw 1.4cqw;
+    border-radius: 2em;
+    background-color: var(--amber);
+    color: var(--paper);
+    font-size: clamp(0.5rem, 0.68cqw, 0.95rem);
+    letter-spacing: 0.08em;
+  }
+
+  /* Seven discs, no third-party marks: the platform logos are not ours either. */
+  .found__social {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5cqw;
+    width: 8.5cqw;
+    margin: 2.25cqw 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .found__social li {
+    width: 1.2cqw;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--amber);
+  }
+
+  .found__vendor {
+    margin-top: auto;
+    font-size: clamp(0.45rem, 0.62cqw, 0.9rem);
+    letter-spacing: 0.02em;
+    color: var(--ink-3, var(--ink-2));
+  }
+
+  /* Cues sit centred on the photo to the right of the rail (x1180 of 2000),
+     not on the page — the source composed them against the picture. */
+  .found__dots {
+    position: absolute;
+    left: 59cqw;
+    bottom: 14%;
+    translate: -50% 0;
+    display: flex;
+    gap: 1.05cqw;
+  }
+  .found__dots span {
+    width: 0.5cqw;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--amber);
+    opacity: 0.55;
+  }
+  .found__dots span[data-on] {
+    opacity: 1;
+  }
+  .found__cue {
+    position: absolute;
+    left: 59cqw;
+    bottom: 5.5%;
+    translate: -50% 0;
+    color: var(--paper);
+  }
+  .found__cue svg {
     display: block;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2.2cqw;
+    height: 2.2cqw;
   }
-  .plate__scroll:hover,
-  .plate__scroll:focus-visible {
-    transform: translateX(-50%) translateY(0.2rem);
-    outline: none;
-  }
-  .plate__bar {
+
+  .found__base {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 0.5rem;
-    background-color: var(--accent);
+    height: 4.4%;
+    background-color: var(--amber);
   }
 
-  /* ── Ledger: the menu rendered as an editorial index. ── */
-  .ledger {
-    max-width: 54rem;
-    margin: 0 auto;
-    padding: clamp(4rem, 12vh, 8rem) var(--edge);
-    border-top: none;
-  }
-  .ledger__eyebrow {
-    font-size: var(--type-label);
-    color: var(--accent);
-    margin: 0 0 1.2rem;
-  }
-  .ledger__lead {
-    font-family: var(--font-display);
-    font-weight: var(--wght-display);
-    font-size: clamp(1.6rem, 4vw, 2.8rem);
-    line-height: 1.2;
-    letter-spacing: var(--tracking-display);
-    margin: 0 0 2.6rem;
-  }
-  .ledger__mechanic {
-    display: grid;
-    gap: 0.6rem;
-    padding-left: 1rem;
-    border-left: 3px solid var(--accent);
-    margin: 0 0 2.6rem;
-  }
-  .ledger__mechanic dt {
-    font-size: var(--type-label);
-    color: var(--ink-2);
-  }
-  .ledger__mechanic dd {
-    margin: 0;
-    font-size: var(--type-body);
-    line-height: 1.5;
-    color: var(--ink-1);
-  }
-  .ledger__palette {
+  /* ══ Delivered ═════════════════════════════════════════════════════════════
+     Ribbon → sticky nav → hero, transcribed from the shipped site's own rules.
+     The fold is a column: the hero takes whatever the ribbon and nav leave. */
+  .pane--after {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.9rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+    flex-direction: column;
+    background-color: var(--paper);
   }
-  .ledger__palette li {
+
+  .made__ribbon {
+    flex: none;
+    margin: 0;
+    padding: 0.55rem 1rem;
+    background-color: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+  .made__ribbon b {
+    color: var(--amber);
+    font-weight: 600;
+  }
+
+  .made__nav {
+    flex: none;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem clamp(1rem, 2cqw, 2rem);
+    background-color: var(--paper);
+    border-bottom: 2px solid var(--ink);
+  }
+  .made__mark {
+    display: inline-flex;
+    align-items: center;
     gap: 0.5rem;
-    font-size: var(--type-label);
-    color: var(--ink-1);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
   }
-  .chip {
-    width: 1.3rem;
-    height: 1.3rem;
-    border-radius: 100%;
-    border: 1px solid var(--line);
-    flex: none;
+  .made__markDisc {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background-color: var(--amber);
+  }
+  .made__navCta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.6rem 1.1rem;
+    background-color: var(--accent);
+    color: var(--paper);
+    font-size: 0.9375rem;
+    font-weight: 600;
   }
 
-  /* ── Colophon: attribution + return. ── */
-  .colophon {
-    max-width: 54rem;
-    margin: 0 auto;
-    padding: 0 var(--edge) clamp(4rem, 12vh, 7rem);
+  .made__hero {
+    position: relative;
+    flex: 1;
+    min-height: 0;
     display: grid;
-    gap: 0.8rem;
-    border-top: 1px solid var(--line);
-    padding-top: 2.4rem;
+    place-items: center;
   }
-  .colophon__meta {
-    font-size: var(--type-label);
-    color: var(--ink-2);
+  /* A heavy scrim is the delivered design's own decision — white display copy
+     over photography only clears AA behind it. */
+  .made__scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(20, 12, 6, 0.4), rgba(20, 12, 6, 0.78));
   }
-  .colophon__src {
-    font-size: var(--type-label);
-    letter-spacing: 0.08em;
-    color: var(--ink-3);
+  .made__inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    color: #fff;
   }
-  .colophon__back {
-    justify-self: start;
-    margin-top: 0.6rem;
-    font-size: var(--type-label);
-    color: var(--ink);
-    text-decoration: none;
-    transition: color var(--dur) var(--ease);
+  .made__label {
+    margin-bottom: 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #ffe2d1;
   }
-  .colophon__back:hover,
-  .colophon__back:focus-visible {
-    color: var(--accent);
+  .made__h1 {
+    max-width: 18ch;
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 900;
+    font-size: clamp(2.1rem, 6cqw, 4.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
+  }
+  .made__btn {
+    margin-top: 2rem;
+    padding: 0.95rem 1.6rem;
+    background-color: var(--accent);
+    color: var(--paper);
+    font-size: 0.9375rem;
+    font-weight: 600;
   }
 
-  /* ── Stack the rail above the plate on narrow viewports. ── */
-  @media (max-width: 46em) {
-    .hero {
-      grid-template-columns: 1fr;
-      min-height: 0;
+  /* The one real affordance on the page besides the seam and ← INDEX: the
+     delivered half is live, so let it be opened. The nav/hero CTAs above are
+     reconstruction — inert spans, never links that lie about where they go. */
+  .made__live {
+    position: absolute;
+    right: var(--chrome-inset, 1.4rem);
+    bottom: var(--chrome-inset, 1.4rem);
+    z-index: 3;
+    font-size: var(--type-label);
+    color: var(--paper);
+    text-decoration: none;
+    opacity: 0.75;
+    transition: opacity var(--dur, 0.2s) var(--ease, ease);
+  }
+  .made__live:hover,
+  .made__live:focus-visible {
+    opacity: 1;
+  }
+
+  /* ══ The seam ══════════════════════════════════════════════════════════════ */
+  .contrast__range,
+  .contrast__seam {
+    display: none;
+  }
+  .contrast[data-js] .contrast__range,
+  .contrast[data-js] .contrast__seam {
+    display: block;
+  }
+
+  .contrast__range {
+    position: absolute;
+    top: 0;
+    /* Widened by one thumb and pulled back half of it, so the thumb's centre
+       tracks 0→100% of the page exactly and stays welded to the seam line. */
+    left: -1.5rem;
+    width: calc(100% + 3rem);
+    height: 100%;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    /* The panes below stay clickable; only the thumb takes the pointer. */
+    pointer-events: none;
+    z-index: 5;
+  }
+  .contrast__range::-webkit-slider-thumb {
+    appearance: none;
+    pointer-events: auto;
+    width: 3rem;
+    height: 3rem;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: ew-resize;
+  }
+  .contrast__range::-moz-range-thumb {
+    pointer-events: auto;
+    width: 3rem;
+    height: 3rem;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    cursor: ew-resize;
+  }
+  .contrast__range::-moz-range-track {
+    background: transparent;
+    border: none;
+  }
+
+  .contrast__seam {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos, 0%);
+    width: 2px;
+    background-color: var(--paper);
+    pointer-events: none;
+    z-index: 4;
+  }
+  .contrast__seam::after {
+    content: '⇄';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: var(--amber);
+    color: var(--paper);
+    font-size: 1.15rem;
+  }
+  .contrast__range:focus-visible ~ .contrast__seam::after {
+    outline: var(--border-w, 2px) solid var(--paper);
+    outline-offset: 3px;
+  }
+
+  /* Phone: the same two designs adapting. The rail keeps its proportions but
+     needs room to breathe, and the delivered hero's copy stops competing with
+     a 6cqw display size on a 375px stage. */
+  @container (max-width: 40rem) {
+    .found__rail {
+      left: 4cqw;
+      width: 46cqw;
+      padding: 4cqw 3cqw;
     }
-    .rail {
-      position: static;
-      min-height: 0;
-      border-right: none;
-      border-bottom: 3px solid var(--accent);
-      padding-top: clamp(4rem, 10vh, 6rem);
+    .found__mark {
+      width: 18cqw;
+      font-size: 3.6cqw;
     }
-    .rail__foot {
-      margin-top: 1rem;
+    .found__addr {
+      margin-top: 5cqw;
+      font-size: 2.8cqw;
     }
-    .plate {
-      min-height: 78svh;
+    .found__cta,
+    .found__signup {
+      margin-top: 5cqw;
+      padding: 1.4cqw 4cqw;
+      font-size: 2.4cqw;
+    }
+    .found__nav {
+      gap: 1.6cqw;
+      margin-top: 5cqw;
+      font-size: 2.4cqw;
+    }
+    .found__social {
+      width: 28cqw;
+      gap: 1.6cqw;
+      margin-top: 5cqw;
+    }
+    .found__social li {
+      width: 4cqw;
+    }
+    .found__vendor {
+      font-size: 2.2cqw;
+    }
+    .found__dots,
+    .found__cue {
+      left: 50cqw;
+    }
+    .found__dots span {
+      width: 1.4cqw;
+    }
+    .found__cue svg {
+      width: 6cqw;
+      height: 6cqw;
+    }
+    .made__h1 {
+      font-size: clamp(1.5rem, 7cqw, 2.4rem);
+    }
+    .made__navCta {
+      font-size: 0.8rem;
+      padding: 0.5rem 0.7rem;
+    }
+    .made__mark {
+      font-size: 1.1rem;
     }
   }
 </style>

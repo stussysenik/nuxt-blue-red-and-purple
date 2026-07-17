@@ -9,3 +9,7 @@ dist/
 
 # scrape:works drafts — staging for human review, promoted by hand into src/content/works
 scripts/scraped/
+
+# Reference screenshots of the third-party source sites (scrape:works writes here).
+# Build-time input for rebuilding each work in-kernel — never ours, never shipped.
+refs/

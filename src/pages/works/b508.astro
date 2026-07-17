@@ -1,0 +1,169 @@
+---
+// B508 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: a page
+// that is nothing but display type in a single typeface — one two-line block
+// pinned to the top-left corner, a second two-line block pinned to the
+// bottom-right, and a wide empty diagonal band running between them. No nav,
+// no chrome, no images. The mechanic is live, not pictured — the source
+// scatters draggable shop icons beneath the 15rem display; here five kernel
+// specimen chips (paper/ink panels, mono product tags) can be grabbed and
+// dragged anywhere in the room, always sliding UNDER the type layer.
+// De-branded: the source's press name and artist become the work title and
+// structural echoes with the same line lengths. All spacing/type composes
+// from kernel custom properties.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'b508');
+const w = entry!.data;
+// Shop specimens scattered through the empty diagonal band (transcribed from
+// where the source leaves room — the type corners stay clear at rest).
+const ICONS = [
+  { tag: 'LP', x: '7%', y: '56%' },
+  { tag: 'EP', x: '20%', y: '72%' },
+  { tag: 'CD', x: '37%', y: '58%' },
+  { tag: 'TEE', x: '48%', y: '36%' },
+  { tag: 'CAP', x: '63%', y: '14%' },
+];
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, draggable shop specimens">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The page is set entirely in one typeface at one enormous size: two lines of display in
+          the top-left corner, two more in the bottom-right, and nothing else. The corners hold
+          the composition like pins, so the emptiness between them reads as a deliberate diagonal
+          — a shelf the shop icons get scattered across and dragged around, always beneath the
+          type. The words are the architecture and the merchandise is the clutter.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site">
+      <p class="display display--tl">{w.title} Sound<br />Music</p>
+
+      {
+        ICONS.map((icon, i) => (
+          <div class={i === 3 ? 'icon icon--spot' : 'icon'} style={`left:${icon.x};top:${icon.y}`} aria-hidden="true">
+            <span class="icon__tag font-mono ttu tracked">{icon.tag}</span>
+            <span class="icon__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+          </div>
+        ))
+      }
+
+      <p class="display display--br">Songs<br />Store</p>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          Two corner anchors are enough structure for a whole page: because both type blocks share
+          one size, one weight, and one tight leading, the eye draws the diagonal between them
+          without a single rule or grid line. That is also what licenses the mess — the draggable
+          icons can land anywhere and the page never breaks, since the type layer sits above them
+          and the corners never move. Rigid frame, loose contents.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // Freeform collage: pointer-drag any specimen, clamped to the room.
+  // Last-grabbed rises to the top of the icon layer (still under the type).
+  const room = document.querySelector<HTMLElement>('.site');
+  let drag: HTMLElement | null = null;
+  let dx = 0;
+  let dy = 0;
+  room?.querySelectorAll<HTMLElement>('.icon').forEach((el) => {
+    el.addEventListener('pointerdown', (e) => {
+      drag = el;
+      dx = e.clientX - el.offsetLeft;
+      dy = e.clientY - el.offsetTop;
+      el.setPointerCapture(e.pointerId);
+      el.parentElement?.append(el);
+    });
+  });
+  room?.addEventListener('pointermove', (e) => {
+    if (!drag || !room) return;
+    const r = room.getBoundingClientRect();
+    drag.style.left = `${Math.min(Math.max(e.clientX - dx, 0), r.width - drag.offsetWidth)}px`;
+    drag.style.top = `${Math.min(Math.max(e.clientY - dy, 0), r.height - drag.offsetHeight)}px`;
+  });
+  addEventListener('pointerup', () => (drag = null));
+</script>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference: display
+     blocks pinned to opposite corners, the diagonal band left empty for the
+     icon scatter. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* One typeface, one size, one leading — the entire identity. The layer is
+     inert so drags pass straight through the letterforms. */
+  .display {
+    position: absolute;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.4rem, 13cqw, 8.5rem);
+    line-height: 0.98;
+    letter-spacing: var(--tracking-display, -0.02em);
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+  }
+  .display--tl {
+    inset: 2% auto auto 3%;
+  }
+  .display--br {
+    inset: auto 3% 2.5% auto;
+  }
+
+  /* Shop specimens: paper/ink chips with mono product tags, standing in for
+     the source's merchandise thumbnails. They live BELOW the type. */
+  .icon {
+    position: absolute;
+    width: 9.5%;
+    aspect-ratio: 1;
+    display: grid;
+    place-content: center;
+    gap: 0.15em;
+    text-align: center;
+    background-color: var(--paper-1, var(--paper));
+    border: 1px solid var(--line, var(--ink-2));
+    box-shadow: var(--shadow, none);
+    z-index: 1;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .icon:active {
+    cursor: grabbing;
+  }
+  .icon__tag {
+    font-size: clamp(0.45rem, 1.1cqw, 0.65rem);
+    color: var(--ink-2);
+  }
+  .icon__num {
+    font-size: clamp(0.9rem, 2.6cqw, 1.6rem);
+    color: var(--ink-3, var(--ink-2));
+    letter-spacing: 0.04em;
+  }
+  /* One specimen carries the spot colour — "artwork carries colour". */
+  .icon--spot .icon__num {
+    color: var(--spot, var(--ink));
+  }
+</style>

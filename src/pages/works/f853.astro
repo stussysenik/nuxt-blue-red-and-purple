@@ -1,0 +1,149 @@
+---
+// F853 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: the
+// homepage IS the index — a single column of eighteen-plus text links set in
+// one size of one grotesk face, flush against the top-left corner with almost
+// no margin, beside a digital clock keeping real time. No nav, no images, no
+// grid: line-height is the only layout system, and titles that wrap take a
+// hanging indent so the numbered left edge stays clean. The clock is live —
+// real seconds, not pictured; the links are echoed dead (this is a study, the
+// index has nowhere to go). List entries are de-branded structural echoes of
+// the source's ragged right edge, not the client's titles. The reference crop
+// ends mid-line at the fold; the room reproduces that cut. All spacing/type
+// composes from kernel custom properties.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'f853');
+const w = entry!.data;
+
+// Varied-width titles echo the source list's ragged right edge; the repeated
+// "No Title" echoes its repeated untitled entries. Entry 01 wraps on purpose.
+const TITLES = [
+  'Plates in Sequence (a continued line, indented)',
+  'Everywhere at Once',
+  'Paper-Stock™',
+  'A Longer Title to Hold the Edge',
+  'No Title',
+  'Margins et Rules™',
+  'No Title',
+  'Numerals: Mono',
+  'Index (spatium interius)',
+  'Flicker',
+  'Counterform',
+  'The Second Column That Never Was',
+  'Ligature',
+  'No Title',
+  'Baseline Drift™',
+  'Ragged Right',
+  'One Size Only',
+  'Past the Fold',
+];
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live clock, echoed index">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          There is no homepage in front of the index — the index is the homepage. Every project is
+          one line of text at one size in one face, stacked from the top-left corner with barely a
+          margin, and the list simply runs past the fold. Titles that wrap indent their second line
+          so the left edge never breaks. The only thing that moves on the whole page is a digital
+          clock keeping real time beside the list — a pulse that proves the site is on.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site">
+      <ul class="site__index">
+        <li class="site__mark">{w.title} Index</li>
+        <li>C.V.</li>
+        {TITLES.map((t, i) => <li>No. {String(i + 1).padStart(2, '0')}—{t}</li>)}
+      </ul>
+      <time class="site__clock font-mono" aria-label="Current time">00:00:00</time>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          One type size is the whole system: with nothing to contrast against, line-height becomes
+          the grid, the ragged right edge becomes the composition, and hierarchy survives on word
+          order alone. The near-zero margin is what makes it read as intent rather than accident —
+          the text behaves like content pinned to the viewport, not a page laid out around it. The
+          clock earns its place by being the one element set in a second face, and the one that
+          changes.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // The one live mechanic: a real-time digital clock, updated every second.
+  const clock = document.querySelector<HTMLElement>('.site__clock');
+  const two = (n: number) => String(n).padStart(2, '0');
+  const tick = () => {
+    const d = new Date();
+    if (clock) clock.textContent = `${two(d.getHours())}:${two(d.getMinutes())}:${two(d.getSeconds())}`;
+  };
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference: list flush
+     to the top-left with ~1% margins, type at ~4% of the room's width, tight
+     leading, list cut mid-line at the bottom edge. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  .site__index {
+    position: absolute;
+    inset: 0.6% auto auto 1.1%;
+    max-width: 72%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-display);
+    font-weight: var(--wght-display, 700);
+    font-size: clamp(1rem, 3.5vw, 2.55rem);
+    line-height: 1.16;
+    letter-spacing: var(--tracking-display, -0.02em);
+  }
+
+  /* Wrapped titles indent their continuation lines — the numbered left edge
+     stays unbroken, exactly as the source handles its one two-line entry. */
+  .site__index li {
+    padding-left: 3ch;
+    text-indent: -3ch;
+  }
+
+  /* The de-branded wordmark line: first entry of the list, nothing more.
+     The source gives it no extra weight or size — flatness is the point. */
+  .site__mark {
+    color: var(--ink);
+  }
+
+  /* The clock sits beside the list on its first baseline — the reference
+     crop excludes it, so scale and placement follow the source's "beside a
+     clock" reading: top-right, mono, tabular so seconds don't jitter. */
+  .site__clock {
+    position: absolute;
+    top: 1.6%;
+    right: 1.6%;
+    font-size: clamp(0.8rem, 2.2vw, 1.6rem);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+    color: var(--ink-1, var(--ink));
+  }
+</style>

@@ -1,0 +1,190 @@
+---
+// After — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1: one centered column and nothing beside it —
+// a coarse pixel-display wordmark sitting directly over a mono grotesk, then
+// a dated tour list that serves as the site's entire index. No nav, no hero,
+// no sections; the face-contrast is the identity and the list is the map.
+// The mechanic is typographic rather than interactive, so the stage is static
+// by design: the wordmark is redrawn from 5×5 bitmaps (data, not an asset —
+// no image, no webfont) and the list rows are structural echoes with the
+// venue column reduced to a tickets cue. Dates carry no year. Everything
+// composes from kernel custom properties; the work's two blues stay inside
+// the stage — the pixel face carries the colour, the chrome stays ink.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'after');
+const w = entry!.data;
+// CaseStudy grafts palette[0] as --work-accent; the second blue is read here
+// and grafted onto the stage root only (smac precedent).
+const blueLight = w.palette?.[1];
+
+// The pixel display face as data: A F T E R, 5×5 cells per glyph.
+const GLYPHS = [
+  '01110 10001 11111 10001 10001', // A
+  '11111 10000 11110 10000 10000', // F
+  '11111 00100 00100 00100 00100', // T
+  '11111 10000 11110 10000 11111', // E
+  '11110 10001 11110 10010 10001', // R
+].map((g) => g.replaceAll(' ', ''));
+
+// The whole index: date · city · tickets. Echo rows — the shape of the list
+// is the subject, not the itinerary.
+const DATES: [string, string][] = [
+  ['16 Mar', 'Berlin'],
+  ['18 Mar', 'Prague'],
+  ['21 Mar', 'Vienna'],
+  ['24 Mar', 'Milan'],
+  ['27 Mar', 'Paris'],
+  ['29 Mar', 'London'],
+];
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — static, pixel face over mono grotesk">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The whole site is one centered column doing two voices: a chunky pixel display face for
+          the name, a small mono grotesk for everything under it. There is no navigation because
+          the dated tour list is the navigation — date, city, tickets, next row. The page reads
+          like a marquee over a timetable, and it needs nothing else to feel finished.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site" style={blueLight ? `--blue-2:${blueLight}` : undefined}>
+      <div class="site__mark" role="img" aria-label={`${w.title} — pixel wordmark`}>
+        {
+          GLYPHS.map((glyph) => (
+            <span class="glyph">
+              {glyph.split('').map((bit) => (
+                <i data-on={bit === '1' ? '' : undefined} />
+              ))}
+            </span>
+          ))
+        }
+      </div>
+
+      <p class="site__tag font-mono ttu tracked">On tour</p>
+
+      <ol class="site__index font-mono">
+        {
+          DATES.map(([date, city], i) => (
+            <li class="row">
+              <span class="row__num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="row__date">{date}</span>
+              <span class="row__city ttu tracked">{city}</span>
+              <span class="row__cta ttu">Tickets</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="site__foot font-mono ttu tracked">Mailing list</p>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          The system works because the two faces never compete for a job: the pixel face is pure
+          display — five glyphs, one colour, no small sizes — and the mono grotesk is pure
+          utility, so every row of the list aligns for free off the character grid. Centering is
+          what makes it hold; with a single axis of symmetry the eye only measures one thing, and
+          the ragged city names against the fixed date column give the column its rhythm. That is
+          why this study rebuilds the bitmap and the row grid rather than approximating either.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<style>
+  /* The rebuilt room: one centered column on empty paper — marquee, tag,
+     timetable, footer cue, each on its own band of the height. */
+  .site {
+    aspect-ratio: 16 / 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--paper);
+    color: var(--ink);
+    padding: 7% 6% 4.5%;
+  }
+
+  /* The pixel face carries the work's colour — "artwork carries colour". */
+  .site__mark {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5.5%;
+    width: min(46%, 22rem);
+    color: var(--work-accent, var(--spot, var(--ink)));
+  }
+  .glyph {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 11%;
+  }
+  .glyph i {
+    aspect-ratio: 1;
+  }
+  .glyph i[data-on] {
+    background-color: currentColor;
+  }
+
+  .site__tag {
+    margin: 5.5% 0 0;
+    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+    color: var(--ink-2);
+  }
+
+  /* The index: fixed mono columns, hairline rows. The date column is rigid,
+     the city rag is the only irregularity the page allows itself. */
+  .site__index {
+    width: min(58%, 28rem);
+    margin: 2.5% 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: clamp(0.6rem, 1.3vw, 0.95rem);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 2.4em 4.6em 1fr auto;
+    align-items: baseline;
+    gap: 1em;
+    padding: 0.55em 0;
+    border-top: 1px solid var(--line, var(--ink-2));
+  }
+  .row:last-child {
+    border-bottom: 1px solid var(--line, var(--ink-2));
+  }
+  .row__num {
+    color: var(--ink-3, var(--ink-2));
+  }
+  .row__date {
+    color: var(--ink-1, var(--ink));
+  }
+  .row__city {
+    letter-spacing: 0.12em;
+  }
+  .row__cta {
+    font-size: 0.82em;
+    letter-spacing: 0.14em;
+    color: var(--ink-2);
+    transition: color var(--dur, 0.25s) var(--ease, ease);
+  }
+  /* The second blue surfaces only on approach — the list stays ink at rest. */
+  .row:hover .row__cta {
+    color: var(--blue-2, var(--work-accent, var(--ink)));
+  }
+
+  .site__foot {
+    margin: auto 0 0;
+    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+    color: var(--ink-3, var(--ink-2));
+  }
+</style>

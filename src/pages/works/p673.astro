@@ -1,0 +1,193 @@
+---
+// P673 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: one
+// centred column (~62% of the page, equal margins), opened by a hairline
+// rule, a three-part nav row (wordmark left, Information centre, contact
+// right), a display headline filling the column, a second hairline, and then
+// the entry ledger — full-column plates on a twelve-column grid, repeated
+// eight times down the page. The mechanic is live, not pictured: the room
+// scrolls and the nav is a frosted backdrop-filter plane the ledger passes
+// under. No script — sticky + backdrop-filter IS the mechanic, so CSS carries
+// it. Plates are de-branded kernel specimens: we rebuild the room, not the
+// client's artwork. All spacing/type composes from kernel custom properties.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'p673');
+const w = entry!.data;
+const ENTRIES = 8;
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, frosted nav over a scrolling ledger">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The whole site is one column hung between two hairlines: a rule opens the page, a
+          three-part nav sits on it — wordmark left, one word of information centre, contact right —
+          and a display headline fills the column edge to edge before the ledger begins. From there
+          the same twelve-column entry repeats down the page, plate after plate, while the nav
+          detaches and frosts, floating over everything that scrolls beneath it.
+        </p>
+      </section>
+    </Fragment>
+
+    <div
+      class="site"
+      tabindex="0"
+      role="region"
+      aria-label="Scrollable ledger reconstruction"
+      data-lenis-prevent
+    >
+      <header class="site__nav">
+        <span class="site__wordmark">{w.title}&trade; Study</span>
+        <span class="site__info">Information</span>
+        <span class="site__contact">Mail, IG &nearr;</span>
+      </header>
+
+      <div class="site__col">
+        <p class="site__masthead">{w.title}</p>
+        <hr class="site__rule" />
+
+        {
+          Array.from({ length: ENTRIES }, (_, i) => (
+            <section class="entry">
+              <figure class="entry__plate">
+                <span class="entry__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+              </figure>
+              <p class="entry__row font-mono ttu tracked">
+                <span class="entry__idx">{String(i + 1).padStart(2, '0')}</span>
+                <span class="entry__label">Entry — specimen plate</span>
+                <span class="entry__meta">12-col</span>
+              </p>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          One column width decides everything: nav, headline, and every plate share the same two
+          vertical edges, so the eye never re-measures the page — it just descends. The hairlines
+          meter that descent, and the frost earns its keep structurally: the nav needs no border or
+          box to hold its plane, because the blurred ledger sliding underneath declares the layering
+          for it. Repetition reads as rhythm here, not monotony, because the grid never flinches.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference: ~19% side
+     margins, nav on the opening hairline, headline flush to the column, then
+     the ledger. The room itself scrolls so the frost has something to do. */
+  .site {
+    aspect-ratio: 16 / 10;
+    overflow-y: auto;
+    background-color: var(--paper);
+    color: var(--ink);
+  }
+  .site:focus-visible {
+    outline: var(--border-w, 2px) solid var(--spot, var(--ink));
+    outline-offset: -2px;
+  }
+
+  /* Frosted plane — the live mechanic. Sticky inside the scrolling room; the
+     ledger passes under it and the blur declares the layer. */
+  .site__nav {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.9em 19%;
+    border-top: 1px solid var(--ink);
+    background-color: color-mix(in srgb, var(--paper) 72%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    font-size: clamp(0.65rem, 1.3vw, 0.95rem);
+    letter-spacing: 0.01em;
+  }
+  .site__wordmark {
+    font-weight: 600;
+  }
+  .site__info,
+  .site__contact {
+    color: var(--ink-1, var(--ink));
+  }
+
+  .site__col {
+    padding: 0.4em 19% 2.5em;
+  }
+
+  /* Headline fills the column the way the source's does — display face,
+     near-solid leading, flush left to the shared edge. */
+  .site__masthead {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: var(--wght-display, 700);
+    font-size: clamp(2.4rem, 9.5vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: var(--tracking-display, -0.02em);
+  }
+  .site__rule {
+    height: 1px;
+    background-color: var(--ink);
+    border: none;
+    margin: 0.55em 0 0;
+  }
+
+  /* One entry = one pass of the twelve-column grid: plate spans all twelve,
+     the caption row sits on the same tracks. Repeated eight times. */
+  .entry {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0.5em 2%;
+    margin-top: clamp(1rem, 3vw, 2.2rem);
+  }
+  .entry__plate {
+    grid-column: 1 / -1;
+    margin: 0;
+    aspect-ratio: 1.39;
+    display: grid;
+    place-items: center;
+    background-color: var(--paper-1, var(--paper));
+    border: 1px solid var(--line, var(--ink-2));
+  }
+  .entry__num {
+    font-size: clamp(1.8rem, 7vw, 4rem);
+    color: var(--ink-3, var(--ink-2));
+    letter-spacing: 0.04em;
+  }
+  /* One plate carries the spot colour — "artwork carries colour". */
+  .entry:nth-of-type(3) .entry__num {
+    color: var(--spot, var(--ink));
+  }
+
+  .entry__row {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    margin: 0;
+    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+    color: var(--ink-2);
+  }
+  .entry__idx {
+    grid-column: 1 / 3;
+  }
+  .entry__label {
+    grid-column: 3 / 10;
+  }
+  .entry__meta {
+    grid-column: 10 / -1;
+    text-align: right;
+  }
+</style>

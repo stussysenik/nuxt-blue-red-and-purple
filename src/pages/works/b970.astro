@@ -1,0 +1,202 @@
+---
+// B970 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: every
+// word the page owns lives in a single band on the top baseline, set across
+// a twelve-column grid as 3/3/6 — identity stack, italic serif title with
+// its roman credit, and one serif paragraph closed by a Read more link.
+// Everything below the band is artwork, run full bleed to all four edges.
+// The mechanic is live where the source is live — Read more extends the
+// essay in place; the band never moves. The film still is echoed, not
+// pictured: the room inverts to an ink field with a tonal mass where the
+// portrait sat, and the plate is credited with a mono specimen label. All
+// spacing/type composes from kernel custom properties.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'b970');
+const w = entry!.data;
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, expanding essay band">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The whole voice of the page is one band across the top: a wordmark with two underlined
+          links, an italic serif title over its roman credit, and a four-line essay — three, three
+          and six columns of a twelve-column grid, all hung from the same baseline. The remaining
+          ninety percent of the viewport belongs to a full-bleed monochrome still, and the text
+          never descends into it. One Read more link is the only door the band offers.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site">
+      <div class="site__band">
+        <header class="band__id">
+          <span class="band__wordmark">{w.title} Archive</span>
+          <span class="band__links" aria-hidden="true">
+            <u>Contact</u>, <u>IG</u>
+          </span>
+        </header>
+
+        <div class="band__caption">
+          <em class="band__title">A Field in Three Columns</em>
+          <span class="band__credit font-mono">{w.title}</span>
+        </div>
+
+        <div class="band__essay lh-copy">
+          <p>
+            The page keeps its entire voice in this one strip: an identity, an italic title with
+            its credit, and a single paragraph, divided three, three and six across twelve
+            columns. Everything beneath the strip is given to the artwork, which runs full bleed
+            to every edge of the viewport.
+          </p>
+          <p class="band__extra">
+            The band itself never moves. Extending the essay pushes nothing but these lines; the
+            field below absorbs the rest, and the two registers never compete.
+          </p>
+          <button class="band__more" type="button" aria-expanded="false">Read more</button>
+        </div>
+      </div>
+
+      <span class="site__plate font-mono ttu" aria-hidden="true">Plate 01 — 16 mm still</span>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          The 3/3/6 split works because the columns widen with the weight of their content — a
+          two-line identity, a two-line caption, a full paragraph — so the band reads left to
+          right as an accelerating sentence. Pinning all three to one baseline is what buys the
+          full-bleed image its silence: the eye clears the text in a single pass and drops into
+          the still with nothing left to negotiate. The serif display against semi-mono captions
+          keeps the registers legible even at one shared type size.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // Read more: extend the essay in place, band stays pinned. Live, like the source.
+  const more = document.querySelector<HTMLButtonElement>('.band__more');
+  const extra = document.querySelector<HTMLElement>('.band__extra');
+  more?.addEventListener('click', () => {
+    const open = extra?.toggleAttribute('data-open') ?? false;
+    more.setAttribute('aria-expanded', String(open));
+    more.textContent = open ? 'Read less' : 'Read more';
+  });
+</script>
+
+<style>
+  /* The rebuilt room, inverted: the full-bleed still becomes an ink field,
+     and every owned word sits in one top band. Proportions transcribed from
+     the reference: band baseline ~4% down, gutters ~2%, columns 3/3/6. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--ink);
+    color: var(--paper);
+    overflow: hidden;
+  }
+  /* Tonal echo of the portrait: a lighter mass low-centre, under a faint
+     scan texture — the artwork's weight without the artwork. */
+  .site::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        color-mix(in oklab, var(--paper) 4%, transparent) 0 1px,
+        transparent 1px 4px
+      ),
+      radial-gradient(
+        58% 72% at 54% 64%,
+        color-mix(in oklab, var(--paper) 18%, transparent),
+        transparent 72%
+      );
+  }
+
+  .site__band {
+    position: absolute;
+    inset: 3.8% 2% auto;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: 1.5%;
+    font-size: clamp(0.68rem, 1.35vw, 0.95rem);
+    line-height: 1.45;
+    z-index: 1;
+  }
+  .band__id {
+    grid-column: 1 / 4;
+    display: flex;
+    flex-direction: column;
+  }
+  .band__links u {
+    text-underline-offset: 0.18em;
+  }
+
+  .band__caption {
+    grid-column: 4 / 7;
+    display: flex;
+    flex-direction: column;
+  }
+  /* The pairing the source trades on: italic serif display over a
+     semi-mono roman credit, at the shared band size. */
+  .band__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    letter-spacing: 0.01em;
+  }
+  .band__credit {
+    font-size: 0.92em;
+    letter-spacing: 0.03em;
+  }
+
+  .band__essay {
+    grid-column: 7 / 13;
+  }
+  .band__essay p {
+    margin: 0;
+  }
+  .band__extra {
+    display: none;
+  }
+  .band__extra[data-open] {
+    display: block;
+    margin-top: 1em;
+  }
+  /* Read more sits one blank line under the essay, underlined like a link. */
+  .band__more {
+    margin-top: 1em;
+    padding: 0;
+    background: none;
+    border: none;
+    font: inherit;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    cursor: pointer;
+  }
+  .band__more:focus-visible {
+    outline: var(--border-w, 2px) solid var(--spot, var(--paper));
+    outline-offset: 2px;
+  }
+
+  /* Specimen credit for the echoed plate — mono, bottom margin, quiet. */
+  .site__plate {
+    position: absolute;
+    left: 2%;
+    bottom: 4%;
+    font-size: var(--type-meta, 0.65rem);
+    letter-spacing: 0.14em;
+    color: color-mix(in oklab, var(--paper) 55%, transparent);
+    z-index: 1;
+  }
+</style>

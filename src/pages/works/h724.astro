@@ -1,0 +1,187 @@
+---
+// H724 — bespoke in-kernel reconstruction (the exemplar for the batch).
+//
+// The page IS the recreation: the reference's signature layout fills the
+// viewport edge-to-edge, exactly as the source frames itself. A studio wordmark
+// and two words of nav pinned top-left, a single centred plate on an otherwise
+// empty page, an 01 / 08 counter bottom-centre. The mechanic is live, not
+// pictured — the canvas is split into two cursor zones and clicking either half
+// hard-cuts between numbered plates (no easing; the source cuts). Plates are
+// de-branded kernel specimens: we rebuild the room, not the client's artwork.
+// All spacing/type composes from kernel custom properties.
+//
+// Reference (internal, never shipped): refs/works/h724.jpg, 1600×1000.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   Everything a hotel site usually shouts is withdrawn here until three things
+//   remain: a wordmark, two words of navigation, and a counter. The slideshow is
+//   the entire interface — no arrows, no thumbnails, no scroll. The page trusts
+//   the viewer to find the two cursor zones, and the hard cut between plates does
+//   the pacing a transition would normally blur.
+//
+//   Study notes —
+//   What reads as emptiness is measured: the plate holds the exact centre, the
+//   chrome sits on one baseline at the top and one at the bottom, and nothing else
+//   touches the page. The restraint only works because the two remaining objects
+//   are placed to the pixel — which is why this study rebuilds the spacing rather
+//   than screenshots it.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const entry = await getEntry('works', 'h724');
+const w = entry!.data;
+const PLATES = 8;
+---
+
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site" data-count={PLATES}>
+    <header class="site__nav">
+      <span class="site__wordmark">{w.title} Studio, Inc.</span>
+      <span class="site__links" aria-hidden="true">Info&ensp;Index</span>
+    </header>
+
+    {
+      Array.from({ length: PLATES }, (_, i) => (
+        <figure class="plate" data-on={i === 0 ? '' : undefined}>
+          <span class="plate__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+        </figure>
+      ))
+    }
+
+    <p class="site__counter font-mono">
+      <span class="site__cur">01</span> / {String(PLATES).padStart(2, '0')}
+    </p>
+
+    <button class="zone zone--prev" type="button" aria-label="Previous plate"></button>
+    <button class="zone zone--next" type="button" aria-label="Next plate"></button>
+  </main>
+</Base>
+
+<script>
+  // Cursor-zone slideshow: hard cuts, wrap-around, counter in lockstep.
+  const site = document.querySelector<HTMLElement>('.site');
+  const plates = site?.querySelectorAll<HTMLElement>('.plate') ?? [];
+  const cur = site?.querySelector<HTMLElement>('.site__cur');
+  let i = 0;
+  const show = (next: number) => {
+    plates[i]?.removeAttribute('data-on');
+    i = (next + plates.length) % plates.length;
+    plates[i]?.setAttribute('data-on', '');
+    if (cur) cur.textContent = String(i + 1).padStart(2, '0');
+  };
+  site?.querySelector('.zone--prev')?.addEventListener('click', () => show(i - 1));
+  site?.querySelector('.zone--next')?.addEventListener('click', () => show(i + 1));
+</script>
+
+<style>
+  /* The rebuilt room, now the whole page. Proportions transcribed from the
+     reference: nav baseline at the top edge, plate centred, counter on the
+     bottom baseline. The page is its own query container — the stage used to
+     provide one, so cq* units resolve against the viewport width instead. */
+  .site {
+    container-type: inline-size;
+    position: relative;
+    min-height: 100dvh;
+    background-color: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* Transcribed from the reference at 1600px: wordmark ink starts x17/y20, the
+     nav sets ~29px (1.8cqw), and the wordmark→links gap is ~34px, not the wide
+     stage-era 3.2em. */
+  .site__nav {
+    position: absolute;
+    inset: 1.5% auto auto 1%;
+    display: flex;
+    gap: 0.95em;
+    font-size: clamp(0.8rem, 1.8cqw, 1.9rem);
+    letter-spacing: 0.01em;
+    z-index: 2;
+  }
+  .site__wordmark {
+    font-weight: 600;
+  }
+  .site__links {
+    color: var(--ink-1, var(--ink));
+  }
+
+  /* Plates stack in the same cell; data-on wins. Hard cut — no transition,
+     the cut IS the mechanic. */
+  .plate {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    /* Reference plate at 1600px: 1075×692 centred on y=500 — 67cqw at 1.55. */
+    width: 67cqw;
+    aspect-ratio: 1.55;
+    margin: 0;
+    display: none;
+    place-items: center;
+    background-color: var(--paper-1, var(--paper));
+    border: 1px solid var(--line, var(--ink-2));
+    box-shadow: var(--shadow, none);
+  }
+  .plate[data-on] {
+    display: grid;
+  }
+  .plate__num {
+    font-size: clamp(2rem, 5cqw, 5.5rem);
+    color: var(--ink-3, var(--ink-2));
+    letter-spacing: 0.04em;
+  }
+  /* One plate carries the spot colour — "artwork carries colour". */
+  .plate:nth-of-type(4) .plate__num {
+    color: var(--spot, var(--ink));
+  }
+
+  .site__counter {
+    position: absolute;
+    inset: auto 0 6%;
+    margin: 0;
+    text-align: center;
+    /* Mono here is our kernel's choice, so match the reference on figure height
+       (what reads as type size) rather than on glyph width. */
+    font-size: clamp(0.7rem, 1.45cqw, 1.5rem);
+    color: var(--ink-1, var(--ink));
+    z-index: 2;
+  }
+
+  /* The invisible interface: two halves, two cursors, zero chrome. */
+  .zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    background: none;
+    border: none;
+    padding: 0;
+    z-index: 1;
+  }
+  .zone--prev {
+    left: 0;
+    cursor: w-resize;
+  }
+  .zone--next {
+    right: 0;
+    cursor: e-resize;
+  }
+  .zone:focus-visible {
+    outline: var(--border-w, 2px) solid var(--spot, var(--ink));
+    outline-offset: -2px;
+  }
+
+  /* Phone: the source layout adapting, not a second design. The plate takes the
+     width it needs and the nav's two clusters stack onto one line. */
+  @container (max-width: 40rem) {
+    .site__nav {
+      gap: 1.4em;
+    }
+    .plate {
+      width: 82cqw;
+    }
+  }
+</style>

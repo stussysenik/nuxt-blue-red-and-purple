@@ -1,0 +1,268 @@
+---
+// G858 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: one yellow
+// journal card pinned top-left over a full-bleed wallpaper — four dated drops
+// (date left, drop tag right, one struck through), two pills splitting the
+// card's bottom edge — and a chip dock bottom-right. The mechanic is live, not
+// pictured: Shop slides a twelve-product overlay up over the whole room. The
+// wallpaper photo is de-branded into a kernel dot-screen; products become
+// numbered specimen plates — we rebuild the room, not the client's artwork.
+// The work's two palette hexes (yellow, near-black) appear only in the stage.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'g858');
+const w = entry!.data;
+const [yellow, black] = w.palette ?? [];
+const PRODUCTS = 12;
+const ENTRIES = [
+  { date: 'Mar. 15', tag: 'Drop 01', copy: 'First pressing, split run — paper on ink' },
+  { date: 'Mar. 22', tag: 'Drop 02', copy: 'Second pressing, single sheet', sold: true },
+  { date: 'Mar. 23', tag: 'Drop 03', copy: 'Proof set, numbered edition' },
+  { date: 'Aug. 3', tag: 'Drop 04', copy: 'Archive sheets, final run' },
+];
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, slide-up overlay shop">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          The whole site is one yellow card floating on a wallpaper. The card is a journal — four
+          dated drops, each with a mono tag on the right margin and one struck through — and the
+          shop never gets a page of its own: it slides up as an overlay and leaves when dismissed.
+          The photo does the atmosphere; the card does every ounce of the interface.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site" style={`--g-yellow:${yellow};--g-black:${black}`}>
+      <div class="wall" aria-hidden="true"></div>
+
+      <aside class="card">
+        <p class="card__mark">{w.title}</p>
+        <ol class="card__journal">
+          {
+            ENTRIES.map((e) => (
+              <li class="entry font-mono">
+                <span class="entry__date">{e.date}</span>
+                <span class="entry__tag" data-sold={e.sold ? '' : undefined}>{e.tag}</span>
+                <span class="entry__copy">{e.copy}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="card__actions font-mono">
+          <button class="pill card__shop" type="button" aria-expanded="false">Shop</button>
+          <span class="pill">IG</span>
+        </div>
+      </aside>
+
+      <div class="dock" aria-hidden="true"></div>
+
+      <section class="shop" aria-label="Overlay shop" inert>
+        <header class="shop__head font-mono ttu tracked">
+          <span>Shop — twelve products</span>
+          <button class="shop__close" type="button">Close ×</button>
+        </header>
+        <ol class="shop__grid">
+          {
+            Array.from({ length: PRODUCTS }, (_, i) => (
+              <li class="product">
+                <span class="product__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+              </li>
+            ))
+          }
+        </ol>
+      </section>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          The card earns its density because everything inside it sits on one mono grid: dates flush
+          left, drop tags flush right, hairline rules between entries, two pills splitting the
+          bottom edge evenly. Against that discipline the wallpaper can be pure noise — and the
+          overlay shop is the same move in reverse, one dark plane sliding over the room instead of
+          one yellow plane floating on it.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // Slide-up shop: one overlay, one open state, Escape closes.
+  const site = document.querySelector<HTMLElement>('.site');
+  const shop = site?.querySelector<HTMLElement>('.shop');
+  const openBtn = site?.querySelector<HTMLButtonElement>('.card__shop');
+  const closeBtn = site?.querySelector<HTMLButtonElement>('.shop__close');
+  const set = (on: boolean) => {
+    shop?.toggleAttribute('data-open', on);
+    if (shop) shop.inert = !on;
+    openBtn?.setAttribute('aria-expanded', String(on));
+    (on ? closeBtn : openBtn)?.focus();
+  };
+  openBtn?.addEventListener('click', () => set(true));
+  closeBtn?.addEventListener('click', () => set(false));
+  shop?.addEventListener('keydown', (e) => e.key === 'Escape' && set(false));
+</script>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference: card pinned
+     top-left at ~32% width, chip dock bottom-right, wallpaper everywhere else. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+  }
+  /* Wallpaper, de-branded: the photo reduces to its role — an even field of
+     grain behind the card — so it becomes a kernel dot screen. */
+  .wall {
+    position: absolute;
+    inset: 0;
+    background-color: var(--paper-1, var(--paper));
+    background-image: radial-gradient(var(--line, var(--ink-2)) 1px, transparent 1.5px);
+    background-size: 14px 14px;
+  }
+  .card {
+    position: absolute;
+    inset: 2.5% auto auto 1.8%;
+    width: min(32%, 26rem);
+    padding: 1.6em 1.9em 1.9em;
+    background-color: var(--g-yellow, var(--spot));
+    color: var(--g-black, var(--ink));
+    border-radius: var(--radius);
+  }
+  .card__mark {
+    margin: 0 0 0.9em;
+    font-family: var(--font-display);
+    font-weight: var(--wght-display, 700);
+    font-size: 4.6em;
+    line-height: 1;
+    letter-spacing: var(--tracking-display, -0.02em);
+  }
+  .card__journal,
+  .shop__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .entry {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35em 1em;
+    padding: 0.9em 0;
+    border-top: 1px solid var(--g-black, var(--ink));
+  }
+  .entry__date {
+    font-weight: 700;
+  }
+  .entry__tag[data-sold] {
+    text-decoration: line-through;
+  }
+  .entry__copy {
+    grid-column: 1 / -1;
+    opacity: 0.82;
+  }
+  .card__actions {
+    display: flex;
+    gap: 0.9em;
+    margin-top: 1.4em;
+  }
+  .pill,
+  .shop__close {
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .pill {
+    flex: 1;
+    padding: 0.7em 0;
+    text-align: center;
+    border: 1px solid var(--g-black, var(--ink));
+    border-radius: 999px;
+  }
+  .card__shop:hover,
+  .card__shop:focus-visible {
+    background-color: var(--g-black, var(--ink));
+    color: var(--g-yellow, var(--spot));
+  }
+  /* Chip dock: four yellow squares, one stacked strip in the reference. */
+  .dock {
+    position: absolute;
+    inset: auto 1.8% 3% auto;
+    width: 2.2em;
+    height: 10.3em;
+    background-image: repeating-linear-gradient(
+      var(--g-yellow, var(--spot)) 0 2.2em,
+      transparent 2.2em 2.7em
+    );
+  }
+  /* The overlay shop: one dark plane, twelve plates, slides over everything. */
+  .shop {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--g-black, var(--ink));
+    color: var(--paper);
+    translate: 0 101%;
+    transition: translate var(--dur, 0.25s) var(--ease, ease);
+  }
+  .shop[data-open] {
+    translate: 0 0;
+  }
+  .shop__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4em 1.8em;
+  }
+  .shop__close {
+    border: none;
+    padding: 0;
+    color: var(--g-yellow, var(--spot));
+  }
+  .shop__close:focus-visible,
+  .card__shop:focus-visible {
+    outline: var(--border-w, 2px) solid currentColor;
+    outline-offset: 2px;
+  }
+  .shop__grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0.9em;
+    padding: 0 1.8em 1.8em;
+  }
+  .product {
+    display: grid;
+    place-items: center;
+    color: var(--ink-2);
+    background-color: var(--paper-1, var(--paper));
+  }
+  .product__num {
+    font-size: 1.6em;
+    color: inherit;
+  }
+  /* One product carries the accent — "artwork carries colour". */
+  .product:nth-of-type(7) {
+    background-color: var(--g-yellow, var(--spot));
+    color: var(--g-black, var(--ink));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .shop {
+      transition: none;
+    }
+  }
+</style>

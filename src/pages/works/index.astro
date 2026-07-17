@@ -1,10 +1,11 @@
 ---
 // The Project Index — a standalone, white-label concept page. Full-screen,
-// centered, scrollable: big display-type title rows with (N#) superscripts over
-// a blurred ghost of the hovered work. Driven entirely by the works collection
-// (no hardcoded brand), so any set of works populates it. Each row navigates to
-// its routed /works/[slug] page. Same deterministic sort as everywhere else —
-// live client first, then newest, then alphabetical — so (N#) numbering is stable.
+// centered, scrollable: big display-type title rows grouped under plain
+// industry labels (restaurant, hotel, music …) over a blurred ghost of the
+// hovered work. Driven entirely by the works collection (no hardcoded brand),
+// so any set of works populates it. Each row navigates to its routed
+// /works/[slug] page. Same deterministic sort inside each group as everywhere
+// else — live client first, then newest, then alphabetical.
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
@@ -17,6 +18,16 @@ const works = (await getCollection('works'))
       b.year - a.year ||
       a.title.localeCompare(b.title),
   );
+
+// Curated industry order; categories not listed yet fall to the end, A→Z.
+const ORDER = ['restaurant', 'hotel', 'music', 'books', 'vintage'];
+const rank = (c: string) => (ORDER.includes(c) ? ORDER.indexOf(c) : ORDER.length);
+const groups = [...new Set(works.map((w) => w.category))]
+  .toSorted((a, b) => rank(a) - rank(b) || a.localeCompare(b))
+  .map((category) => ({
+    category,
+    items: works.filter((w) => w.category === category),
+  }));
 ---
 
 <Base title="Project index — *blue red + purple/" chrome="close">
@@ -24,23 +35,22 @@ const works = (await getCollection('works'))
     <span class="index__ghost" aria-hidden="true"></span>
 
     <h1 class="visually-hidden">Project index</h1>
-    <ul class="index__list">
-      {
-        works.map((w, i) => (
-          <li>
-            <a class="row" href={`/works/${w.slug}`} data-image={w.image}>
-              <span class="row__num font-mono" aria-hidden="true">
-                (N{i + 1})
-              </span>
-              <span class="row__title">{w.title}</span>
-              <span class="row__meta font-mono ttu tracked">
-                {w.category} · {w.year}
-              </span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      groups.map(({ category, items }) => (
+        <section class="group">
+          <h2 class="group__label font-mono ttu tracked">{category}</h2>
+          <ul class="index__list">
+            {items.map((w) => (
+              <li>
+                <a class="row" href={`/works/${w.slug}`} data-image={w.image}>
+                  <span class="row__title">{w.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
   </main>
 </Base>
 
@@ -81,7 +91,20 @@ const works = (await getCollection('works'))
     min-height: 100svh;
     display: grid;
     align-content: center;
+    row-gap: clamp(2.2rem, 5.5vh, 3.6rem);
     color: var(--ink);
+    /* Top/bottom padding clears the pinned chrome: the CLOSE anchor (top) and
+       the theme toggle (bottom). When the groups outgrow the viewport the page
+       top-anchors, so without this the first label tucks under CLOSE. */
+    padding: clamp(4.5rem, 11vh, 7rem) 1rem clamp(4rem, 9vh, 5.5rem);
+  }
+
+  .group__label {
+    text-align: center;
+    font-size: var(--type-label);
+    font-weight: 500;
+    color: var(--ink-2);
+    margin: 0 0 0.7rem;
   }
 
   /* Ghost backdrop — the hovered work's image, blurred and faint. */
@@ -104,15 +127,10 @@ const works = (await getCollection('works'))
     align-items: center;
     gap: 0.1rem;
     margin: 0;
-    /* Top/bottom padding clears the pinned chrome: the CLOSE anchor (top) and
-       the theme toggle (bottom). When the list outgrows the viewport it
-       top-anchors, so without this the first row tucks under CLOSE. */
-    padding: clamp(4.5rem, 11vh, 7rem) 1rem clamp(4rem, 9vh, 5.5rem);
+    padding: 0;
     list-style: none;
   }
 
-  /* Idle title stays centered; category · year is revealed out-of-flow to the
-     right on hover/focus, so the composition never shifts. */
   .row {
     position: relative;
     display: inline-flex;
@@ -128,12 +146,6 @@ const works = (await getCollection('works'))
     color: var(--ink);
     outline: none;
   }
-  .row__num {
-    font-size: clamp(0.82rem, 1.6vw, 1.1rem);
-    color: var(--ink-2);
-    line-height: 1;
-    padding-top: 0.35em;
-  }
   .row__title {
     font-family: var(--font-display);
     font-weight: var(--wght-display);
@@ -142,30 +154,9 @@ const works = (await getCollection('works'))
     letter-spacing: var(--tracking-display);
     color: inherit;
   }
-  .row__meta {
-    position: absolute;
-    left: calc(100% + 0.4rem);
-    top: 50%;
-    transform: translateY(-50%);
-    white-space: nowrap;
-    font-size: var(--type-label);
-    color: var(--ink-2);
-    opacity: 0;
-    transition: opacity 0.2s var(--ease);
-  }
-  .row:hover .row__meta,
-  .row:focus-visible .row__meta {
-    opacity: 1;
-  }
-  @media (max-width: 40em) {
-    .row__meta {
-      display: none;
-    }
-  }
   @media (prefers-reduced-motion: reduce) {
     .index__ghost,
-    .row,
-    .row__meta {
+    .row {
       transition: none;
     }
   }

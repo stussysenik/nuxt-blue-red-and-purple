@@ -13,11 +13,12 @@
 // review before a draft is promoted into src/content/works/. Collisions with an
 // already-curated work are flagged, not overwritten.
 //
-// The API's `screenshot` (authoritative 1600px render of the live site) is the
-// real work imagery — downloaded and COMMITTED locally so the site never
-// hotlinks Cargo at runtime (SPEC 4.3 "local assets only") and we own every
-// asset. `source` stays attribution text; the eventual goal is to rebuild each
-// work in our own kernel, for which this owned screenshot is the reference.
+// The API's `screenshot` (a render of the live third-party site) is NOT ours and
+// is NOT work imagery. It lands in refs/works/ — a gitignored, build-time-only
+// reference for rebuilding the work in our own kernel. It must never reach
+// public/ (which ships) or a rendered surface: the schema's `image` is a
+// licensed stock photo, "never a hotlink or screenshot". `source` stays
+// attribution text.
 //
 // Usage:  pnpm scrape:works <cargoId>[:<slug>] [...]
 //   e.g.  pnpm scrape:works 3347193:h724 2657644:l384
@@ -32,8 +33,9 @@ import { hexToHsl } from '../src/uno/hue.ts';
 const here = dirname(fileURLToPath(import.meta.url));
 const stageDir = resolve(here, 'scraped');
 const collectionDir = resolve(here, '../src/content/works');
-const imageDir = resolve(here, '../public/works');
-const SHOT_WIDTH = 1600; // freight CDN width bucket for committed work imagery
+// Reference screenshots are third-party bytes: internal, gitignored, never shipped.
+const refDir = resolve(here, '../refs/works');
+const SHOT_WIDTH = 1600; // freight CDN width bucket for the reference render
 
 interface CargoScreenshot {
   hash?: string;
@@ -56,14 +58,14 @@ function screenshotUrl(shot: CargoSite['screenshot']): string | undefined {
   return hash && name ? `https://freight.cargo.site/w/${SHOT_WIDTH}/i/${hash}/${name}` : undefined;
 }
 
-/** Download the screenshot to public/works/{slug}.jpg — an owned local asset. */
+/** Download the reference screenshot to refs/works/{slug}.jpg — internal only. */
 async function downloadImage(url: string, slug: string): Promise<boolean> {
   const res = await fetch(url, { headers: { 'user-agent': 'Mozilla/5.0 blueredandpurple/1' } });
   if (!res.ok) return false;
   const buf = Buffer.from(await res.arrayBuffer());
   if (buf.byteLength < 1024) return false; // guard against error-page stubs
-  mkdirSync(imageDir, { recursive: true });
-  writeFileSync(resolve(imageDir, `${slug}.jpg`), buf);
+  mkdirSync(refDir, { recursive: true });
+  writeFileSync(resolve(refDir, `${slug}.jpg`), buf);
   return true;
 }
 
@@ -129,7 +131,9 @@ async function scrape(id: string, slugOverride?: string): Promise<void> {
     title,
     category: 'TODO(restaurant|hotel|music|vintage|books)',
     year: new Date().getFullYear(),
-    image: `/works/${slug}.jpg`,
+    // A licensed stock photo, curated by hand into public/works — never the
+    // scraped reference screenshot (refs/works), which must not ship.
+    image: 'TODO — curate a licensed stock photo into public/works/<slug>.jpg',
     summary: 'TODO — lorem prose pending copywriting',
     ...(palette.length ? { palette } : {}),
     mechanic: 'TODO — distill the signature mechanic from the source',
@@ -142,8 +146,8 @@ async function scrape(id: string, slugOverride?: string): Promise<void> {
   const collides = existsSync(resolve(collectionDir, `${slug}.json`));
   console.log(
     `  ${id} → ${slug}  palette=[${palette.join(', ') || '—'}]` +
-      `  image=${gotImage ? '✓ public/works/' + slug + '.jpg' : shot ? '✗ download failed' : '— no screenshot'}` +
-      (collides ? `  ⚠ already curated — image replaced, JSON untouched` : ''),
+      `  ref=${gotImage ? '✓ refs/works/' + slug + '.jpg' : shot ? '✗ download failed' : '— no screenshot'}` +
+      (collides ? `  ⚠ already curated — JSON + public imagery untouched` : ''),
   );
 }
 
@@ -154,7 +158,7 @@ async function main(): Promise<void> {
     process.exitCode = 1;
     return;
   }
-  console.log(`Scraping ${args.length} site(s) → ${stageDir} + public/works/`);
+  console.log(`Scraping ${args.length} site(s) → ${stageDir} + refs/works/`);
   for (const arg of args) {
     const [id, slugOverride] = arg.split(':');
     if (!id) continue;

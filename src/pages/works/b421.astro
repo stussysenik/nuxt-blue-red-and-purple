@@ -1,0 +1,238 @@
+---
+// B421 — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: a proposal
+// deck wearing a website. Two rows of pinned chrome — wordmark, A/B/C switcher,
+// right-set spec paragraph — sit on hairlines above a gallery grid whose plates
+// each declare their own ratio in a caption rail (A1 — 1:1 … 2:1), with a
+// three-part colophon on the bottom baseline. The mechanic is live, not
+// pictured: A/B/C hard-swaps the whole sheet — label, plate count, grid — under
+// chrome that never moves. Plates are de-branded kernel specimens — we rebuild
+// the room, not the client's artwork. The work's white/black is grafted inline
+// inside the stage; its blue rides in as --work-accent.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'b421');
+const w = entry!.data;
+const [, sitePaper, siteInk] = w.palette ?? [];
+
+// Three decks: A transcribed from the reference, B/C extended by its own rule —
+// every row takes its height from the ratio its plates declare (… C8 4:1).
+const SPECS: [string, { ratio: string; count: number }[]][] = [
+  ['A', [{ ratio: '1:1', count: 4 }, { ratio: '2:1', count: 2 }]],
+  ['B', [{ ratio: '3:2', count: 2 }, { ratio: '1:1', count: 3 }]],
+  ['C', [{ ratio: '1:1', count: 4 }, { ratio: '4:3', count: 3 }, { ratio: '4:1', count: 1 }]],
+];
+const DECKS = SPECS.map(([id, specs]) => {
+  let n = 0;
+  const rows = specs.map((r) => ({ ...r, cells: Array.from({ length: r.count }, () => `${id}${++n}`) }));
+  return { id, rows, plates: String(n).padStart(2, '0') };
+});
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, A/B/C proposal switcher">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          A client presentation formatted as a public page. The chrome reads like a cover sheet —
+          studio name, a live "Proposal: A. B. C." switcher, spec copy set into the right third —
+          and the gallery reads like deck pages: every artwork sits over a caption cell declaring
+          its index and ratio on a hairline. Switching proposals replaces the entire sheet while
+          the two chrome baselines and the colophon hold perfectly still.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site" style={`--site-paper:${sitePaper ?? 'var(--paper)'};--site-ink:${siteInk ?? 'var(--ink)'}`}>
+      <header class="site__chrome">
+        <div class="site__row">
+          <span class="site__wordmark">{w.title} Studio, Inc.</span>
+          <span class="site__meta">
+            <span>Proposal:&ensp;{DECKS.map((d, i) => (
+              <button class="sw" type="button" data-deck={d.id} data-on={i === 0 ? '' : undefined}>{d.id}.</button>
+            ))}</span>
+            <span class="site__tally font-mono">{DECKS[0]!.plates} plates</span>
+          </span>
+        </div>
+        <div class="site__row">
+          <span class="site__proposal">Proposal A</span>
+          <p class="site__copy">
+            Each proposal is a fixed sequence of plates. Every plate declares its ratio in the
+            caption rail beneath it, and each row takes its height from that declaration.
+            Switching proposals replaces the whole sheet under the same two baselines.
+          </p>
+        </div>
+      </header>
+
+      <div class="site__scroll" data-lenis-prevent>
+        {DECKS.map((d, di) => (
+            <section class="deck" data-deck={d.id} data-plates={d.plates} data-on={di === 0 ? '' : undefined}>
+              {d.rows.map((r) => (
+                <div class="row" style={`--cols:${r.count};--ar:${r.ratio.replace(':', ' / ')}`}>
+                  {r.cells.map((label) => (
+                    <figure class="cell">
+                      <span class="cell__art"><span class="cell__num font-mono">{label}</span></span>
+                      <figcaption class="cell__tag font-mono">{label} — {r.ratio}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+              ))}
+            </section>
+          ))}
+      </div>
+
+      <footer class="site__foot">
+        <span class="site__mail" aria-hidden="true">Email</span>
+        <span>{w.title} — proposal deck</span>
+        <span class="font-mono">№ 0421</span>
+      </footer>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          The chrome runs on thirds — copy column pinned at the right third — while the gallery
+          runs on quarters and halves, and the two systems never align; the per-plate caption
+          hairlines reconcile them, turning the grid into its own legend. Because row height is
+          derived from the declared ratio, a row of four squares and a row of two 2:1 plates land
+          on identical margins — the swap between proposals reads as one sheet replacing another,
+          not a layout re-flowing.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // A/B/C switcher: the whole deck hard-swaps under pinned chrome; proposal
+  // label + plate tally move in lockstep, scroll resets to the top edge.
+  const site = document.querySelector<HTMLElement>('.site');
+  const decks = Array.from(site?.querySelectorAll<HTMLElement>('.deck') ?? []);
+  const btns = Array.from(site?.querySelectorAll<HTMLButtonElement>('.sw') ?? []);
+  const label = site?.querySelector<HTMLElement>('.site__proposal');
+  const tally = site?.querySelector<HTMLElement>('.site__tally');
+  const scroll = site?.querySelector<HTMLElement>('.site__scroll');
+  const pick = (id: string) => {
+    for (const d of decks) d.toggleAttribute('data-on', d.dataset.deck === id);
+    for (const b of btns) b.toggleAttribute('data-on', b.dataset.deck === id);
+    if (label) label.textContent = `Proposal ${id}`;
+    const on = decks.find((d) => d.dataset.deck === id);
+    if (tally && on) tally.textContent = `${on.dataset.plates} plates`;
+    if (scroll) scroll.scrollTop = 0;
+  };
+  for (const b of btns) b.addEventListener('click', () => pick(b.dataset.deck ?? 'A'));
+</script>
+
+<style>
+  /* The rebuilt room: two chrome baselines pinned top, deck scrolling between,
+     colophon on the bottom edge. Stark white/black grafted inline; blue = accent. */
+  .site {
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 16 / 10;
+    background-color: var(--site-paper, var(--paper));
+    color: var(--site-ink, var(--ink));
+    font-size: clamp(0.6rem, 1.3vw, 0.95rem);
+  }
+
+  /* Chrome grid runs on thirds: 1fr | right third. The gallery below runs on
+     quarters — the mismatch is the source's, kept deliberately. */
+  .site__row {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 33.5%);
+    gap: 0.5em 2em;
+    padding: 1em 2.5% 0.9em;
+    border-bottom: 1px solid var(--line, var(--ink-2));
+  }
+  .site__meta {
+    display: flex;
+    justify-content: space-between;
+  }
+  .sw {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    margin-right: 0.45em;
+    color: var(--work-accent, var(--spot));
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .sw[data-on] {
+    color: inherit;
+    text-decoration: none;
+  }
+  .site__copy {
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.45;
+  }
+
+  .site__scroll {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .deck {
+    display: none;
+    padding: 4% 2.5% 5%;
+  }
+  .deck[data-on] {
+    display: block;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    column-gap: 0.3em;
+  }
+  .row + .row {
+    margin-top: 4.5%;
+  }
+
+  /* Specimen plates: the ratio each caption declares IS the panel's geometry. */
+  .cell {
+    margin: 0;
+  }
+  .cell__art {
+    width: 72%;
+    margin: 4% auto 7%;
+    aspect-ratio: var(--ar, 1);
+    display: grid;
+    place-items: center;
+    background-color: var(--paper-1, var(--paper));
+    border: 1px solid var(--line, var(--ink-2));
+  }
+  .cell__num {
+    font-size: clamp(0.9rem, 3.4cqw, 2.2rem);
+    color: var(--ink-3, var(--ink-2));
+  }
+  /* Every third plate carries the work's blue — "artwork carries colour". */
+  .cell:nth-child(3n + 1) .cell__num {
+    color: var(--work-accent, var(--spot));
+  }
+  .site__tally,
+  .cell__tag {
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+  }
+  .cell__tag {
+    border-top: 1px solid var(--line, var(--ink-2));
+    padding: 0.55em 0.75em 0 0.15em;
+    font-size: clamp(0.5rem, 0.95vw, 0.7rem);
+  }
+
+  .site__foot {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.9em 2.5% 1em;
+    border-top: 1px solid var(--line, var(--ink-2));
+  }
+  .site__mail {
+    color: var(--work-accent, var(--spot));
+    text-decoration: underline;
+  }
+</style>

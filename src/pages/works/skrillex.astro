@@ -1,0 +1,174 @@
+---
+// Skrillex — bespoke in-kernel reconstruction.
+//
+// Signature layout, rebuilt 1:1 from the owned reference screenshot: the
+// entire viewport is the artwork, full bleed, and every character on the page
+// lives in one vertical rail pinned to the left edge — wordmark at the bottom,
+// a three-stroke glyph, then the nav words ascending. One typeface, one
+// weight, zero palette; the chrome is achromatic and the artwork carries all
+// the colour. The mechanic is live, not pictured — the rail's lines arrive
+// one per beat (click the room to replay). The artwork is a de-branded kernel
+// specimen: a full-bleed spot-colour field standing in for the photograph —
+// we rebuild the room, not the client's artwork. This work ships no palette
+// in its data, so the field composes from kernel --spot / --spot-2 only.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import CaseStudy from '../../components/CaseStudy.astro';
+
+const entry = await getEntry('works', 'skrillex');
+const w = entry!.data;
+// DOM order = bottom-to-top once the rail is rotated, matching the reference.
+const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
+---
+
+<Base title={`${w.title} — *blue red + purple/`}>
+  <CaseStudy work={w} stageLabel="Reconstruction — live, line-by-line arrival">
+    <Fragment slot="narrative">
+      <section class="prose">
+        <h2>The signature</h2>
+        <p>
+          There is no layout to speak of — that is the layout. The photograph runs edge to edge,
+          and the whole interface is one vertical line of mono type climbing the left margin:
+          wordmark, glyph, five nav words, all the same size and the same weight. No palette is
+          declared anywhere in the chrome; the image supplies every ounce of colour, and the type
+          stays as neutral as a caption on a contact sheet.
+        </p>
+      </section>
+    </Fragment>
+
+    <div class="site">
+      <div class="art" aria-hidden="true">
+        <span class="art__meta font-mono ttu tracked">Plate 01 — full bleed</span>
+      </div>
+
+      <!-- Lines ship arrived (data-on) so the rail survives without JS; the
+           script strips and replays them on load. -->
+      <nav class="rail font-mono ttu" aria-label="Rebuilt rail navigation">
+        <span class="rail__mark" data-on>{w.title}</span>
+        <span class="rail__glyph" data-on aria-hidden="true">≡</span>
+        {RAIL.map((item) => <span data-on>{item}</span>)}
+      </nav>
+
+      <button class="replay" type="button" aria-label="Replay line-by-line arrival"></button>
+    </div>
+
+    <Fragment slot="notes">
+      <section class="prose">
+        <h2>Study notes</h2>
+        <p>
+          Collapsing the type system to a single voice is what lets the page get away with a
+          full-bleed image: with one typeface at one weight there is no hierarchy to defend, so
+          the rail can sit on the artwork at any brightness and still read as chrome, not
+          content. The vertical setting buys the same economy in space — seven items spend one
+          text line of width and leave the other ninety-odd percent of the canvas untouched.
+        </p>
+      </section>
+    </Fragment>
+  </CaseStudy>
+</Base>
+
+<script>
+  // Line-by-line arrival: the rail lands one line per beat; click replays.
+  const site = document.querySelector<HTMLElement>('.site');
+  const lines = Array.from(site?.querySelectorAll<HTMLElement>('.rail > *') ?? []);
+  let t = 0;
+  const run = () => {
+    clearTimeout(t);
+    for (const line of lines) line.removeAttribute('data-on');
+    const step = (n: number) => {
+      lines[n]?.setAttribute('data-on', '');
+      if (n + 1 < lines.length) t = window.setTimeout(() => step(n + 1), 200);
+    };
+    t = window.setTimeout(() => step(0), 300);
+  };
+  site?.querySelector('.replay')?.addEventListener('click', run);
+  run();
+</script>
+
+<style>
+  /* The rebuilt room. Proportions transcribed from the reference (a 16/10
+     frame): artwork bleeds to all four edges, the rail hugs the left edge
+     with a hair of padding, nothing else touches the canvas. */
+  .site {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background-color: var(--paper);
+    overflow: hidden;
+  }
+
+  /* The artwork, de-branded: a full-bleed specimen field. The source photo
+     is the page's only colour source, so the stand-in is the one coloured
+     object in the room — kernel spot inks, since this work declares none. */
+  .art {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(115deg, var(--spot-2, var(--spot)) 0%, var(--spot) 62%);
+  }
+  .art__meta {
+    position: absolute;
+    right: 2.6%;
+    bottom: 4%;
+    font-size: clamp(0.55rem, 1vw, 0.72rem);
+    color: var(--paper);
+    opacity: 0.7;
+  }
+
+  /* One rail, one typeface, one weight — the entire type system. Set
+     vertical and rotated so it reads bottom-to-top, as in the source;
+     DOM-first (the wordmark) lands at the bottom. */
+  .rail {
+    position: absolute;
+    inset: 0 auto 0 0;
+    padding-block: 4%;
+    padding-inline: 1.6%;
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    display: flex;
+    gap: 2.4em;
+    font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: var(--paper);
+    z-index: 1;
+  }
+  .rail__mark {
+    letter-spacing: 0.2em;
+  }
+  .rail__glyph {
+    letter-spacing: 0;
+  }
+
+  /* Arrival: each line fades in and settles along the reading direction.
+     Hidden until the script grants data-on, one beat apart. */
+  .rail > * {
+    opacity: 0;
+    translate: 0 -0.6em;
+    transition:
+      opacity var(--dur, 0.25s) var(--ease, ease),
+      translate var(--dur, 0.25s) var(--ease, ease);
+  }
+  .rail > [data-on] {
+    opacity: 1;
+    translate: 0 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail > * {
+      transition: none;
+    }
+  }
+
+  /* The replay surface: the whole room, zero chrome. */
+  .replay {
+    position: absolute;
+    inset: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .replay:focus-visible {
+    outline: var(--border-w, 2px) solid var(--paper);
+    outline-offset: -6px;
+  }
+</style>
