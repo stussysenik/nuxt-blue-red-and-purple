@@ -11,8 +11,11 @@
 // frosted backdrop-filter plane the ledger passes under. Promoting the room to the
 // page hands its scroll to the document, which is what the source does — sticky +
 // backdrop-filter IS the mechanic, so CSS carries it and there is no script.
-// Plates are de-branded kernel specimens: we rebuild the room, not the client's
-// artwork. The work declares no palette, so nothing grafts: the sheet rides the
+// Entry 01's plate — the one that clears the fold whole — is the committed photo
+// the ledger opens on; plates 02–08 stay de-branded numbered specimens. The thin
+// nav sticks BELOW --chrome-band (and the column opens below it) so its three
+// clusters — the flush-right contact especially — never collide with the pinned
+// ← Index. The work declares no palette, so nothing grafts: the sheet rides the
 // ambient kernel --paper/--ink and inverts coherently with the mode.
 //
 // Reference (internal, never shipped): refs/works/p673.jpg, 1600×1000, ground L=255.
@@ -82,12 +85,23 @@ const ENTRIES = 8;
         Array.from({ length: ENTRIES }, (_, i) => (
           <section class="entry">
             <figure class="entry__plate">
-              <span class="entry__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+              {i === 0 ? (
+                <img
+                  class="entry__img"
+                  src={w.image}
+                  alt={`${w.title} plate 01`}
+                  width="999"
+                  height="721"
+                  decoding="async"
+                />
+              ) : (
+                <span class="entry__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+              )}
             </figure>
             <p class="entry__row font-mono ttu tracked">
               <span class="entry__idx">{String(i + 1).padStart(2, '0')}</span>
-              <span class="entry__label">Entry — specimen plate</span>
-              <span class="entry__meta">12-col</span>
+              <span class="entry__label">Lorem ipsum dolor sit amet</span>
+              <span class="entry__meta">{w.year}</span>
             </p>
           </section>
         ))
@@ -108,14 +122,16 @@ const ENTRIES = 8;
      would make .site the sticky nav's scroll container and kill the mechanic. */
   .site {
     container-type: inline-size;
-    min-height: 100dvh;
+    min-height: 100svh;
     background-color: var(--paper);
     color: var(--ink);
   }
 
-  /* padding-top 2cqw = the reference's 32px above the opening rule. */
+  /* padding-top = the reference's 32px above the opening rule, but never less than
+     --chrome-band: the nav (first in the column) must open below the pinned ←
+     Index, not under it, at scroll 0. */
   .site__col {
-    padding: 2cqw 18.75% 5cqw;
+    padding: max(2cqw, var(--chrome-band)) 18.75% 5cqw;
   }
 
   /* Frosted plane — the live mechanic. Sticky against the document now that the
@@ -125,7 +141,10 @@ const ENTRIES = 8;
      the measured baseline with no padding, so no font-metric fudging. */
   .site__nav {
     position: sticky;
-    top: 0;
+    /* Sticks below the chrome band, never rising into the reserved strip where ←
+       Index floats — so the frosted plane and the pinned mark share the top edge
+       without their content ever overlapping. */
+    top: var(--chrome-band);
     z-index: 2;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -194,6 +213,28 @@ const ENTRIES = 8;
     place-items: center;
     background-color: var(--paper-1, var(--paper));
     border: 1px solid var(--line, var(--ink-2));
+  }
+  /* Entry 01's plate is the committed photo: it fills the plate box (the paper-1
+     fill is its ghost skeleton) and fades in over it on load — no JS
+     (@starting-style). object-fit crops within the img's own box, so it never
+     spills the bordered frame. */
+  .entry__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .entry__img {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .entry__img {
+      transition: none;
+    }
   }
   .entry__num {
     font-size: clamp(1.6rem, 7cqw, 7.5rem);
