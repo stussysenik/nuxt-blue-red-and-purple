@@ -55,7 +55,8 @@ pages". The original §4 list dropped it.)
       spine progress scroll-driven (commit)
 - [x] b421 — proposal deck; pinned chrome → sticky cover sheet over natural
       scroll, A/B/C swap kept, plate A1 seats the committed photo (commit)
-- [ ] b508
+- [x] b508 — draggable type-collage; overflow trap retired, TL display opts into
+      the band, one draggable specimen chip becomes the committed photo (commit)
 - [ ] b970
 - [ ] d429
 - [ ] g858

@@ -6,9 +6,11 @@
 // corner, a second two-line block right-set into the bottom-right, and a wide
 // empty diagonal band running between them. No nav, no chrome, no images. The
 // mechanic is live, not pictured — the source scatters draggable shop icons
-// beneath the display; here five kernel specimen chips (paper/ink panels, mono
-// product tags) can be grabbed and dragged anywhere in the room, always sliding
-// UNDER the type layer. De-branded: the source's press name and artist become
+// beneath the display; here five specimen chips can be grabbed and dragged
+// anywhere in the room, always sliding UNDER the type layer. Four are mono
+// product tags; one is the committed photograph — the real merchandise plate
+// among the specimens, the room's single artwork ("artwork carries colour").
+// De-branded: the source's press name and artist become
 // the work title and structural echoes with the same line lengths (10/5 and
 // 5/5 characters). All spacing/type composes from kernel custom properties.
 //
@@ -74,9 +76,22 @@ const ICONS = [
 
     {
       ICONS.map((icon, i) => (
-        <div class={i === 3 ? 'icon icon--spot' : 'icon'} style={`left:${icon.x};top:${icon.y}`} aria-hidden="true">
-          <span class="icon__tag font-mono ttu tracked">{icon.tag}</span>
-          <span class="icon__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+        <div class={i === 3 ? 'icon icon--art' : 'icon'} style={`left:${icon.x};top:${icon.y}`} aria-hidden="true">
+          {i === 3 ? (
+            <img
+              class="icon__img"
+              src={w.image}
+              alt={`${w.title} plate`}
+              width="600"
+              height="600"
+              decoding="async"
+            />
+          ) : (
+            <Fragment>
+              <span class="icon__tag font-mono ttu tracked">{icon.tag}</span>
+              <span class="icon__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+            </Fragment>
+          )}
         </div>
       ))
     }
@@ -118,10 +133,9 @@ const ICONS = [
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
     background-color: var(--paper);
     color: var(--ink);
-    overflow: hidden;
   }
 
   /* One typeface, one size, one weight, one leading — the entire identity. The
@@ -141,10 +155,12 @@ const ICONS = [
     pointer-events: none;
     user-select: none;
   }
-  /* Ink lands on x49 / cap top y39 once 'B''s 20.6px side bearing and the
-     line box's negative half-leading are accounted for. */
+  /* Top-left block. Left edge keeps the measured 1.78cqw ('B''s side bearing off
+     x49); the top opts into the chrome band so the display clears the pinned
+     marks instead of climbing into the reserved strip — the shared band opt-in,
+     seated exactly as the skrillex rail is. */
   .display--tl {
-    inset: 1.25cqw auto auto 1.78cqw;
+    inset: var(--chrome-band) auto auto 1.78cqw;
   }
   /* Right-set, not merely pinned: both lines end flush on x≈1569. */
   .display--br {
@@ -184,9 +200,28 @@ const ICONS = [
     color: var(--ink-3, var(--ink-2));
     letter-spacing: 0.04em;
   }
-  /* One specimen carries the spot colour — "artwork carries colour". */
-  .icon--spot .icon__num {
-    color: var(--work-accent, var(--spot, var(--ink)));
+  /* One specimen is the committed photograph — the room's artwork. It fills its
+     chip (object-fit cover) over the paper-tint chip ground, which doubles as the
+     load-in skeleton so nothing flashes before the bytes arrive (no JS). */
+  .icon--art {
+    place-content: stretch;
+  }
+  .icon__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .icon__img {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .icon__img {
+      transition: none;
+    }
   }
 
   /* Phone: the source room adapting, not a second design. The composition is
