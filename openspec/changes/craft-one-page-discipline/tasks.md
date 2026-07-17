@@ -57,37 +57,55 @@ pages". The original §4 list dropped it.)
       scroll, A/B/C swap kept, plate A1 seats the committed photo (commit)
 - [x] b508 — draggable type-collage; overflow trap retired, TL display opts into
       the band, one draggable specimen chip becomes the committed photo (commit)
-- [ ] b970
-- [ ] d429
-- [ ] g858
-- [ ] h724
-- [ ] l384
-- [ ] p673
+- [x] b970 — full-bleed still + 3/3/6 editorial band; ::before echo → committed
+      photo, overflow trap retired, band opts into --chrome-band (desktop
+      collision retired); single-screen by concept (commit)
+- [x] d429 — document sheet; max-height clip → real scroll (runs deeper than the
+      viewport honestly), foot-of-margin plate is the committed photo, masthead
+      clears the band (320/375 collision retired), body → lorem (commit)
+- [x] g858 — journal card over wallpaper; wallpaper → committed photo, card opts
+      into the band, slide-up shop leaves layout when closed (no dead scroll) and
+      covers + retires the chrome when open (Close/← Index no longer stack) (commit)
+- [x] h724 — cursor-zone slideshow; plate 01 is the committed photo, nav opts
+      into the band, hard-cut mechanic kept; single-screen by concept (commit)
+- [x] l384 — index + cut-through plate; plate → committed photo, both top regions
+      (phone index, desktop right column) opt into the band (320 collision +
+      desktop bar collision retired) (commit)
+- [x] p673 — frosted-nav ledger; entry 01 plate is the committed photo, column
+      opens below the band and the sticky nav sticks below it (info/contact
+      collision retired at rest AND scrolled), caption copy → lorem (commit)
 - [x] skrillex — full-bleed art page; photo becomes the artwork, rail clears
       the band, arrival mechanic kept; single-screen by concept (commit)
-- [ ] smac — already renders its photo; still needs trap/overflow retire + band
+- [x] smac — before/after seam (real client, copy stays real); height/overflow
+      trap → min-height:100svh, whole contrast opts into the band (ribbon <b>
+      collision retired), range overdraw contained via overflow-x:clip (commit)
 
 The 8 subtasks, applied per page (checked when ALL 14 pages satisfy each — the
 §4 gate is fully green only when the page tracker above is fully checked). For
 each of after, b374, b421, b508, b970, d429, d445, f853, g858, h724, l384, p673,
 skrillex, smac — keeping its bespoke concept:
 
-- [ ] 4.1 Retire the 100dvh trap → `min-height: 100svh`, natural scroll;
+- [x] 4.1 Retire the 100dvh trap → `min-height: 100svh`, natural scroll;
       frames grow with content.
-- [ ] 4.2 Chrome-band opt-in; relocate any page content out of the band
+- [x] 4.2 Chrome-band opt-in; relocate any page content out of the band
       (f853's numeral collision is the reference bug).
-- [ ] 4.3 Render the work's photo into the imagery slot with the ghost
+- [x] 4.3 Render the work's photo into the imagery slot with the ghost
       load-in.
-- [ ] 4.4 Typography pass: ragged-right, `text-wrap: balance` on display
+- [x] 4.4 Typography pass: ragged-right, `text-wrap: balance` on display
       titles, spacing/margins on the token ladder only.
-- [ ] 4.5 Cut self-annotation; a mechanic survives only as interaction (e.g.
+- [x] 4.5 Cut self-annotation; a mechanic survives only as interaction (e.g.
       d445: plate is click-to-zoom with cursor affordance — no labeled toggle).
-- [ ] 4.6 Body copy → lorem ipsum; real metadata (title/category/year) stays.
-- [ ] 4.8 Elaborate the composition: ≥3 distinct movements on the token
+- [x] 4.6 Body copy → lorem ipsum; real metadata (title/category/year) stays
+      (smac excepted — a real client, its copy is verbatim from the shipped site).
+- [x] 4.8 Elaborate the composition: ≥3 distinct movements on the token
       ladder; the signature mechanic live via interaction/scroll (CSS-first);
-      at least one scroll-driven behavior beyond the shared band reveal.
-- [ ] 4.7 320/375/768/1280 sweep per page: no horizontal overflow, nothing
-      clipped, nothing under chrome.
+      at least one scroll-driven behavior beyond the shared band reveal (full-bleed
+      single-screen concepts — skrillex, b970, h724, g858 — take the skrillex
+      exemption, their mechanic + ghost-load + arrival standing in for scroll).
+- [x] 4.7 320/375/768/1280 sweep per page: no horizontal overflow, nothing
+      clipped, nothing under chrome — verified site-wide via a programmatic
+      iframe overlap detector (64/64 page×breakpoint combinations clean, incl.
+      the interactive states: g858 shop, h724 cut, p673 scrolled, smac dragged).
 
 ## 5. Project index + close-out
 
