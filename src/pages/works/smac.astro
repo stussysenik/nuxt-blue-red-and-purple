@@ -7,6 +7,12 @@
 // Drag, arrow-key or tab to the seam; with no JS the seam never appears and the
 // page rests on the delivered half, which is the half we are selling.
 //
+// One-page discipline (2026-07-18): the fixed-viewport contrast dropped its
+// height/overflow trap for min-height:100svh, and the whole contrast now opts
+// into --chrome-band so neither half's top content (the delivered ribbon's studio
+// <b>, the as-found rail) sits under the pinned ← Index. The seam already renders
+// the committed photo in both halves, so the imagery slot was never the gap here.
+//
 // Provenance — both halves are rebuilt in-kernel; neither is a screenshot:
 //   • As found is a reconstruction. The client's original is not ours to ship.
 //   • Delivered is our own design, transcribed from its source of truth at
@@ -196,20 +202,28 @@ const delivered = {
        here every cq* unit would silently re-resolve against the viewport. */
     container-type: inline-size;
     position: relative;
-    height: 100dvh;
-    overflow: hidden;
+    min-height: 100svh;
     color: var(--ink);
   }
 
   .contrast {
     position: relative;
-    height: 100%;
+    /* The whole contrast opts into the chrome band: both halves — the delivered
+       ribbon and the as-found rail alike — start below the pinned ← Index instead
+       of under it (the ribbon's studio <b> was the collision the sweep flagged).
+       The strip above shows the page ground, where ← Index rests legibly. */
+    margin-top: var(--chrome-band);
+    min-height: calc(100svh - var(--chrome-band));
+    /* Contains ONLY the seam range's deliberate 1.5rem-per-side thumb overdraw
+       (it is widened by a thumb so its centre welds to the seam at the extremes);
+       no page content is ever clipped, and the vertical axis stays free. The root
+       overflow trap that used to do this is retired. */
+    overflow-x: clip;
   }
 
   .pane {
     position: absolute;
     inset: 0;
-    overflow: hidden;
   }
   /* clip-path never touches layout, so the clipped half stays full-width and
      its cqw rules keep resolving against the whole page — the seam reveals a
