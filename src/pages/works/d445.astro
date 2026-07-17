@@ -1,0 +1,336 @@
+---
+// D445 — bespoke in-kernel reconstruction.
+//
+// The page IS the recreation: a book page, not a screen. A drawn border frames
+// the viewport, a single justified column of running text holds the centre with
+// footnote markers threaded through it, and the notes themselves hang on a short
+// rule at the foot of the frame — the printed page's own apparatus. The one live
+// mechanic is the reading control: image-zoom is OFF by default (the signature
+// state — a page you read, not a gallery you pinch), and a lone toggle lets a
+// curious reader switch zoom ON, at which point the specimen plate becomes a
+// lens. De-branded: the source's plate is a kernel specimen, not the client's
+// artwork, and the only spot of colour marks where that artwork sat.
+//
+// No reference render exists for this work (refs/works/d445.jpg was never
+// captured), so — unlike the measured pages in this set — the geometry here is
+// NOT transcribed from a source at 1600px. It is composed from reading
+// typography's own constants instead: a measure in the 60–72ch band, footnotes a
+// step down on a short rule, a double-ruled frame inset from the edge. Honest
+// first principles, not invented pixels.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   Everything here defers to reading. The page draws its own border so the text
+//   sits inside an object, not a window; the column takes exactly one comfortable
+//   measure and no more; and the footnotes stay where footnotes belong, on a
+//   short rule at the foot, addressed by number rather than by hover. Zoom is
+//   withheld by default because zoom is a way of not reading — the control exists,
+//   but the page opens in the state that trusts the reader.
+//
+//   Study notes —
+//   A reading page is mostly restraint: the measure is the design decision, and
+//   once it is set the margins, the footnote size, and the frame all fall out of
+//   it. The mechanic had to be a toggle, not a hover, because a hover-zoom would
+//   fire every time the eye crossed the plate on its way down the column — the
+//   opposite of reading. So the default is off, the switch is explicit, and the
+//   lens only arms once the reader asks for it.
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const entry = await getEntry('works', 'd445');
+const w = entry!.data;
+---
+
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site">
+    <div class="page">
+      <article class="reader">
+        <header class="reader__head">
+          <p class="reader__folio font-mono">{w.title} · fol. 1</p>
+          <h1 class="reader__title">A Page, Read Rather Than Pinched</h1>
+        </header>
+
+        <div class="reader__col">
+          <p>
+            A page is a room entered through the left margin, and this one draws its own walls so
+            the text sits inside an object rather than floating in a window.<sup
+              ><a id="ref1" href="#fn1">1</a></sup
+            > The measure is the first and only real decision; once the line length is set to a
+            comfortable span, the inner margins, the footnote size, and the frame all fall out of it
+            without further argument.
+          </p>
+
+          <figure class="plate" aria-describedby="plate-cap">
+            <span class="plate__mark font-mono">fig. i</span>
+            <figcaption id="plate-cap" class="plate__cap font-mono">specimen · zoom disabled</figcaption>
+          </figure>
+
+          <p>
+            Zoom is withheld here on purpose, because zoom is a way of not reading — a hover that
+            magnifies the plate would fire every time the eye crossed it on the way down the
+            column.<sup><a id="ref2" href="#fn2">2</a></sup> The control still exists, bottom-right, but
+            the page opens in the state that trusts the reader, and the lens only arms once the reader
+            explicitly asks for it. Until then the specimen is simply an illustration, sized to the
+            measure and left alone.
+          </p>
+        </div>
+
+        <footer class="reader__notes">
+          <ol class="reader__fn">
+            <li id="fn1">
+              The border is double-ruled — an outer line with an inset companion — the oldest way to
+              say “this is a page, and it ends here.” <a href="#ref1" aria-label="Back to reference 1">↩</a>
+            </li>
+            <li id="fn2">
+              Reading mode = zoom off. Toggle it on and the plate becomes a lens; click the plate to
+              magnify, click again to release. <a href="#ref2" aria-label="Back to reference 2">↩</a>
+            </li>
+          </ol>
+        </footer>
+
+        <button class="reader__toggle font-mono" type="button" aria-pressed="false">
+          Zoom · Off
+        </button>
+      </article>
+    </div>
+  </main>
+</Base>
+
+<script>
+  // The one live mechanic: reading mode defaults to zoom OFF. The toggle flips a
+  // data-zoom flag on the reader; only while it is set does the plate arm as a
+  // lens, and only a click (never a hover) magnifies it — a hover would fire on
+  // every pass of the eye, which is the behaviour the default exists to prevent.
+  const reader = document.querySelector<HTMLElement>('.reader');
+  const toggle = reader?.querySelector<HTMLButtonElement>('.reader__toggle');
+  const plate = reader?.querySelector<HTMLElement>('.plate');
+
+  toggle?.addEventListener('click', () => {
+    const on = reader!.toggleAttribute('data-zoom');
+    toggle.textContent = on ? 'Zoom · On' : 'Zoom · Off';
+    toggle.setAttribute('aria-pressed', String(on));
+    if (!on) plate?.removeAttribute('data-lens'); // leaving reading mode releases the lens
+  });
+
+  plate?.addEventListener('click', () => {
+    if (reader?.hasAttribute('data-zoom')) plate.toggleAttribute('data-lens');
+  });
+</script>
+
+<style>
+  /* The rebuilt room, now the whole page. One viewport tall, the frame inset from
+     every edge, and the column cropped at the fold if it runs long — the page is
+     an object with a bottom, not an endless scroll.
+
+     The page is its own query container: cq* units below resolve against the
+     viewport width, since no stage wraps a work page any more. */
+  .site {
+    container-type: inline-size;
+    display: grid;
+    place-items: stretch;
+    min-height: 100dvh;
+    max-height: 100dvh;
+    padding: clamp(1rem, 3.2cqw, 3.5rem);
+    background-color: var(--paper);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* The drawn page border: an outer rule plus an inset companion rule (::after),
+     the printed page's oldest frame. Not a box around content — the object the
+     text lives inside. */
+  .page {
+    position: relative;
+    border: 1px solid var(--line, var(--ink-2));
+    padding: clamp(1.4rem, 3cqw, 3.2rem);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+  .page::after {
+    content: '';
+    position: absolute;
+    inset: clamp(6px, 0.8cqw, 12px);
+    border: 1px solid var(--line, var(--ink-2));
+    pointer-events: none;
+  }
+
+  .reader {
+    display: contents;
+  }
+
+  /* Masthead: a mono folio line above a single display title, both hung on the
+     column's own left edge (the measure is centred by margin below). */
+  .reader__head {
+    width: min(64ch, 100%);
+    margin-inline: auto;
+  }
+  .reader__folio {
+    margin: 0;
+    font-size: var(--type-label);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-1, var(--ink));
+  }
+  .reader__title {
+    margin: 0.5cqw 0 0;
+    font-family: var(--font-display);
+    font-weight: var(--wght-display, 700);
+    font-size: clamp(1.6rem, 4cqw, 3.4rem);
+    line-height: 1.04;
+    letter-spacing: var(--tracking-display, -0.02em);
+  }
+
+  /* The single measure: the whole design decision. ~62ch, centred, justified the
+     way set type is, hyphenation on so the ragged edge does not fight the frame. */
+  .reader__col {
+    width: min(62ch, 100%);
+    margin: clamp(1.2rem, 3.4cqw, 3rem) auto 0;
+    align-self: start;
+    font-size: clamp(1rem, 1.35cqw, 1.4rem);
+    line-height: 1.55;
+    text-align: justify;
+    text-wrap: pretty;
+    hyphens: auto;
+  }
+  .reader__col p {
+    margin: 0;
+    text-indent: 1.6em;
+  }
+  .reader__col p:first-child {
+    text-indent: 0; /* opening paragraph sets flush, as set text does */
+  }
+  .reader__col sup a {
+    color: var(--ink);
+    text-decoration: none;
+    font-feature-settings: 'sups';
+  }
+  .reader__col sup a:hover,
+  .reader__col sup a:focus-visible {
+    color: var(--spot, var(--ink));
+  }
+
+  /* The specimen. Inert while reading (default cursor, no scale). When zoom is
+     armed it becomes a lens: cursor invites the click, and a lensed click scales
+     it in place above the text. The spot ink marks where the artwork sat. */
+  .plate {
+    position: relative;
+    width: min(22ch, 70%);
+    aspect-ratio: 3 / 2;
+    margin: clamp(1rem, 2.4cqw, 2rem) auto;
+    display: grid;
+    place-items: center;
+    gap: 0.4em;
+    background-color: var(--paper-1, var(--paper));
+    border: 1px solid var(--line, var(--ink-2));
+    transition: scale var(--dur, 0.3s) var(--ease, ease);
+    transform-origin: center;
+    z-index: 0;
+  }
+  .plate__mark {
+    font-size: clamp(0.8rem, 1.6cqw, 1.4rem);
+    letter-spacing: 0.08em;
+    color: var(--spot, var(--ink));
+  }
+  .plate__cap {
+    font-size: var(--type-label);
+    letter-spacing: 0.06em;
+    color: var(--ink-1, var(--ink));
+  }
+  .reader[data-zoom] .plate {
+    cursor: zoom-in;
+  }
+  .reader[data-zoom] .plate[data-lens] {
+    scale: 1.8;
+    cursor: zoom-out;
+    z-index: 3;
+    box-shadow: var(--shadow, 0 1cqw 3cqw rgb(0 0 0 / 0.18));
+  }
+
+  /* Footnotes: a step down, hung on a short rule at the foot of the frame — where
+     footnotes belong. The rule is short and left-set, the printed convention. */
+  .reader__notes {
+    width: min(62ch, 100%);
+    margin-inline: auto;
+    padding-top: clamp(0.8rem, 1.6cqw, 1.4rem);
+  }
+  .reader__notes::before {
+    content: '';
+    display: block;
+    width: 8ch;
+    border-top: 1px solid var(--line, var(--ink-2));
+    margin-bottom: clamp(0.5rem, 1cqw, 0.9rem);
+  }
+  .reader__fn {
+    margin: 0;
+    padding-left: 1.6em;
+    font-size: clamp(0.78rem, 1cqw, 1rem);
+    line-height: 1.35;
+    color: var(--ink-1, var(--ink));
+  }
+  .reader__fn li + li {
+    margin-top: 0.4em;
+  }
+  .reader__fn a {
+    color: var(--ink-1, var(--ink));
+    text-decoration: none;
+  }
+  .reader__fn a:hover,
+  .reader__fn a:focus-visible {
+    color: var(--spot, var(--ink));
+  }
+
+  /* The reading control: the page's only interactive chrome, tucked bottom-right
+     inside the frame, clear of the ← INDEX mark. Reads as a marginal switch, not
+     a button-button. */
+  .reader__toggle {
+    position: absolute;
+    right: clamp(1.4rem, 3cqw, 3.2rem);
+    bottom: clamp(1.4rem, 3cqw, 3.2rem);
+    padding: 0.4em 0.7em;
+    font-size: var(--type-label);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: none;
+    border: 1px solid var(--line, var(--ink-2));
+    cursor: pointer;
+    transition: color var(--dur, 0.3s) var(--ease, ease);
+    z-index: 4;
+  }
+  .reader__toggle:hover,
+  .reader__toggle:focus-visible {
+    color: var(--spot, var(--ink));
+    outline: none;
+  }
+  .reader[data-zoom] .reader__toggle {
+    color: var(--spot, var(--ink));
+  }
+
+  /* Motion is a nicety, not the mechanic — reduced-motion keeps the lens instant. */
+  @media (prefers-reduced-motion: reduce) {
+    .plate,
+    .reader__toggle {
+      transition: none;
+    }
+  }
+
+  /* Phone: the source page adapting, not a second design. A reading column is
+     already single-measure, so it just narrows to the device; the frame's inset
+     tightens and the type rides its rem floors. */
+  @container (max-width: 40rem) {
+    .reader__col,
+    .reader__head,
+    .reader__notes {
+      width: 100%;
+    }
+    .reader__col {
+      text-align: left;
+      hyphens: manual;
+    }
+    .plate {
+      width: min(24ch, 80%);
+    }
+  }
+</style>
