@@ -1,25 +1,73 @@
 ---
 // D429 — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: a single
-// document sheet centred on the page, cropped at the fold, ruled by one axis —
-// the running-text column's left edge. Masthead and body text hang off that
-// axis; a step-smaller note column hangs left of it in the margin, each entry
-// on a hanging indent, with the artwork parked at the foot of the margin. The
-// mechanic here IS the grid (no interaction in the source), so the stage is
-// static — proportions carry the study. De-branded: the source masthead
-// becomes the work title, its line-drawing doodle becomes a kernel specimen
-// plate, and the sheet's ground drops to paper tones (the entry carries no
-// palette, so the colour law holds — only --spot marks where artwork sat).
+// The page IS the recreation: a document sheet centred on the ground, running
+// off the bottom edge, ruled by one axis — the running-text column's left edge.
+// Masthead and body hang off that axis; a step-smaller note column hangs left
+// of it in the margin, each entry on a hanging indent, with the artwork parked
+// at the foot of the margin. The mechanic here IS the grid — the source has no
+// interaction, so the page is static and the crop at the fold is the point, not
+// an accident of viewport height. De-branded: the source masthead becomes the
+// work title, its line-drawing doodle becomes a kernel specimen plate, and the
+// sheet's yellow ground drops to paper tones (the entry carries no palette, so
+// there is nothing to graft and the colour law holds — only --spot marks where
+// the artwork sat).
+//
+// Reference (internal, never shipped): refs/works/d429.jpg, 1600×1000, ground
+// L=255. Measured with scripts/ref-geometry.py + per-glyph probes, then
+// converted x/1600*100 → cqw. Type is sized by CAP HEIGHT, not by eye: Archivo's
+// cap is 0.686em (checked in the woff2, not assumed), so font-size = capH/0.686.
+//
+//   sheet        x315→1283 (969), centred, top y43   → 60.56cqw col, 2.69cqw top
+//   sheet pad    left 43, right 43 (1240→1283)       → padding-inline 2.69cqw
+//   note column  x358→626 (268 of the 883 content)   → 268fr
+//   gutter       268→658, a 32px wall                → column-gap 3.62%
+//   body column  x658→1240 (582) — THE axis          → 583fr
+//   masthead     capH 36 (y95→130)                   → 3.28cqw  (36/.686 = 52.5px)
+//   sub          capH 19 (y158→176), 10px under it   → 1.73cqw, margin-top .64cqw
+//   deep band    sub baseline 176 → body cap top 346 → margin-bottom 9.77cqw
+//   body         capH 14, line pitch 25px            → 1.275cqw / line-height 1.225
+//   notes        capH 11, line pitch 19.2px          → 1cqw / line-height 1.2
+//   note hang    line 1 x358, line 2 x388 (30px)     → 1.9em hanging indent
+//   para indent  column 658 → 'Lorem' at 701 (34px)  → text-indent 1.65em
+//   lead break   only ONE blank line (y471→522), the → .body__lead margin 1lh;
+//                rest of the paragraphs indent only     no gap between the rest
+//   figure       ink x366→613, y678→945; notes end   → margin-top 3.08cqw,
+//                628, so a 268-square at the foot       aspect-ratio 1
+//
+// The reference's serif is not ours (the kernel ships two families, neither a
+// serif), so the body is Archivo matched on cap height + line pitch — the two
+// measurable things — and the glyph-width delta is accepted, per the method.
+// The sheet's yellow is likewise the client's, not ours to keep.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   The page is a sheet, not a screen: one document block centred against the
+//   ground and cropped mid-sentence at the fold. Everything obeys a single axis —
+//   the masthead and the running serif text share one left edge, while the
+//   marginal notes hang to its left, set smaller, each entry indenting its own
+//   continuation lines. A deep band of nothing between masthead and text does the
+//   pacing; the drawing sits in the margin like a footnote.
+//
+//   Study notes —
+//   The spacing works because the hierarchy is spatial before it is typographic:
+//   primary text owns the axis, secondary text hangs off it, and rank is legible
+//   from position alone before a single size difference registers. The oversized
+//   band under the masthead is the one extravagance, and it is load-bearing — it
+//   separates the document's name from the document's body the way a title page
+//   separates itself from chapter one. Rebuilding it meant transcribing three
+//   measures — note column, gutter, text column — and letting every other
+//   decision fall out of them.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'd429');
 const w = entry!.data;
 
 // The margin column — a second, subordinate voice. Italic entries echo the
-// source's asides; the grid never moves for them.
+// source's asides; the grid never moves for them. Four entries, one italic:
+// the reference's own count.
 const notes = [
   { text: 'The note column sets a step smaller and hangs every entry from its first line.' },
   { text: 'Asides and citations drop to italic; the measure and the gutter hold.', em: true },
@@ -28,180 +76,196 @@ const notes = [
 ];
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — static, two-column document grid">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          The page is a sheet, not a screen: one document block centred against the ground and
-          cropped mid-sentence at the fold. Everything obeys a single axis — the masthead and the
-          running serif text share one left edge, while the marginal notes hang to its left, set
-          smaller, each entry indenting its own continuation lines. A deep band of nothing between
-          masthead and text does the pacing; the drawing sits in the margin like a footnote.
-        </p>
-      </section>
-    </Fragment>
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site">
+    <div class="sheet">
+      <div class="sheet__grid">
+        <header class="masthead">
+          <p class="masthead__title ttu">{w.title} Study Doc</p>
+          <p class="masthead__sub ttu">Margin note · Running text</p>
+        </header>
 
-    <div class="site">
-      <div class="sheet">
-        <div class="sheet__grid">
-          <header class="masthead">
-            <p class="masthead__title ttu">{w.title} Study Doc</p>
-            <p class="masthead__sub ttu">Margin note · Running text</p>
-          </header>
+        <aside class="margin">
+          <ul class="margin__notes">
+            {notes.map((n) => <li class:list={{ em: n.em }}>{n.text}</li>)}
+          </ul>
+          <figure class="margin__plate">
+            <span class="font-mono">fig. 01</span>
+          </figure>
+        </aside>
 
-          <aside class="margin">
-            <ul class="margin__notes">
-              {notes.map((n) => <li class:list={{ em: n.em }}>{n.text}</li>)}
-            </ul>
-            <figure class="margin__plate">
-              <span class="font-mono">fig. 01</span>
-            </figure>
-          </aside>
-
-          <div class="body">
-            <p>
-              <em>One axis rules the sheet,</em> and it belongs to this column. The masthead
-              hangs from it, the text hangs from it, and nothing else on the page is allowed an
-              opinion about where the left edge sits. What looks like a wide inner margin is the
-              cost of that rule — and the page pays it without flinching.
-            </p>
-            <p>
-              The notes opposite are the second voice. They comment, cite, and digress at a
-              smaller size, <em>never interrupting the measure of this column,</em> because the
-              gutter between the two is a wall, not a suggestion. Each note announces itself with
-              a flush first line and tucks the rest behind it.
-            </p>
-            <p>
-              Below the fold the text simply keeps going. The sheet is cropped, not concluded —
-              the document grid promises continuity, and the crop is proof that the system runs
-              deeper than the viewport. A reader scrolls a document here, not a website, and the
-              grid never once breaks character to remind them otherwise.
-            </p>
-          </div>
+        <div class="body">
+          <p class="body__lead">
+            <em>One axis rules the sheet,</em> and it belongs to this column. The masthead hangs
+            from it, the text hangs from it, and nothing else on the page is allowed an opinion
+            about where the left edge sits. What looks like a wide inner margin is the cost of that
+            rule — and the page pays it without flinching.
+          </p>
+          <p>
+            The notes opposite are the second voice. They comment, cite, and digress at a smaller
+            size, <em>never interrupting the measure of this column,</em> because the gutter between
+            the two is a wall, not a suggestion. Each note announces itself with a flush first line
+            and tucks the rest behind it.
+          </p>
+          <p>
+            Below the fold the text simply keeps going. The sheet is cropped, not concluded — the
+            document grid promises continuity, and the crop is proof that the system runs deeper
+            than the viewport. A reader scrolls a document here, not a website, and the grid never
+            once breaks character to remind them otherwise.
+          </p>
+          <p>
+            <em>Nothing announces the edge,</em> which is why it convinces. The masthead does not
+            sit on a rule, the columns are not boxed, and the note column is separated from the text
+            by air alone. Rank arrives as position before it arrives as size, so the page can afford
+            to set its second voice only a step down and still be read in the right order — and the
+            sentence that runs past the bottom of the screen is
+          </p>
         </div>
       </div>
     </div>
-
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          The spacing works because the hierarchy is spatial before it is typographic: primary
-          text owns the axis, secondary text hangs off it, and rank is legible from position
-          alone before a single size difference registers. The oversized band under the masthead
-          is the one extravagance, and it is load-bearing — it separates the document's name from
-          the document's body the way a title page separates itself from chapter one. Rebuilding
-          it meant transcribing three measures — note column, gutter, text column — and letting
-          every other decision fall out of them.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+  </main>
 </Base>
 
 <style>
-  /* The rebuilt room. Proportions transcribed from the reference: sheet at
-     60% of the canvas, offset from the top, running off the bottom edge —
-     the crop is part of the layout. Type sizes in cqw so the transcription
-     holds at any stage width. */
+  /* The rebuilt room, now the whole page. The sheet is centred, starts 43px off
+     the top edge, and runs off the bottom — the crop IS the layout, so the page
+     is exactly one viewport and clips. Static by design: the source has no
+     mechanic, the grid is the mechanic.
+
+     The page is its own query container. This page already declared one on
+     .site, and every cqw below sits on a DESCENDANT of it, so the transcription
+     survived the promotion intact — but it now resolves against the viewport
+     (1600) rather than the old ~1000px stage, which is the whole point. */
   .site {
     container-type: inline-size;
-    aspect-ratio: 16 / 10;
+    display: grid;
+    grid-template-columns: 60.56cqw;
+    justify-content: center;
+    padding-top: 2.69cqw;
+    min-height: 100dvh;
+    max-height: 100dvh;
     background-color: var(--paper);
     color: var(--ink);
     overflow: hidden;
   }
 
+  /* Sheet ink starts 43px in on both sides; the bottom border is omitted
+     because the reference has no bottom — it is cropped. */
   .sheet {
-    width: 60.3%;
-    min-height: 100%;
-    margin: 0 auto;
-    translate: 0 2.7cqw; /* 4.3% of the canvas height, width-relative */
+    padding: 2.69cqw 2.69cqw 0;
     background-color: var(--paper-1, var(--paper));
     border: 1px solid var(--line, var(--ink-2));
     border-bottom: none;
-    padding: 5.3cqw 2.2cqw 0 2.5cqw;
   }
 
-  /* One grid carries the whole sheet: notes 27 / gutter 5.4 / text 60 (of the
-     sheet width). The masthead spans only the text column — the axis rule. */
+  /* One grid carries the whole sheet: notes 268 / gutter 32 / text 583 of the
+     883px content box. The masthead spans only the text column — that is the
+     axis rule, stated as geometry rather than as alignment. */
   .sheet__grid {
     display: grid;
-    grid-template-columns: 27fr 60fr;
-    column-gap: 5.4%;
+    grid-template-columns: 268fr 583fr;
+    grid-template-areas:
+      '.      masthead'
+      'margin body';
+    column-gap: 3.62%;
     align-items: start;
   }
 
   .masthead {
-    grid-column: 2;
-    margin-bottom: 10cqw; /* the deep band between name and body */
+    grid-area: masthead;
+    margin-bottom: 9.77cqw; /* the deep band between name and body: 156px */
   }
   .masthead__title {
     margin: 0;
     font-family: var(--font-display);
     font-weight: var(--wght-display, 700);
-    font-size: 3cqw;
+    font-size: clamp(1.6rem, 3.28cqw, 4.1rem);
     line-height: 1.05;
     letter-spacing: var(--tracking-display, -0.02em);
   }
   .masthead__sub {
-    margin: 0.9em 0 0;
-    font-size: 1.5cqw;
+    margin: 0.64cqw 0 0;
+    font-size: clamp(0.85rem, 1.73cqw, 2.16rem);
     font-weight: 400;
+    line-height: 1.2;
     letter-spacing: 0.02em;
     color: var(--ink-1, var(--ink));
   }
 
   .margin {
-    grid-column: 1;
+    grid-area: margin;
   }
   .margin__notes {
     list-style: none;
     margin: 0;
     padding: 0;
-    font-size: 0.95cqw;
-    line-height: 1.45;
+    font-size: clamp(0.75rem, 1cqw, 1.25rem);
+    line-height: 1.2;
     color: var(--ink-1, var(--ink));
   }
-  /* Hanging indent: first line flush, continuation lines tucked behind it. */
+  /* Hanging indent: first line flush on the note axis, continuation lines tucked
+     30px behind it. Entries run on one continuous pitch — the reference puts no
+     air between them, so the margin reads as a single ledger. */
   .margin__notes li {
-    padding-left: 2.1em;
-    text-indent: -2.1em;
+    padding-left: 1.9em;
+    text-indent: -1.9em;
   }
   .margin__notes li.em {
     font-style: italic;
   }
 
-  /* Where the source parks its line drawing: a de-branded specimen plate at
-     the foot of the margin. The spot ink marks "artwork carries colour". */
+  /* Where the source parks its line drawing: a de-branded specimen plate at the
+     foot of the margin, spanning the column and standing as tall as it is wide
+     (the reference's drawing is 268px in a 268px column). The spot ink marks
+     "artwork carries colour". */
   .margin__plate {
-    margin: 3.8cqw 0 0;
-    aspect-ratio: 5 / 6;
+    margin: 3.08cqw 0 0;
+    aspect-ratio: 1;
     display: grid;
     place-items: center;
     background-color: var(--paper);
     border: 1px solid var(--line, var(--ink-2));
   }
   .margin__plate span {
-    font-size: 1.1cqw;
+    font-size: clamp(0.6rem, 0.9cqw, 1.1rem);
     letter-spacing: 0.08em;
     color: var(--spot, var(--ink));
   }
 
   .body {
-    grid-column: 2;
-    font-size: 1.2cqw;
-    line-height: 1.5;
+    grid-area: body;
+    font-size: clamp(0.95rem, 1.275cqw, 1.6rem);
+    line-height: 1.225; /* 25px pitch at the reference's 20.4px body */
   }
   .body p {
     margin: 0;
   }
-  /* Source rhythm: italic lead-ins, indented follow-on paragraphs, and a
-     half-line of air only where a new thought starts. */
-  .body p + p {
-    margin-top: 0.55em;
-    text-indent: 1.8em;
+  /* Source rhythm: an italic lead-in opens the block, exactly one blank line
+     separates it from the running text, and every paragraph after that is
+     indented with no air at all. The gap is one line, so state it as one line. */
+  .body__lead {
+    margin-bottom: 1lh;
+  }
+  .body__lead ~ p {
+    text-indent: 1.65em;
+  }
+
+  /* Phone: the source sheet adapting, not a second design. The two columns are
+     the work — collapsing them would break the axis the whole page is about — so
+     the sheet widens instead and the note column takes the smallest share that
+     still holds a measure. Type is already on rem floors above. */
+  @container (max-width: 48rem) {
+    .site {
+      grid-template-columns: 94cqw;
+    }
+    .sheet__grid {
+      grid-template-columns: 34fr 66fr;
+    }
+    .masthead {
+      margin-bottom: 3.2rem;
+    }
+    .margin__plate {
+      margin-top: 2rem;
+    }
   }
 </style>

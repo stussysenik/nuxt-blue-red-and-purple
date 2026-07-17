@@ -80,11 +80,44 @@ frontmatter → kernel tokens only → `pnpm test && pnpm check` to zero.
       existing proportions with caps re-tuned by holding each rule's effective
       rendered ratio at the old 1000px stage. This is the one page whose numbers
       the 6.1 visual pass must actually settle rather than confirm.
-- [ ] 4.6 `b508.astro` — music. 3 rows.
-- [ ] 4.7 `b374.astro` — books. **Tool degenerates** (ground L=187, full-bleed) —
+- [x] 4.6 `b508.astro` — music. 3 rows.
+      Done. The reported 3rd row is a merged cluster — an 8-blank-row split
+      cannot cut a 195px baseline pitch. Sub-divided via the ink profile, which
+      independently confirmed both blocks share one size and one leading (the
+      fact the page hangs on). Font cap was 40% short, weight 47% too heavy in
+      stem. Full-bleed incidentally fixes a latent drag bug: `dx = clientX -
+      offsetLeft` assumed the room's left edge sat at clientX 0 — false in the
+      inset stage, true now.
+- [x] 4.7 `b374.astro` — books. **Tool degenerates** (ground L=187, full-bleed) —
       read the jpg by eye.
-- [ ] 4.8 `d429.astro` — books. 3 rows; already declares its own container.
-- [ ] 4.9 `p673.astro` — books. 4 rows.
+      Done by eye; the tool found the photo, not the layout (its detected
+      "ground" L=187 IS the verso photograph). Decisive find: the crease falloff
+      is identical to two decimals on every row sampled, proving it is a
+      synthetic gradient in the source, not photographed paper — and `.crease`
+      was 256px against a measured 32px, ~8× out. **Could not** establish the
+      verso-side falloff (the photo brightens near the gutter, returning
+      negative alphas); mirrored the recto per the source's evident symmetry.
+      b374 is the one exception to the top-right chrome rationale — its source
+      nav is top-right and collides, so `← INDEX` moved to the bottom-right
+      page-locally.
+- [x] 4.8 `d429.astro` — books. 3 rows; already declares its own container.
+      Done. The container claim verified TRUE and for the right reason: every
+      `cqw` sat on a descendant, never on `.site` itself. Consequence is the
+      inverse of the usual — no `rem` caps existed to be too small, but no
+      legibility floor either (body copy would be 4.8px on a 375px phone), so
+      floors were added rather than caps re-tuned. **Open call: the reference
+      sheet is `#FCDA43` bright yellow and is kept de-branded to `--paper-1`** —
+      the client's colour with no palette entry to legitimise it. This is the
+      set's single biggest deliberate visual delta.
+- [x] 4.9 `p673.astro` — books. 4 rows.
+      Done. Tool read the y70 hairline as ink: there are THREE rules
+      (y32/y70/y250), not two — the nav is a bordered band, and missing that
+      mis-sets the whole vertical stack. Its `capH` is a band height
+      (cap-top→descender), not cap height; isolating a descenderless word gave
+      the true 17px. Headline was set at two-thirds scale (7.5rem cap vs a
+      wanted 166px). `container-type: inline-size` applies style + inline-size
+      containment only — no scroll container — so the sticky nav survives; never
+      set `overflow` on `.site` or it becomes the nav's scroll container.
 - [ ] 4.10 `b970.astro` — vintage. **Tool degenerates** (ground L=127) — by eye.
 - [ ] 4.11 `f853.astro` — vintage. 6 rows; live real-time clock must stay live.
 - [ ] 4.12 `g858.astro` — vintage. Dark ground (L=81), 3 rows.

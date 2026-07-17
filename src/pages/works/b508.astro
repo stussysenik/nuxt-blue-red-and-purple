@@ -1,23 +1,62 @@
 ---
 // B508 — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: a page
-// that is nothing but display type in a single typeface — one two-line block
-// pinned to the top-left corner, a second two-line block pinned to the
-// bottom-right, and a wide empty diagonal band running between them. No nav,
-// no chrome, no images. The mechanic is live, not pictured — the source
-// scatters draggable shop icons beneath the 15rem display; here five kernel
-// specimen chips (paper/ink panels, mono product tags) can be grabbed and
-// dragged anywhere in the room, always sliding UNDER the type layer.
-// De-branded: the source's press name and artist become the work title and
-// structural echoes with the same line lengths. All spacing/type composes
-// from kernel custom properties.
+// The page IS the recreation: a room that is nothing but display type in a
+// single typeface, edge-to-edge. One two-line block pinned to the top-left
+// corner, a second two-line block right-set into the bottom-right, and a wide
+// empty diagonal band running between them. No nav, no chrome, no images. The
+// mechanic is live, not pictured — the source scatters draggable shop icons
+// beneath the display; here five kernel specimen chips (paper/ink panels, mono
+// product tags) can be grabbed and dragged anywhere in the room, always sliding
+// UNDER the type layer. De-branded: the source's press name and artist become
+// the work title and structural echoes with the same line lengths (10/5 and
+// 5/5 characters). All spacing/type composes from kernel custom properties.
+//
+// Reference (internal, never shipped): refs/works/b508.jpg, 1600×1000, L=255.
+// Measured with scripts/ref-geometry.py, then converted x/1600*100 → cqw. The
+// tool merges the bottom cluster into one 391px "row" (its 8-blank-row split is
+// too coarse for a 195px baseline pitch); the ink profile sub-divides it into
+// two lines, and the two blocks turn out to share one size and one leading:
+//
+//   cap height    'L' of Lacan y233→388 = 155px    → 155/.686 = 226px = 14.1cqw
+//   stem width    'l' of Blot x177→192 = 16px      → font-weight 300 (16.3px)
+//   baseline pitch 193→388 and 746→941 = 195px     → line-height .863
+//   TL ink left   x49, 'B' lsb 20.6px              → left 1.78cqw (box x28.4)
+//   TL line 1     cap top y39, baseline y193       → top 1.25cqw (box y20)
+//   BR ink right  x1569 ('s' rsb + tracking ≈ 8)   → right 1.5cqw
+//   BR last line  baseline y941, 'p' tail to y983  → bottom 2.3cqw (box y963)
+//
+// Both lines of the bottom block end flush within 6px (x1569 / x1563 — 's' vs
+// 'm' side bearings), so the block is right-set, not merely pinned. Line widths
+// are NOT matched: "B508 Sound" is legitimately wider than "Blot Press" in our
+// typeface (1201px vs 850px of ink). Match the height, accept the width — but
+// the wider line eats the source's top-right void, so the last specimen moves
+// x63%→80% to stay on the empty diagonal at rest. The rule the source states is
+// "the type corners stay clear until you drag"; our room states it at x80%.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   The page is set entirely in one typeface at one enormous size: two lines of
+//   display in the top-left corner, two more in the bottom-right, and nothing
+//   else. The corners hold the composition like pins, so the emptiness between
+//   them reads as a deliberate diagonal — a shelf the shop icons get scattered
+//   across and dragged around, always beneath the type. The words are the
+//   architecture and the merchandise is the clutter.
+//
+//   Study notes —
+//   Two corner anchors are enough structure for a whole page: because both type
+//   blocks share one size, one weight, and one tight leading, the eye draws the
+//   diagonal between them without a single rule or grid line. That is also what
+//   licenses the mess — the draggable icons can land anywhere and the page never
+//   breaks, since the type layer sits above them and the corners never move.
+//   Rigid frame, loose contents.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'b508');
 const w = entry!.data;
+const accent = w.palette?.[0];
 // Shop specimens scattered through the empty diagonal band (transcribed from
 // where the source leaves room — the type corners stay clear at rest).
 const ICONS = [
@@ -25,53 +64,25 @@ const ICONS = [
   { tag: 'EP', x: '20%', y: '72%' },
   { tag: 'CD', x: '37%', y: '58%' },
   { tag: 'TEE', x: '48%', y: '36%' },
-  { tag: 'CAP', x: '63%', y: '14%' },
+  { tag: 'CAP', x: '80%', y: '14%' },
 ];
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — live, draggable shop specimens">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          The page is set entirely in one typeface at one enormous size: two lines of display in
-          the top-left corner, two more in the bottom-right, and nothing else. The corners hold
-          the composition like pins, so the emptiness between them reads as a deliberate diagonal
-          — a shelf the shop icons get scattered across and dragged around, always beneath the
-          type. The words are the architecture and the merchandise is the clutter.
-        </p>
-      </section>
-    </Fragment>
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site" style={accent ? `--work-accent:${accent}` : undefined}>
+    <p class="display display--tl">{w.title} Sound<br />Music</p>
 
-    <div class="site">
-      <p class="display display--tl">{w.title} Sound<br />Music</p>
+    {
+      ICONS.map((icon, i) => (
+        <div class={i === 3 ? 'icon icon--spot' : 'icon'} style={`left:${icon.x};top:${icon.y}`} aria-hidden="true">
+          <span class="icon__tag font-mono ttu tracked">{icon.tag}</span>
+          <span class="icon__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+        </div>
+      ))
+    }
 
-      {
-        ICONS.map((icon, i) => (
-          <div class={i === 3 ? 'icon icon--spot' : 'icon'} style={`left:${icon.x};top:${icon.y}`} aria-hidden="true">
-            <span class="icon__tag font-mono ttu tracked">{icon.tag}</span>
-            <span class="icon__num font-mono">{String(i + 1).padStart(2, '0')}</span>
-          </div>
-        ))
-      }
-
-      <p class="display display--br">Songs<br />Store</p>
-    </div>
-
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          Two corner anchors are enough structure for a whole page: because both type blocks share
-          one size, one weight, and one tight leading, the eye draws the diagonal between them
-          without a single rule or grid line. That is also what licenses the mess — the draggable
-          icons can land anywhere and the page never breaks, since the type layer sits above them
-          and the corners never move. Rigid frame, loose contents.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+    <p class="display display--br">Songs<br />Store</p>
+  </main>
 </Base>
 
 <script>
@@ -100,43 +111,52 @@ const ICONS = [
 </script>
 
 <style>
-  /* The rebuilt room. Proportions transcribed from the reference: display
-     blocks pinned to opposite corners, the diagonal band left empty for the
-     icon scatter. */
+  /* The rebuilt room, now the whole page: display blocks pinned to opposite
+     corners, the diagonal band left empty for the icon scatter. The page is its
+     own query container — the stage used to provide one, so every cq* unit
+     below would silently resolve against the viewport without this. */
   .site {
+    container-type: inline-size;
     position: relative;
-    aspect-ratio: 16 / 10;
+    min-height: 100dvh;
     background-color: var(--paper);
     color: var(--ink);
     overflow: hidden;
   }
 
-  /* One typeface, one size, one leading — the entire identity. The layer is
-     inert so drags pass straight through the letterforms. */
+  /* One typeface, one size, one weight, one leading — the entire identity. The
+     layer is inert so drags pass straight through the letterforms. Sized from
+     the reference's cap height (155px → 226px at 1600 → 14.1cqw), not from the
+     stage-era 8.5rem cap, which was 40% short of the reference on a 1600px
+     page. Weight is measured too: the reference's 16px stem is Archivo 300. */
   .display {
     position: absolute;
     margin: 0;
     font-family: var(--font-display);
-    font-weight: 500;
-    font-size: clamp(2.4rem, 13cqw, 8.5rem);
-    line-height: 0.98;
+    font-weight: 300;
+    font-size: clamp(2.4rem, 14.1cqw, 15rem);
+    line-height: 0.863;
     letter-spacing: var(--tracking-display, -0.02em);
     z-index: 2;
     pointer-events: none;
     user-select: none;
   }
+  /* Ink lands on x49 / cap top y39 once 'B''s 20.6px side bearing and the
+     line box's negative half-leading are accounted for. */
   .display--tl {
-    inset: 2% auto auto 3%;
+    inset: 1.25cqw auto auto 1.78cqw;
   }
+  /* Right-set, not merely pinned: both lines end flush on x≈1569. */
   .display--br {
-    inset: auto 3% 2.5% auto;
+    inset: auto 1.5cqw 2.3cqw auto;
+    text-align: right;
   }
 
   /* Shop specimens: paper/ink chips with mono product tags, standing in for
      the source's merchandise thumbnails. They live BELOW the type. */
   .icon {
     position: absolute;
-    width: 9.5%;
+    width: 9.5cqw;
     aspect-ratio: 1;
     display: grid;
     place-content: center;
@@ -153,17 +173,35 @@ const ICONS = [
   .icon:active {
     cursor: grabbing;
   }
+  /* Caps re-tuned for the 152px chip a 1600px page gives, not the ~95px one the
+     stage gave — the old .65rem/1.6rem caps clipped both labels at full width. */
   .icon__tag {
-    font-size: clamp(0.45rem, 1.1cqw, 0.65rem);
+    font-size: clamp(0.45rem, 1.1cqw, 1.2rem);
     color: var(--ink-2);
   }
   .icon__num {
-    font-size: clamp(0.9rem, 2.6cqw, 1.6rem);
+    font-size: clamp(0.9rem, 2.6cqw, 2.8rem);
     color: var(--ink-3, var(--ink-2));
     letter-spacing: 0.04em;
   }
   /* One specimen carries the spot colour — "artwork carries colour". */
   .icon--spot .icon__num {
-    color: var(--spot, var(--ink));
+    color: var(--work-accent, var(--spot, var(--ink)));
+  }
+
+  /* Phone: the source room adapting, not a second design. The composition is
+     scale-invariant (every offset is cqw), so the only thing that changes is
+     how much of the narrower room each object claims — the display takes more
+     of it, and the chips stay big enough to grab. */
+  @container (max-width: 40rem) {
+    .display {
+      font-size: clamp(2.4rem, 16cqw, 8rem);
+    }
+    .icon {
+      width: 18cqw;
+    }
+    .icon__num {
+      font-size: 4.4cqw;
+    }
   }
 </style>

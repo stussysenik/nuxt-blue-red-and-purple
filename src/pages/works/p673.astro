@@ -1,169 +1,202 @@
 ---
 // P673 — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: one
-// centred column (~62% of the page, equal margins), opened by a hairline
-// rule, a three-part nav row (wordmark left, Information centre, contact
-// right), a display headline filling the column, a second hairline, and then
-// the entry ledger — full-column plates on a twelve-column grid, repeated
-// eight times down the page. The mechanic is live, not pictured: the room
-// scrolls and the nav is a frosted backdrop-filter plane the ledger passes
-// under. No script — sticky + backdrop-filter IS the mechanic, so CSS carries
-// it. Plates are de-branded kernel specimens: we rebuild the room, not the
-// client's artwork. All spacing/type composes from kernel custom properties.
+// The page IS the recreation: one centred column hung between hairlines, filling
+// the viewport edge-to-edge exactly as the source frames itself. A rule opens the
+// page, a three-part nav sits between it and a second rule (wordmark left, one
+// word of information on the grid's seventh column, contact flush right), a
+// display headline fills the column, a third rule closes it, and then the entry
+// ledger — full-column plates on a twelve-column grid, repeated eight times down
+// the page. The mechanic is live, not pictured: the room scrolls and the nav is a
+// frosted backdrop-filter plane the ledger passes under. Promoting the room to the
+// page hands its scroll to the document, which is what the source does — sticky +
+// backdrop-filter IS the mechanic, so CSS carries it and there is no script.
+// Plates are de-branded kernel specimens: we rebuild the room, not the client's
+// artwork. The work declares no palette, so nothing grafts: the sheet rides the
+// ambient kernel --paper/--ink and inverts coherently with the mode.
+//
+// Reference (internal, never shipped): refs/works/p673.jpg, 1600×1000, ground L=255.
+// Measured with scripts/ref-geometry.py, then read by eye where the tool is blunt
+// (it reported 4 rows but merged the nav's closing rule into the nav band, and
+// merged the whole ledger into one 720px band). Converted x/1600*100 → cqw:
+//
+//   column        rules/ink/plate all x300→1300  → padding-inline 18.75% (62.5cqw)
+//   rule 1        y32, x301→1297                 → padding-top 2cqw + nav border-top
+//   nav ink       cap y43 → baseline y60         → capH 17px; Archivo capH .686
+//                                                  → 24.8px = clamp(.82rem, 1.55cqw, 1.6rem)
+//   nav band      rule y33 → rule y70 = 37px     → line-height 1.5, no padding-block
+//                                                  (Archivo asc .878 → baseline lands y59.9)
+//   nav parts     x301→448 / x808→922 / x1202→1297 → 12-col grid, spans 1/7 · 7/11 · 11/-1
+//                                                  (col 7 opens at x810 — the source hangs
+//                                                  "Information" on the grid, not on centre;
+//                                                  space-between would put it 40px left)
+//   headline      cap y98 → baseline y212        → capH 114px → 166px = clamp(2.2rem, 10.4cqw, 11rem)
+//   headline set  rule y70 → cap y98 = 28px      → line-height 1, margin-top .15cqw
+//   rule 3        y250, ink baseline y212        → margin-top .65cqw
+//   plate         y257→977, 999×721              → aspect-ratio 1.386, margin-top .375cqw (6px)
+//   the fold      plate bottom y977 of 1000      → the first plate clears the fold whole
+//
+// The 6px rule→plate gap is the only ledger spacing the reference exposes (the
+// caption rail and every entry after the first sit below the fold), so it is used
+// as the ledger's whole meter: entry gap and plate→caption gap alike. The headline
+// fills the column exactly in the reference ("Writer's Retreat", ink x301→1299) —
+// a fitted display line we deliberately do not chase, because our headline is the
+// de-branded "P673": match the cap height, accept the width delta.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   The whole site is one column hung between two hairlines: a rule opens the page, a
+//   three-part nav sits on it — wordmark left, one word of information centre, contact right —
+//   and a display headline fills the column edge to edge before the ledger begins. From there
+//   the same twelve-column entry repeats down the page, plate after plate, while the nav
+//   detaches and frosts, floating over everything that scrolls beneath it.
+//
+//   Study notes —
+//   One column width decides everything: nav, headline, and every plate share the same two
+//   vertical edges, so the eye never re-measures the page — it just descends. The hairlines
+//   meter that descent, and the frost earns its keep structurally: the nav needs no border or
+//   box to hold its plane, because the blurred ledger sliding underneath declares the layering
+//   for it. Repetition reads as rhythm here, not monotony, because the grid never flinches.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'p673');
 const w = entry!.data;
 const ENTRIES = 8;
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — live, frosted nav over a scrolling ledger">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          The whole site is one column hung between two hairlines: a rule opens the page, a
-          three-part nav sits on it — wordmark left, one word of information centre, contact right —
-          and a display headline fills the column edge to edge before the ledger begins. From there
-          the same twelve-column entry repeats down the page, plate after plate, while the nav
-          detaches and frosts, floating over everything that scrolls beneath it.
-        </p>
-      </section>
-    </Fragment>
-
-    <div
-      class="site"
-      tabindex="0"
-      role="region"
-      aria-label="Scrollable ledger reconstruction"
-      data-lenis-prevent
-    >
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site">
+    <div class="site__col">
       <header class="site__nav">
         <span class="site__wordmark">{w.title}&trade; Study</span>
         <span class="site__info">Information</span>
         <span class="site__contact">Mail, IG &nearr;</span>
       </header>
 
-      <div class="site__col">
-        <p class="site__masthead">{w.title}</p>
-        <hr class="site__rule" />
+      <p class="site__masthead">{w.title}</p>
+      <hr class="site__rule" />
 
-        {
-          Array.from({ length: ENTRIES }, (_, i) => (
-            <section class="entry">
-              <figure class="entry__plate">
-                <span class="entry__num font-mono">{String(i + 1).padStart(2, '0')}</span>
-              </figure>
-              <p class="entry__row font-mono ttu tracked">
-                <span class="entry__idx">{String(i + 1).padStart(2, '0')}</span>
-                <span class="entry__label">Entry — specimen plate</span>
-                <span class="entry__meta">12-col</span>
-              </p>
-            </section>
-          ))
-        }
-      </div>
+      {
+        Array.from({ length: ENTRIES }, (_, i) => (
+          <section class="entry">
+            <figure class="entry__plate">
+              <span class="entry__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+            </figure>
+            <p class="entry__row font-mono ttu tracked">
+              <span class="entry__idx">{String(i + 1).padStart(2, '0')}</span>
+              <span class="entry__label">Entry — specimen plate</span>
+              <span class="entry__meta">12-col</span>
+            </p>
+          </section>
+        ))
+      }
     </div>
-
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          One column width decides everything: nav, headline, and every plate share the same two
-          vertical edges, so the eye never re-measures the page — it just descends. The hairlines
-          meter that descent, and the frost earns its keep structurally: the nav needs no border or
-          box to hold its plane, because the blurred ledger sliding underneath declares the layering
-          for it. Repetition reads as rhythm here, not monotony, because the grid never flinches.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+  </main>
 </Base>
 
 <style>
-  /* The rebuilt room. Proportions transcribed from the reference: ~19% side
-     margins, nav on the opening hairline, headline flush to the column, then
-     the ledger. The room itself scrolls so the frost has something to do. */
+  /* The rebuilt room, now the whole page: the column runs x300→1300 of the
+     reference's 1600 — 18.75% margins — and the document's own scroll gives the
+     frosted nav something to float over. The page is its own query container:
+     the stage used to provide one, so cq* units silently resolve against the
+     viewport without this. `container-type: inline-size` applies style +
+     inline-size containment only — it creates no scroll container, so the nav's
+     `position: sticky` still resolves against the viewport, and Lenis smooths the
+     document natively rather than transforming it. Never set overflow here: that
+     would make .site the sticky nav's scroll container and kill the mechanic. */
   .site {
-    aspect-ratio: 16 / 10;
-    overflow-y: auto;
+    container-type: inline-size;
+    min-height: 100dvh;
     background-color: var(--paper);
     color: var(--ink);
   }
-  .site:focus-visible {
-    outline: var(--border-w, 2px) solid var(--spot, var(--ink));
-    outline-offset: -2px;
+
+  /* padding-top 2cqw = the reference's 32px above the opening rule. */
+  .site__col {
+    padding: 2cqw 18.75% 5cqw;
   }
 
-  /* Frosted plane — the live mechanic. Sticky inside the scrolling room; the
-     ledger passes under it and the blur declares the layer. */
+  /* Frosted plane — the live mechanic. Sticky against the document now that the
+     room is the page; the ledger passes under it and the blur declares the layer.
+     Both hairlines belong to the nav (reference y32 and y70), so they travel with
+     it. The band is 37px on 24.8px type — line-height 1.5 lands that height AND
+     the measured baseline with no padding, so no font-metric fudging. */
   .site__nav {
     position: sticky;
     top: 0;
     z-index: 2;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding: 0.9em 19%;
-    border-top: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 0 2%;
+    border-block: 1px solid var(--ink);
     background-color: color-mix(in srgb, var(--paper) 72%, transparent);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    font-size: clamp(0.65rem, 1.3vw, 0.95rem);
+    font-size: clamp(0.82rem, 1.55cqw, 1.6rem);
+    line-height: 1.5;
     letter-spacing: 0.01em;
   }
+  /* The nav rides the same twelve columns as the ledger — that shared grid is the
+     sheet's whole thesis, and it is what puts "Information" at x808 rather than on
+     the column's centre. */
   .site__wordmark {
+    grid-column: 1 / 7;
     font-weight: 600;
+  }
+  .site__info {
+    grid-column: 7 / 11;
+  }
+  .site__contact {
+    grid-column: 11 / -1;
+    text-align: right;
   }
   .site__info,
   .site__contact {
     color: var(--ink-1, var(--ink));
   }
 
-  .site__col {
-    padding: 0.4em 19% 2.5em;
-  }
-
-  /* Headline fills the column the way the source's does — display face,
-     near-solid leading, flush left to the shared edge. */
+  /* Headline fills the column the way the source's does — display face, solid
+     leading, flush left to the shared edge. 10.4cqw = 166px at 1600, which is the
+     reference's 114px cap height through Archivo's .686 cap ratio; the old 7.5rem
+     cap was sized for the ~1000px stage and set it at two-thirds scale. */
   .site__masthead {
-    margin: 0;
+    margin: 0.15cqw 0 0;
     font-family: var(--font-display);
     font-weight: var(--wght-display, 700);
-    font-size: clamp(2.4rem, 9.5vw, 7.5rem);
-    line-height: 0.95;
+    font-size: clamp(2.2rem, 10.4cqw, 11rem);
+    line-height: 1;
     letter-spacing: var(--tracking-display, -0.02em);
   }
   .site__rule {
     height: 1px;
     background-color: var(--ink);
     border: none;
-    margin: 0.55em 0 0;
+    margin: 0.65cqw 0 0;
   }
 
-  /* One entry = one pass of the twelve-column grid: plate spans all twelve,
-     the caption row sits on the same tracks. Repeated eight times. */
+  /* One entry = one pass of the twelve-column grid: plate spans all twelve, the
+     caption row sits on the same tracks. Repeated eight times, all on the 6px
+     meter the reference sets between its closing rule and the first plate. */
   .entry {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    gap: 0.5em 2%;
-    margin-top: clamp(1rem, 3vw, 2.2rem);
+    gap: 0.375cqw 2%;
+    margin-top: 0.375cqw;
   }
   .entry__plate {
     grid-column: 1 / -1;
     margin: 0;
-    aspect-ratio: 1.39;
+    /* Reference plate y257→977 at the full column: 999 × 721. */
+    aspect-ratio: 1.386;
     display: grid;
     place-items: center;
     background-color: var(--paper-1, var(--paper));
     border: 1px solid var(--line, var(--ink-2));
   }
   .entry__num {
-    font-size: clamp(1.8rem, 7vw, 4rem);
+    font-size: clamp(1.6rem, 7cqw, 7.5rem);
     color: var(--ink-3, var(--ink-2));
     letter-spacing: 0.04em;
   }
@@ -177,7 +210,7 @@ const ENTRIES = 8;
     display: grid;
     grid-template-columns: subgrid;
     margin: 0;
-    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+    font-size: clamp(0.62rem, 1.1cqw, 1.15rem);
     color: var(--ink-2);
   }
   .entry__idx {
@@ -189,5 +222,23 @@ const ENTRIES = 8;
   .entry__meta {
     grid-column: 10 / -1;
     text-align: right;
+  }
+
+  /* Phone: the source column adapting, not a second design. The reference's 18.75%
+     margins would leave a 244px column on a 390px screen, so the column widens and
+     the nav's three clusters take fewer tracks each — same grid, same order. */
+  @container (max-width: 40rem) {
+    .site__col {
+      padding-inline: 6%;
+    }
+    .site__wordmark {
+      grid-column: 1 / 6;
+    }
+    .site__info {
+      grid-column: 6 / 10;
+    }
+    .site__contact {
+      grid-column: 10 / -1;
+    }
   }
 </style>
