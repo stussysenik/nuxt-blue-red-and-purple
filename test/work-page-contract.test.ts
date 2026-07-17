@@ -1,16 +1,23 @@
-// Page contract — the cheap channel guarding the promote-work-recreations shape.
+// Page contract — the cheap channel guarding the craft-one-page-discipline shape.
 //
-// Every work page was promoted out of the shared CaseStudy shell (now deleted)
-// and IS its own full-page recreation. Three properties define that shape, and
-// a future edit could silently break any of them without failing typecheck or
-// lint:
-//   1. <Base chrome="work"> — the work chrome (lone ← INDEX, no pill/toggle).
+// Every work page IS its own full-page recreation. The contract grows here so
+// pages are re-crafted against a failing gate (red -> green), and the trap
+// patterns cannot return. index.astro is the Project Index, not a work page.
+//
+// Inherited from promote-work-recreations (retired shell, chrome variant):
+//   1. <Base chrome="work"> — work chrome (lone ← INDEX, no pill/toggle).
 //   2. No `import CaseStudy` — the shell is retired; re-introducing it would
 //      wrap the recreation back inside a stage and re-break the cq* container.
-//   3. An "Archived case-study copy" block — the former narrative prose is not
-//      lost, it is archived verbatim in each page's frontmatter comment.
+//   3. An "Archived case-study copy" block — former narrative is archived in
+//      frontmatter, not lost.
 //
-// index.astro is the Project Index, not a work page, so it is excluded.
+// New for craft-one-page-discipline (P1 foundation):
+//   4. No max-height: 100dvh — the viewport trap cannot return.
+//   5. No root-level overflow: hidden — content is never clipped.
+//   6. Requires an <img bound to the work's committed photo.
+//   7. No text-align: justify — justified text creates rivers.
+//   8. No self-annotation strings — the template never narrates its own
+//      mechanics (zoom labels, specimen annotations).
 
 import { describe, it, expect } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -41,6 +48,32 @@ describe('work page contract', () => {
 
       it('archives its former case-study copy in frontmatter', () => {
         expect(src).toContain('Archived case-study copy');
+      });
+
+      it('forbids max-height: 100dvh (the viewport trap)', () => {
+        expect(src).not.toMatch(/max-height\s*:\s*100dvh/i);
+      });
+
+      it('forbids root-level overflow hidden/clip (no viewport clipping)', () => {
+        expect(src).not.toMatch(/overflow\s*:\s*hidden/i);
+        expect(src).not.toMatch(/overflow\s*:\s*clip/i);
+      });
+
+      it('requires an <img element (imagery slot)', () => {
+        expect(src).toMatch(/<img/i);
+      });
+
+      it('opts into the chrome band (top clearance below the pinned marks)', () => {
+        expect(src).toMatch(/chrome-safe|--chrome-band/);
+      });
+
+      it('forbids text-align: justify (justified text creates rivers)', () => {
+        expect(src).not.toMatch(/text-align\s*:\s*justify/i);
+      });
+
+      it('forbids self-annotation strings (zoom · off|on, zoom disabled)', () => {
+        expect(src).not.toMatch(/zoom\s*·\s*off/i);
+        expect(src).not.toMatch(/zoom\s+disabled/i);
       });
     });
   }

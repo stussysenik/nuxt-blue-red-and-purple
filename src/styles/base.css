@@ -22,6 +22,15 @@
   --edge: clamp(1.4rem, 6vw, 8rem); /* page horizontal margin = grid gutter */
   --chrome-inset: 1.4rem; /* pinned-chrome offset from the viewport edge */
 
+  /* Chrome band — the reserved top strip the pinned marks live in. Sized from
+     --chrome-inset (top offset + a line of chrome + a matching inset of breathing
+     room) and safe-area aware, so a notch pushes it down too. Page roots that
+     anchor content near the top opt into `.chrome-safe` (below) to clear it; this
+     is what makes the f853-numeral-under-← Index collision class unrepresentable. */
+  --chrome-band: calc(
+    max(var(--chrome-inset), env(safe-area-inset-top)) + 1lh + var(--chrome-inset)
+  );
+
   /* Spacing scale — 0.4rem base step. Used by the chrome/new UI; extend freely. */
   --space-1: 0.4rem;
   --space-2: 0.8rem;
@@ -42,6 +51,36 @@
 
 html {
   scrollbar-gutter: stable;
+}
+
+/* Opt-in top clearance below the pinned chrome band. Full-bleed heroes that
+   deliberately run under the chrome skip this; any page root with top-anchored
+   content (titles, section indices, source-nav echoes) uses it so nothing sits
+   under the pinned marks. The shared reference the page contract checks for. */
+.chrome-safe {
+  padding-top: var(--chrome-band);
+}
+
+/* Content-band scroll reveals — rise + fade as each band enters, compositor
+   driven, zero JS. Guarded twice: only when motion is allowed AND the browser
+   supports scroll-driven timelines. Every other path (Firefox in early 2026,
+   reduced-motion) renders the band fully visible — this only ever adds motion,
+   never hides content. Global so any page using `.band` inherits it (replaces
+   the former GSAP ScrollTrigger reveals in Base.astro). */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    @keyframes band-rise {
+      from {
+        opacity: 0;
+        transform: translateY(2rem);
+      }
+    }
+    .band {
+      animation: band-rise both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
 }
 
 /* Cross-document view transitions (same-origin MPA): a full-screen animation
