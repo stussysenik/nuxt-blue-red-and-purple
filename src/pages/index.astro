@@ -105,6 +105,21 @@ const works = (await getCollection('works'))
     <p class="band__lead measure-wide lh-copy">
       <br> Our Formula:<br> –1 → 0 <br> Discovering possibilities through curiosity, research, and brainstorming. <br> 0 → 1 <br> Bringing ideas to life through thoughtful design and technology. <br>1+<br> Helping brands grow through continued creativity, refinement, and evolution.
     </p>
+
+    <!-- Lineage colophon: where the practice comes from. Kept in the mono meta
+         register (a CV/credit block, not studio prose) so the "we" voice above
+         stays intact. The free-game line names the north star this studio
+         descends from — the pgLang ethos of open, shareable method. -->
+    <dl class="lineage font-mono">
+      <div class="lineage__row">
+        <dt>Previously</dt>
+        <dd>BFA, The Cooper Union for the Advancement of Science and Art.</dd>
+      </div>
+      <div class="lineage__row">
+        <dt>Free game</dt>
+        <dd>After Virgil Abloh — the method is open-source; take it, pass it on.</dd>
+      </div>
+    </dl>
   </section>
 
   <!-- ── §05 Ledger (the checkable claim) ── -->
@@ -371,5 +386,42 @@ const works = (await getCollection('works'))
     font-weight: var(--wght-display);
     font-size: 2rem;
     color: var(--ink);
+  }
+
+  /* Lineage colophon (§04). Label column + hanging value, the CV/credit
+     register. Distinct from .ledger (numeric, space-between) — this is a
+     two-column label→prose grid that stacks on the narrowest viewports. */
+  .lineage {
+    display: grid;
+    gap: 0.9rem;
+    max-width: 34rem;
+    margin-top: 2.4rem;
+  }
+  .lineage__row {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--line);
+  }
+  .lineage__row dt {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.7rem;
+    color: var(--ink-2);
+  }
+  .lineage__row dd {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--ink-1);
+  }
+  /* Below ~28rem the label column would starve the value; stack them. */
+  @media (max-width: 28rem) {
+    .lineage__row {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
   }
 </style>
