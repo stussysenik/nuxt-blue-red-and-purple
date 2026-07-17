@@ -1,31 +1,60 @@
 ---
 // F853 — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: the
-// homepage IS the index — a single column of eighteen-plus text links set in
-// one size of one grotesk face, flush against the top-left corner with almost
-// no margin, beside a digital clock keeping real time. No nav, no images, no
-// grid: line-height is the only layout system, and titles that wrap take a
-// hanging indent so the numbered left edge stays clean. The clock is live —
-// real seconds, not pictured; the links are echoed dead (this is a study, the
-// index has nowhere to go). List entries are de-branded structural echoes of
-// the source's ragged right edge, not the client's titles. The reference crop
-// ends mid-line at the fold; the room reproduces that cut. All spacing/type
-// composes from kernel custom properties.
+// The page IS the recreation: the reference's signature layout fills the
+// viewport edge-to-edge, exactly as the source frames itself. The homepage IS
+// the index — a single column of eighteen-plus text links set in one size of one
+// grotesk face, flush against the top-left corner with almost no margin, beside
+// a digital clock keeping real time. No nav, no images, no grid: line-height is
+// the only layout system, and titles that wrap take a hanging indent so the
+// numbered left edge stays clean. The clock is live — real seconds, not
+// pictured; the links are echoed dead (this is a study, the index has nowhere to
+// go). List entries are de-branded structural echoes of the source's ragged
+// right edge, not the client's titles. The list runs past the fold, cut mid-line
+// exactly as the reference is. All spacing/type composes from kernel custom
+// properties.
+//
+// Reference (internal, never shipped): refs/works/f853.jpg, 1600×1000, ground
+// L=255. ref-geometry merges this page's bands (the rows sit inside its
+// 8-blank-row split, and its "capH" is a cap-top→descender band, not a cap
+// height), so the grid below was re-derived from a raw ink profile of the jpg:
+// 14 lines on a 75.4px pitch, cap top y13, ink left x13, true cap height 57px
+// read off the descenderless "C.V." line. 57px ÷ Archivo's real cap height
+// (0.686em, read from public/fonts/archivo-wght.woff2) = 83.1px type = 5.19cqw.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   There is no homepage in front of the index — the index is the homepage. Every
+//   project is one line of text at one size in one face, stacked from the top-left
+//   corner with barely a margin, and the list simply runs past the fold. Titles
+//   that wrap indent their second line so the left edge never breaks. The only
+//   thing that moves on the whole page is a digital clock keeping real time beside
+//   the list — a pulse that proves the site is on.
+//
+//   Study notes —
+//   One type size is the whole system: with nothing to contrast against,
+//   line-height becomes the grid, the ragged right edge becomes the composition,
+//   and hierarchy survives on word order alone. The near-zero margin is what makes
+//   it read as intent rather than accident — the text behaves like content pinned
+//   to the viewport, not a page laid out around it. The clock earns its place by
+//   being the one element set in a second face, and the one that changes.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'f853');
 const w = entry!.data;
 
 // Varied-width titles echo the source list's ragged right edge; the repeated
-// "No Title" echoes its repeated untitled entries. Entry 01 wraps on purpose.
+// "No Title" echoes its repeated untitled entries. Entry 01 wraps on purpose:
+// its lengths are set so the break lands on the parenthesis at every
+// --wght-display the kernel can hand us (300→800), reproducing the reference's
+// one two-line entry rather than orphaning a word.
 const TITLES = [
-  'Plates in Sequence (a continued line, indented)',
+  'Plates in Sequence (Continuation Indented)',
   'Everywhere at Once',
   'Paper-Stock™',
-  'A Longer Title to Hold the Edge',
+  'A Title to Hold the Edge',
   'No Title',
   'Margins et Rules™',
   'No Title',
@@ -33,7 +62,7 @@ const TITLES = [
   'Index (spatium interius)',
   'Flicker',
   'Counterform',
-  'The Second Column That Never Was',
+  'The Second Column',
   'Ligature',
   'No Title',
   'Baseline Drift™',
@@ -43,44 +72,15 @@ const TITLES = [
 ];
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — live clock, echoed index">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          There is no homepage in front of the index — the index is the homepage. Every project is
-          one line of text at one size in one face, stacked from the top-left corner with barely a
-          margin, and the list simply runs past the fold. Titles that wrap indent their second line
-          so the left edge never breaks. The only thing that moves on the whole page is a digital
-          clock keeping real time beside the list — a pulse that proves the site is on.
-        </p>
-      </section>
-    </Fragment>
-
-    <div class="site">
-      <ul class="site__index">
-        <li class="site__mark">{w.title} Index</li>
-        <li>C.V.</li>
-        {TITLES.map((t, i) => <li>No. {String(i + 1).padStart(2, '0')}—{t}</li>)}
-      </ul>
-      <time class="site__clock font-mono" aria-label="Current time">00:00:00</time>
-    </div>
-
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          One type size is the whole system: with nothing to contrast against, line-height becomes
-          the grid, the ragged right edge becomes the composition, and hierarchy survives on word
-          order alone. The near-zero margin is what makes it read as intent rather than accident —
-          the text behaves like content pinned to the viewport, not a page laid out around it. The
-          clock earns its place by being the one element set in a second face, and the one that
-          changes.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site">
+    <ul class="site__index">
+      <li>{w.title} Index</li>
+      <li>C.V.</li>
+      {TITLES.map((t, i) => <li>No. {String(i + 1).padStart(2, '0')}—{t}</li>)}
+    </ul>
+    <time class="site__clock font-mono" aria-label="Current time">00:00:00</time>
+  </main>
 </Base>
 
 <script>
@@ -96,54 +96,83 @@ const TITLES = [
 </script>
 
 <style>
-  /* The rebuilt room. Proportions transcribed from the reference: list flush
-     to the top-left with ~1% margins, type at ~4% of the room's width, tight
-     leading, list cut mid-line at the bottom edge. */
+  /* The rebuilt room, now the whole page. The page is its own query container —
+     the stage used to provide one, so cq* units would otherwise resolve against
+     the viewport. The list is in flow (not absolute) so the room's paper follows
+     it past the fold; the fold itself is just where 100dvh lands, which is what
+     cuts the reference's last line in half. */
   .site {
+    container-type: inline-size;
     position: relative;
-    aspect-ratio: 16 / 10;
+    min-height: 100dvh;
     background-color: var(--paper);
     color: var(--ink);
-    overflow: hidden;
+    /* Reference cap height 57px ÷ Archivo cap 0.686em = 83.1px type at 1600 =
+       5.19cqw. Declared as a token because cq* on .site itself would resolve
+       against an ancestor container, not .site — and everything vertical on this
+       page is a multiple of the one type size, because line-height is the only
+       layout system the source has. */
+    --type: clamp(1.35rem, 5.19cqw, 5.5rem);
   }
 
+  /* Flush top-left: reference ink starts x13 (0.81cqw) / cap top y13. The cap
+     sits 0.102em below the line box under this leading, so the box top is
+     0.055em — the near-zero margin IS the design.
+     Column 92cqw (1472px at 1600): the reference's longest line reaches x1371
+     and fits, its one wrapped entry does not. Weight/tracking come from the mode
+     kernel — flatness is the point, so the wordmark line takes no more than the
+     rest of the list. */
   .site__index {
-    position: absolute;
-    inset: 0.6% auto auto 1.1%;
-    max-width: 72%;
-    margin: 0;
+    max-width: 92cqw;
+    margin: calc(var(--type) * 0.055) 0 var(--type) 0.81cqw;
     padding: 0;
     list-style: none;
     font-family: var(--font-display);
     font-weight: var(--wght-display, 700);
-    font-size: clamp(1rem, 3.5vw, 2.55rem);
-    line-height: 1.16;
+    font-size: var(--type);
+    line-height: 0.908; /* reference line pitch 75.4px over 83.1px type */
     letter-spacing: var(--tracking-display, -0.02em);
   }
 
   /* Wrapped titles indent their continuation lines — the numbered left edge
-     stays unbroken, exactly as the source handles its one two-line entry. */
+     stays unbroken, exactly as the source handles its one two-line entry.
+     Reference: continuation ink x145, i.e. 131px / 1.58em in from x13. */
   .site__index li {
-    padding-left: 3ch;
-    text-indent: -3ch;
+    padding-left: 1.58em;
+    text-indent: -1.58em;
   }
 
-  /* The de-branded wordmark line: first entry of the list, nothing more.
-     The source gives it no extra weight or size — flatness is the point. */
-  .site__mark {
-    color: var(--ink);
-  }
-
-  /* The clock sits beside the list on its first baseline — the reference
-     crop excludes it, so scale and placement follow the source's "beside a
-     clock" reading: top-right, mono, tabular so seconds don't jitter. */
+  /* The clock sits beside the list, on its second line — the reference crop is
+     the top-left corner and excludes it, so scale and placement follow the
+     source's "beside a clock" reading. The second baseline is the one the
+     pinned ← INDEX chrome (top-right) leaves free, and "C.V." leaves the whole
+     right of that line empty. Sized and offset off --type so its cap top lands
+     on the list's own y88 grid line at every width. Mono, tabular so seconds
+     don't jitter. */
   .site__clock {
     position: absolute;
-    top: 1.6%;
-    right: 1.6%;
-    font-size: clamp(0.8rem, 2.2vw, 1.6rem);
+    top: calc(var(--type) * 0.991);
+    right: 0.81cqw;
+    font-size: calc(var(--type) * 0.385);
+    line-height: 1;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.06em;
     color: var(--ink-1, var(--ink));
+  }
+
+  /* Phone: the source layout adapting, not a second design. A 0.81cqw margin is
+     3px at phone width — the reference's flushness reads as intent because the
+     room is wide, so the margin takes the width it needs on both edges. The
+     clock keeps its baseline but stops tracking --type: 0.385 of a floored type
+     size is 8px, and the one live element on the page has to stay readable. */
+  @container (max-width: 40rem) {
+    .site__index {
+      max-width: none;
+      margin-inline: 4cqw;
+    }
+    .site__clock {
+      right: 4cqw;
+      font-size: 0.85rem;
+    }
   }
 </style>

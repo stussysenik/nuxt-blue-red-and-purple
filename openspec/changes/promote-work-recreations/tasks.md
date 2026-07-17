@@ -118,9 +118,37 @@ frontmatter → kernel tokens only → `pnpm test && pnpm check` to zero.
       wanted 166px). `container-type: inline-size` applies style + inline-size
       containment only — no scroll container — so the sticky nav survives; never
       set `overflow` on `.site` or it becomes the nav's scroll container.
-- [ ] 4.10 `b970.astro` — vintage. **Tool degenerates** (ground L=127) — by eye.
-- [ ] 4.11 `f853.astro` — vintage. 6 rows; live real-time clock must stay live.
-- [ ] 4.12 `g858.astro` — vintage. Dark ground (L=81), 3 rows.
+- [x] 4.10 `b970.astro` — vintage. **Tool degenerates** (ground L=127) — by eye.
+      Done by eye. The 3/3/6 grid is real: ink starts x29/x417/x808 solve to a
+      12-track grid at 129.8px pitch, needing an 18.6px (1.2%) gutter (the old
+      1.5% put columns 2px off). One type size serves the whole band (C/D/B caps
+      all y34→46 = 13px), and `.band__essay` was silently overridden by a
+      `lh-copy` utility (1.5) that fought the measured 1.267 leading. Two real
+      bugs surfaced: the artwork IS the ground here, so Base's `← Index` was
+      `--ink` on `--ink` (invisible in **every** mode) sitting exactly where the
+      essay column ends — re-inked to `--paper` and moved to the opposite corner;
+      and the focus ring used `--spot` (always defined, so its `--paper` fallback
+      never fired) → ink ring on ink. **Not** re-grafted: b970.json has no palette.
+- [x] 4.11 `f853.astro` — vintage. 6 rows; live real-time clock must stay live.
+      Done. Tool merges the bands and its "capH" is a cap-top→descender band, so
+      the grid was re-derived from a raw ink profile: 14 lines on a 75.4px pitch,
+      true cap 57px read off the descenderless "C.V." line. **Clock stays live**
+      — a real `new Date()` on `setInterval(1000)`, tabular-nums so seconds don't
+      jitter; the list is in flow so the room's paper runs past the fold and
+      100dvh cuts the last line in half exactly as the reference is cropped.
+- [x] 4.12 `g858.astro` — vintage. Dark ground (L=81), 3 rows.
+      Done by eye — the tool locks onto the dark forest photo (L=81) and cannot
+      isolate the yellow card. Read the card at left x24 (1.5cqw) / top y16 /
+      width 486px (30.4cqw); wordmark cap ~86px = 125px type (9.2× the ~13.6px
+      mono entry face, itself read from the longest copy line's ~8px advance).
+      Real palette here (yellow/near-black) grafts as `--g-yellow`/`--g-black`,
+      so no `--work-accent` orphan and the resting page is theme-robust: card and
+      dock are fixed hexes, the wall (`--paper-1`) and `← INDEX` (`--ink`) invert
+      together. Unlike skrillex the room does not force `--ink` as ground, so no
+      chrome fix was needed. The hidden shop overlay grounds in the fixed
+      `--g-black` while its plates/label use mode tokens (`--paper-1`/`--paper`) —
+      a latent low-contrast case in a persisted dark theme; left as-is
+      (invented, not in the reference) and flagged for the 6.1 pass.
 
 ## 5. Retire the shell & verify
 
