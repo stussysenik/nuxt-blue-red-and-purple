@@ -37,15 +37,19 @@ contract test grows first so pages are re-crafted against a failing gate
       ~1600px). Shared ghost-load CSS: paper-tint skeleton, reserved
       aspect-ratio, fade-in on load, no JS, no layout shift.
 
-## 4. Re-craft the 13 work pages (the bulk; one commit each, gate green per page)
+## 4. Re-craft the 14 work pages (the bulk; one commit each, gate green per page)
 
 **Per-page progress** (each session picks up here; one page = one green commit,
 all 8 subtasks below applied at once). A page is checked only when it passes the
-full contract + `pnpm check` + build:
+full contract + `pnpm check` + build. (The count is 14, not 13 — `after` is a
+work page the contract enforces; design.md's risk note already says "14 bespoke
+pages". The original §4 list dropped it.)
 
 - [x] d445 — reading page; lens plate, reading-progress rule (commit)
 - [x] f853 — index/CV; clock anchored to --chrome-band (collision fixed),
       index resolves into a past-the-fold plate (commit)
+- [x] after — tour marquee/timetable; pixel wordmark stays data, poster plate
+      supplies the imagery slot (commit)
 - [ ] b374
 - [ ] b421
 - [ ] b508
@@ -58,9 +62,9 @@ full contract + `pnpm check` + build:
 - [ ] skrillex
 - [ ] smac — already renders its photo; still needs trap/overflow retire + band
 
-The 8 subtasks, applied per page (checked when ALL 13 pages satisfy each — the
+The 8 subtasks, applied per page (checked when ALL 14 pages satisfy each — the
 §4 gate is fully green only when the page tracker above is fully checked). For
-each of b374, b421, b508, b970, d429, d445, f853, g858, h724, l384, p673,
+each of after, b374, b421, b508, b970, d429, d445, f853, g858, h724, l384, p673,
 skrillex, smac — keeping its bespoke concept:
 
 - [ ] 4.1 Retire the 100dvh trap → `min-height: 100svh`, natural scroll;
