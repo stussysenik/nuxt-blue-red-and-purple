@@ -152,17 +152,30 @@ frontmatter → kernel tokens only → `pnpm test && pnpm check` to zero.
 
 ## 5. Retire the shell & verify
 
-- [ ] 5.1 Delete `src/components/CaseStudy.astro` once no page imports it
-      (`grep -l CaseStudy src/pages/works/*.astro` → empty).
-- [ ] 5.2 Add a page-contract test: every `src/pages/works/<slug>.astro` uses
-      `chrome="work"`, imports no `CaseStudy`, and carries an
-      "Archived case-study copy" block. (Write it once 4.x is done, so it lands
-      green.)
-- [ ] 5.3 `pnpm test` + `pnpm check` to zero; `pnpm build` green; no case-study
-      prose in any `dist/works/*/index.html`; Project Index rows all navigate.
-- [ ] 5.4 Home page hardcodes "Researched works — 17" while the collection holds
-      13 (`src/pages/index.astro` also has an unused `works` binding). Decide:
-      make dynamic or update.
+- [x] 5.1 Delete `src/components/CaseStudy.astro` — no page imports it (only an
+      explanatory prose comment in `after.astro` names it). Deleted.
+- [x] 5.2 Page-contract test `test/work-page-contract.test.ts`: every
+      `src/pages/works/<slug>.astro` except `index.astro` uses `chrome="work"`,
+      imports no `CaseStudy`, and carries an "Archived case-study copy" block.
+      13 pages × 3 assertions, all green; proven red by stripping `chrome="work"`
+      from one page (1 failed) and restored.
+- [x] 5.3 `pnpm test` 88 passed (8 files); `pnpm check` 0 errors / 0 warnings
+      (6 pre-existing ts6133 hints — see 5.4); `pnpm build` 16 pages. No archived
+      prose in any `dist/works/*/index.html` (frontmatter comments are stripped).
+      All 13 Project Index rows resolve to a built `dist/works/<slug>/index.html`.
+- [~] 5.4 **Premise was stale — needs a user call, not a code fix.** The "17" and
+      "Seventeen" figures live in the home page's §01 Works CTA and §05 Ledger,
+      and BOTH of those `<section>`s (in fact §01–§05) are commented-out WIP —
+      nothing about a work count ships today, and the home page's only live link
+      to the catalogue is the top chrome `/works` nav. So there is no live
+      discrepancy to correct. The one real residue is the `works` binding in
+      `src/pages/index.astro:12` reading ts6133-unused, because its only
+      consumers are those commented bands. Left the staged binding and the
+      commented figures untouched (editing dead commented markup is churn, and
+      deleting the binding would break the bands on re-enable). **Decision for
+      the user:** (a) re-enable §01/§05 and wire the count to `{works.length}`
+      (clears the hint, restores a live count), or (b) delete the dead binding
+      and stale figures if the bands are not returning.
 
 ## 6. Visual pass — one dedicated session, at the end
 
