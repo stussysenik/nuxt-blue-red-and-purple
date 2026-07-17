@@ -1,23 +1,34 @@
 ---
 // B374 — bespoke in-kernel reconstruction.
 //
-// The page IS the recreation: the reference's signature layout fills the
-// viewport edge-to-edge, exactly as the source frames itself. The viewport is
-// an open book spread — a full-bleed plate owns the verso, the recto stays
-// near-empty except one portrait plate hung flush against the gutter, and one
-// line of running heads holds the top margin. The fold is the whole trick: a
-// pinned shadow crease at dead centre makes two ordinary columns read as verso
-// and recto. The mechanic is live, not pictured — spreads scroll-snap through
-// the window while the crease stays pinned, and a script deepens the fold shade
-// mid-scroll so the turn reads as a page lifting. Plates are de-branded kernel
-// specimens: we rebuild the room, not the client's artwork. All spacing/type
-// composes from kernel custom properties.
+// The page IS the recreation: an open book spread that fills the viewport. Each
+// spread is a full-height row split at the gutter — a verso (left) against a
+// near-empty recto (right) — and the spreads stack in natural document scroll:
+// no inner scroller, no locked viewport, the page grows and the window scrolls.
+// One verso carries the plate — the committed photograph, full-bleed, the book's
+// single artwork — the others carry a large folio number. Each recto hangs one
+// portrait specimen plate flush to the gutter and is otherwise paper. A mono
+// running head holds the top margin, below the chrome band.
 //
-// Reference (internal, never shipped): refs/works/b374.jpg, 1600×1000.
-// ref-geometry degenerates here (design.md §Known tool limits): the ground it
-// detects (L=187) is the verso photograph, not paper, so it collapses the frame
-// into one 1000px "row". Every number below was read off the jpg by eye and
-// with per-pixel probes instead — the tool's x-runs were used only as clusters.
+// The fold is the whole trick: a crease pinned at the viewport centre (fixed,
+// not scrolled) sinks the two columns into a verso/recto spine. The mechanic is
+// live, not pictured — as the reader scrolls between spreads the fold shade
+// deepens then relaxes, so a turn reads as a page lifting, and a slim spine
+// progress fills down the crease (CSS scroll-driven). Both degrade safely: no JS
+// leaves a static crease, reduced-motion leaves it still. Plates are de-branded
+// kernel specimens — we rebuild the room, not the client's artwork. All
+// spacing/type composes from kernel custom properties.
+//
+// Reference (internal, never shipped): refs/works/b374.jpg, 1600×1000. The recto
+// plate keeps the source's proportions (portrait, hung high off the gutter); the
+// rest is re-composed for continuous scroll rather than transcribed pixel for
+// pixel, since the page is no longer a single locked frame.
+//
+// This reference's source nav is top-RIGHT — the one place it would collide with
+// the sitewide pinned ← Index (design.md: source navs are top-left in nearly
+// every reference). The band opt-in resolves it honestly: the running head is one
+// left-anchored mono line living in the chrome band, so the top-right corner
+// stays the ← Index's alone — no corner hack, no override of the shared chrome.
 //
 // Archived case-study copy (removed from DOM 2026-07-17):
 //
@@ -48,150 +59,150 @@ const SPREADS = 4;
 
 <Base title={`${w.title} — *blue red + purple/`} chrome="work">
   <main class="site">
-    <header class="site__nav">
+    <header class="site__nav font-mono">
       <span class="site__wordmark">{w.title} Press</span>
-      <span class="site__links" aria-hidden="true">Information, Index</span>
+      <span class="site__sep" aria-hidden="true">·</span>
+      <span class="site__links">Information, Index</span>
     </header>
 
-    <div class="book" tabindex="0" aria-label="Book spreads — scroll to turn" data-lenis-prevent>
-      {
-        Array.from({ length: SPREADS }, (_, i) => (
-          <section class="spread" aria-label={`Spread ${i + 1} of ${SPREADS}`}>
-            <figure class="page page--verso">
+    {
+      Array.from({ length: SPREADS }, (_, i) => (
+        <section class="spread" aria-label={`Spread ${i + 1} of ${SPREADS}`}>
+          <figure class="page page--verso">
+            {i === 0 ? (
+              <img
+                class="art"
+                src={w.image}
+                alt={`${w.title} plate`}
+                width="1600"
+                height="1000"
+                decoding="async"
+              />
+            ) : (
               <span class="page__num font-mono">{String(i + 1).padStart(2, '0')}</span>
-            </figure>
-            <figure class="page page--recto">
-              <span class="plate">
-                <span class="plate__num font-mono">{String(i + 1).padStart(2, '0')}</span>
-              </span>
-            </figure>
-          </section>
-        ))
-      }
-    </div>
+            )}
+          </figure>
+          <figure class="page page--recto">
+            <span class="plate">
+              <span class="plate__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+            </span>
+          </figure>
+        </section>
+      ))
+    }
 
-    <div class="crease" aria-hidden="true"></div>
+    <!-- The fold: pinned to the viewport centre, over the scrolling spreads. -->
+    <div class="crease" aria-hidden="true">
+      <span class="crease__progress"></span>
+    </div>
   </main>
 </Base>
 
 <script>
-  // Pinned-crease spreads: the fold shade deepens mid-scroll, like a page
-  // lifting, then relaxes as the next spread snaps flat.
+  // Pinned-crease spreads: the fold shade deepens between spreads, like a page
+  // lifting, then relaxes as the next spread settles flat. Reads real window
+  // scroll (natural document scroll, no inner scroller); a sawtooth of the
+  // per-viewport position drives --turn. Enhancement only — without JS the crease
+  // holds at its base depth.
   const site = document.querySelector<HTMLElement>('.site');
-  const book = site?.querySelector<HTMLElement>('.book');
-  book?.addEventListener(
-    'scroll',
-    () => {
-      const pos = book.scrollTop / book.clientHeight;
-      const turn = Math.min(1, Math.abs(pos - Math.round(pos)) * 2);
-      site?.style.setProperty('--turn', turn.toFixed(3));
-    },
-    { passive: true }
-  );
+  const onScroll = () => {
+    const pos = window.scrollY / window.innerHeight;
+    const turn = Math.min(1, Math.abs(pos - Math.round(pos)) * 2);
+    site?.style.setProperty('--turn', turn.toFixed(3));
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 </script>
 
 <style>
-  /* The rebuilt room, now the whole page. Proportions transcribed from the
-     reference at 1600×1000: running heads on the top margin, fold at dead
-     centre (measured trough x=798 → 49.9%), verso full-bleed, recto plate hung
-     flush off the gutter at half the page width. The page is its own query
-     container — the stage used to provide one, so every cq* unit below would
-     silently re-resolve against the viewport without this. */
+  /* The rebuilt room, now the whole page and a continuous scroll: spreads stack
+     in document flow, the window scrolls, nothing is clipped. The page is its own
+     query container — no stage wraps a work page any more, so every cq* unit
+     below resolves against the viewport width. */
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
+    /* Top pad seats the running head in the chrome band, clear of the pinned
+       ← Index. The shared band opt-in — no page content under chrome. */
+    padding-top: var(--chrome-band);
     background-color: var(--paper);
     color: var(--ink);
-    overflow: hidden;
   }
 
-  /* This is the one reference whose source nav is top-RIGHT, so Base's reserved
-     corner (design.md: "clear of the source navs, which are top-left in nearly
-     every reference") collides with `Information, Index`. Drop the lone chrome
-     mark to the opposite corner — the recto below the plate is empty paper in
-     the reference, so it lands on the page's own white space and stays in a
-     corner, which is what the sitewide rule is actually protecting. */
-  :global(.chrome-back) {
-    top: auto;
-    bottom: max(var(--chrome-inset), env(safe-area-inset-bottom));
-  }
-
-  /* One line of running heads, both halves the same size — measured ink top
-     y=16, baseline y=27, so 11px of ascender. Archivo's ascender is 0.723em, so
-     the reference's ~15.2px (0.95cqw at 1600) reproduces that height; the cap
-     is a hair above the reference size because a browser running head does not
-     balloon with the window. Ink lands x15 / x1584 → 1% either side, and with
-     line-height 1 Archivo's baseline sits 0.834em down, so a 1.45% box top puts
-     the ink back on y=16. */
+  /* Running head: one mono line in the top margin, left-anchored so the top-right
+     corner stays the ← Index's. Sticky, so it runs over every spread as the book
+     turns — exactly what a running head does on a printed page. */
   .site__nav {
-    position: absolute;
-    inset: 1.45% 1% auto 1%;
+    position: sticky;
+    top: var(--chrome-band);
+    z-index: 3;
     display: flex;
-    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.6ch;
+    padding: 0.4rem clamp(1rem, 3cqw, 3rem);
     font-size: clamp(0.7rem, 0.95cqw, 1.05rem);
     line-height: 1;
     letter-spacing: 0.01em;
-    z-index: 3;
     pointer-events: none;
   }
   .site__wordmark {
     font-weight: 600;
   }
+  .site__sep,
   .site__links {
     color: var(--ink-1, var(--ink));
   }
 
-  /* The book: spreads snap through the window; the crease never moves. */
-  .book {
-    position: absolute;
-    inset: 0;
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
-    scrollbar-width: none;
-  }
-  .book:focus-visible {
-    outline: var(--border-w, 2px) solid var(--spot, var(--ink));
-    outline-offset: -2px;
-  }
-
+  /* One spread: a full-height verso|recto split. scroll-snap is deliberately not
+     used — natural reading scroll is the mandate, and the pinned crease, not a
+     hard snap, is what makes the turn read. */
   .spread {
-    height: 100%;
+    min-height: calc(100svh - var(--chrome-band));
     display: grid;
     grid-template-columns: 1fr 1fr;
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
   }
 
   .page {
     position: relative;
     margin: 0;
   }
-  /* Verso: the artwork page — a full-bleed kernel specimen, bleeding to the
-     top, bottom and left edges exactly as the reference photograph does. */
+  /* Verso: the artwork page. On the plate spread it is the committed photograph,
+     full-bleed; elsewhere a large folio number. The paper-tint ground doubles as
+     the image's load-in skeleton, so nothing flashes before the bytes arrive. */
   .page--verso {
     display: grid;
     place-items: center;
     background-color: var(--paper-1, var(--paper));
   }
+  .art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .art {
+      opacity: 0;
+    }
+  }
   .page__num {
-    /* Re-tuned for the 1600px page: the old 6rem cap was sized for the ~1000px
-       stage and would shrink the number to 12% of the verso instead of 20%. */
     font-size: clamp(2.5rem, 10cqw, 10rem);
     color: var(--ink-3, var(--ink-2));
     letter-spacing: 0.04em;
   }
-  /* One spread carries the spot colour — "artwork carries colour". */
+  /* One spread carries the spot colour — "artwork carries colour" (the plate
+     spread already does, in the photograph). */
   .spread:nth-of-type(3) .page__num {
     color: var(--spot, var(--ink));
   }
 
-  /* Recto: white page, one portrait plate hung high and flush to the gutter.
-     Measured: x800→1199, y34→609 — so half the recto page wide, 400/576 in
-     aspect, its left edge buried in the fold shadow (the plate's hard top edge
-     at y=34 survives at x=802 but not at x=798, which is how we know it runs
-     right up to the crease). Nothing else marks the recto: the reference is
-     pure paper from y=609 to the bottom edge. */
+  /* Recto: white page, one portrait plate hung high and flush to the gutter —
+     the source's proportions (x800→1199, y34→609 of 1600×1000: half the recto
+     wide, 400/576 in aspect, its left edge buried in the fold). */
   .plate {
     position: absolute;
     top: 3.4%;
@@ -205,25 +216,20 @@ const SPREADS = 4;
     box-shadow: var(--shadow, none);
   }
   .plate__num {
-    /* Re-tuned with the plate: the 1.4rem cap held this to the old stage's
-       plate width, not this page's. */
     font-size: clamp(0.9rem, 2.4cqw, 2.4rem);
     color: var(--ink-2);
     letter-spacing: 0.06em;
   }
 
-  /* The fake fold, pinned over the scrolling spreads. The reference's crease is
-     a synthetic gradient, not photographed paper — its falloff is identical to
-     two decimals on every row — so it is worth matching exactly. Measured on the
-     recto's clean white: alpha 0.87 at the fold, 0.43 at 5px, 0.24 at 9px, 0.14
-     at 13px, 0.06 at 21px, gone by 32px (2cqw). Far tighter than a linear ramp,
-     hence the stops. The verso's falloff is unmeasurable — the photograph is too
-     dark to separate shadow from content — so it mirrors the recto's, which is
-     what the source's evident symmetry implies. --turn (set by the script)
-     deepens the whole crease as a spread lifts. */
+  /* The fold, pinned to the viewport centre over the scrolling spreads. The
+     reference's crease is a synthetic gradient, not photographed paper — its
+     falloff is identical to two decimals on every row (alpha 0.87 at the fold,
+     0.43 at 5px, 0.24 at 9px, 0.14 at 13px, 0.06 at 21px, gone by 32px ≈ 2cqw),
+     far tighter than a linear ramp, hence the stops. --turn (from the script)
+     deepens the whole crease as a spread lifts; without JS it holds at base. */
   .crease {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: var(--chrome-band);
     bottom: 0;
     left: 50%;
     width: 0;
@@ -256,8 +262,44 @@ const SPREADS = 4;
     left: 0;
   }
 
+  /* Spine progress: a slim mark down the fold that fills with scroll — the one
+     CSS scroll-driven behaviour, present only where it can animate (scroll
+     timeline + motion allowed), never a broken static bar elsewhere. */
+  .crease__progress {
+    display: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .crease__progress {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: -1px;
+        width: 2px;
+        height: 100%;
+        background-color: var(--spot, var(--ink));
+        opacity: 0.55;
+        transform-origin: top;
+        scale: 1 0;
+        animation: spine-fill linear both;
+        animation-timeline: scroll(root);
+      }
+      @keyframes spine-fill {
+        to {
+          scale: 1 1;
+        }
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .art {
+      transition: none;
+    }
+  }
+
   /* Phone: the source layout adapting, not a second design. The spread stays a
-     spread — the fold is the whole point — but half of a ~195px recto is not a
+     spread — the fold is the whole point — but half of a narrow recto is not a
      plate, so it takes the width it needs, as the exemplar's does. */
   @container (max-width: 40rem) {
     .plate {

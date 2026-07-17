@@ -50,7 +50,9 @@ pages". The original §4 list dropped it.)
       index resolves into a past-the-fold plate (commit)
 - [x] after — tour marquee/timetable; pixel wordmark stays data, poster plate
       supplies the imagery slot (commit)
-- [ ] b374
+- [x] b374 — open-book spreads; crease pinned fixed over natural scroll, photo
+      is the book's plate, running head opts into the band (collision retired),
+      spine progress scroll-driven (commit)
 - [ ] b421
 - [ ] b508
 - [ ] b970
