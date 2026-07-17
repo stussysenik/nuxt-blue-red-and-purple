@@ -6,9 +6,10 @@
 // and two words of nav pinned top-left, a single centred plate on an otherwise
 // empty page, an 01 / 08 counter bottom-centre. The mechanic is live, not
 // pictured — the canvas is split into two cursor zones and clicking either half
-// hard-cuts between numbered plates (no easing; the source cuts). Plates are
-// de-branded kernel specimens: we rebuild the room, not the client's artwork.
-// All spacing/type composes from kernel custom properties.
+// hard-cuts between numbered plates (no easing; the source cuts). Plate 01, the
+// one the page opens on, IS the committed photo — the artwork the slideshow
+// presents; plates 02–08 stay de-branded numbered specimens. All spacing/type
+// composes from kernel custom properties.
 //
 // Reference (internal, never shipped): refs/works/h724.jpg, 1600×1000.
 //
@@ -43,11 +44,24 @@ const PLATES = 8;
     </header>
 
     {
-      Array.from({ length: PLATES }, (_, i) => (
-        <figure class="plate" data-on={i === 0 ? '' : undefined}>
-          <span class="plate__num font-mono">{String(i + 1).padStart(2, '0')}</span>
-        </figure>
-      ))
+      Array.from({ length: PLATES }, (_, i) =>
+        i === 0 ? (
+          <figure class="plate plate--photo" data-on="">
+            <img
+              class="plate__img"
+              src={w.image}
+              alt={`${w.title} plate 01`}
+              width="1075"
+              height="694"
+              decoding="async"
+            />
+          </figure>
+        ) : (
+          <figure class="plate">
+            <span class="plate__num font-mono">{String(i + 1).padStart(2, '0')}</span>
+          </figure>
+        )
+      )
     }
 
     <p class="site__counter font-mono">
@@ -83,18 +97,20 @@ const PLATES = 8;
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
     background-color: var(--paper);
     color: var(--ink);
-    overflow: hidden;
   }
 
   /* Transcribed from the reference at 1600px: wordmark ink starts x17/y20, the
      nav sets ~29px (1.8cqw), and the wordmark→links gap is ~34px, not the wide
-     stage-era 3.2em. */
+     stage-era 3.2em. The reference pinned the nav to the very top edge, but our
+     room carries a pinned ← Index the source never had, so the nav opts into the
+     shared chrome band — its baseline drops below the reserved strip, clearing
+     the mark at every width (never above 1.5%). */
   .site__nav {
     position: absolute;
-    inset: 1.5% auto auto 1%;
+    inset: max(1.5%, var(--chrome-band)) auto auto 1%;
     display: flex;
     gap: 0.95em;
     font-size: clamp(0.8rem, 1.8cqw, 1.9rem);
@@ -127,6 +143,27 @@ const PLATES = 8;
   }
   .plate[data-on] {
     display: grid;
+  }
+  /* Plate 01 is the committed photo: it fills the plate box (the paper-1 fill is
+     its ghost skeleton) and fades in over it on load — no JS (@starting-style).
+     object-fit crops within the img's own box, so nothing spills the frame. */
+  .plate__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .plate__img {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .plate__img {
+      transition: none;
+    }
   }
   .plate__num {
     font-size: clamp(2rem, 5cqw, 5.5rem);
