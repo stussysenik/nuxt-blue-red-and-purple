@@ -1,22 +1,65 @@
 ---
 // B421 — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: a proposal
-// deck wearing a website. Two rows of pinned chrome — wordmark, A/B/C switcher,
-// right-set spec paragraph — sit on hairlines above a gallery grid whose plates
-// each declare their own ratio in a caption rail (A1 — 1:1 … 2:1), with a
-// three-part colophon on the bottom baseline. The mechanic is live, not
-// pictured: A/B/C hard-swaps the whole sheet — label, plate count, grid — under
-// chrome that never moves. Plates are de-branded kernel specimens — we rebuild
-// the room, not the client's artwork. The work's white/black is grafted inline
-// inside the stage; its blue rides in as --work-accent.
+// The page IS the recreation: a proposal deck wearing a website, edge-to-edge.
+// Two rows of pinned chrome — wordmark, A/B/C switcher, right-set spec
+// paragraph — sit on hairlines above a gallery grid whose plates each declare
+// their own ratio in a caption rail (A1 — 1:1 … 2:1), with a three-part
+// colophon on the bottom baseline. The mechanic is live, not pictured: A/B/C
+// hard-swaps the whole sheet — label, plate tally, grid — under chrome that
+// never moves. Plates are de-branded kernel specimens: we rebuild the room, not
+// the client's artwork. The work's white/black grafts inline as
+// --site-paper/--site-ink; its blue rides in as --work-accent ("artwork carries
+// colour"). The room's hairline + muted tone derive from that grafted pair, not
+// from mode-dependent kernel tokens, so the sheet stays stark in every mode.
+//
+// Reference (internal, never shipped): refs/works/b421.jpg, 1600×1000, L=255.
+// Measured with scripts/ref-geometry.py, then converted x/1600*100 → cqw:
+//
+//   content box   ink x11→1587                 → padding-inline .75cqw (12px)
+//   4 columns     dividers x406/800/1194       → 4×394px, no gap; borders divide
+//   chrome type   band y12→26 (15px)           → clamp(.75rem, 1cqw, 1.05rem)
+//   right column  x1068→1587 (519 of 1576)     → 1fr minmax(0, 32.9%)
+//   row A         ink y12→26, rule y37         → padding .55em .75cqw .5em
+//   row B         ink y51→134 (5 lines), y163  → padding .65em .75cqw 1.6em
+//   spec copy     519px wide, pitch ~17.8px    → .82em / line-height 1.36
+//   deck top      rule y163 → art y227 (64px)  → padding-top 4cqw
+//   art box       291sq centred in a 394 col   → width 74%, margin-bottom 3.4cqw
+//   caption rail  rule y573, ink y583→591 (9)  → clamp(.55rem, .78cqw, .85rem)
+//   caption inset text x24 / x419 / x812       → padding-left .75cqw (12px)
+//   row gap       row1 ends 605, row2 top 677  → margin-top 4.5cqw (72px)
+//   footer        rule y962, ink y975→989      → padding .55em .75cqw
+//
+// The two gallery rows land on the same art height (291px) from opposite rules —
+// 4 columns at 1:1 and 2 columns at 2:1 — which is the sheet's own logic, and
+// the reference confirms it (subject bands 272px and 268px). The spec paragraph
+// was extended to the reference's five-line block: the source's is lorem, ours
+// is real, and the wrap point is a measured target like any other.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   A client presentation formatted as a public page. The chrome reads like a
+//   cover sheet — studio name, a live "Proposal: A. B. C." switcher, spec copy
+//   set into the right third — and the gallery reads like deck pages: every
+//   artwork sits over a caption cell declaring its index and ratio on a
+//   hairline. Switching proposals replaces the entire sheet while the two chrome
+//   baselines and the colophon hold perfectly still.
+//
+//   Study notes —
+//   The chrome runs on thirds — copy column pinned at the right third — while
+//   the gallery runs on quarters and halves, and the two systems never align;
+//   the per-plate caption hairlines reconcile them, turning the grid into its
+//   own legend. Because row height is derived from the declared ratio, a row of
+//   four squares and a row of two 2:1 plates land on identical margins — the
+//   swap between proposals reads as one sheet replacing another, not a layout
+//   re-flowing.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'b421');
 const w = entry!.data;
-const [, sitePaper, siteInk] = w.palette ?? [];
+const [accent, sitePaper, siteInk] = w.palette ?? [];
 
 // Three decks: A transcribed from the reference, B/C extended by its own rule —
 // every row takes its height from the ratio its plates declare (… C8 4:1).
@@ -32,80 +75,58 @@ const DECKS = SPECS.map(([id, specs]) => {
 });
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — live, A/B/C proposal switcher">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          A client presentation formatted as a public page. The chrome reads like a cover sheet —
-          studio name, a live "Proposal: A. B. C." switcher, spec copy set into the right third —
-          and the gallery reads like deck pages: every artwork sits over a caption cell declaring
-          its index and ratio on a hairline. Switching proposals replaces the entire sheet while
-          the two chrome baselines and the colophon hold perfectly still.
-        </p>
-      </section>
-    </Fragment>
-
-    <div class="site" style={`--site-paper:${sitePaper ?? 'var(--paper)'};--site-ink:${siteInk ?? 'var(--ink)'}`}>
-      <header class="site__chrome">
-        <div class="site__row">
-          <span class="site__wordmark">{w.title} Studio, Inc.</span>
-          <span class="site__meta">
-            <span>Proposal:&ensp;{DECKS.map((d, i) => (
-              <button class="sw" type="button" data-deck={d.id} data-on={i === 0 ? '' : undefined}>{d.id}.</button>
-            ))}</span>
-            <span class="site__tally font-mono">{DECKS[0]!.plates} plates</span>
-          </span>
-        </div>
-        <div class="site__row">
-          <span class="site__proposal">Proposal A</span>
-          <p class="site__copy">
-            Each proposal is a fixed sequence of plates. Every plate declares its ratio in the
-            caption rail beneath it, and each row takes its height from that declaration.
-            Switching proposals replaces the whole sheet under the same two baselines.
-          </p>
-        </div>
-      </header>
-
-      <div class="site__scroll" data-lenis-prevent>
-        {DECKS.map((d, di) => (
-            <section class="deck" data-deck={d.id} data-plates={d.plates} data-on={di === 0 ? '' : undefined}>
-              {d.rows.map((r) => (
-                <div class="row" style={`--cols:${r.count};--ar:${r.ratio.replace(':', ' / ')}`}>
-                  {r.cells.map((label) => (
-                    <figure class="cell">
-                      <span class="cell__art"><span class="cell__num font-mono">{label}</span></span>
-                      <figcaption class="cell__tag font-mono">{label} — {r.ratio}</figcaption>
-                    </figure>
-                  ))}
-                </div>
-              ))}
-            </section>
-          ))}
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main
+    class="site"
+    style={`--site-paper:${sitePaper ?? 'var(--paper)'};--site-ink:${siteInk ?? 'var(--ink)'}${accent ? `;--work-accent:${accent}` : ''}`}
+  >
+    <header class="site__chrome">
+      <div class="site__row">
+        <span class="site__wordmark">{w.title} Studio, Inc.</span>
+        <span class="site__meta">
+          <span>Proposal:&ensp;{DECKS.map((d, i) => (
+            <button class="sw" type="button" data-deck={d.id} data-on={i === 0 ? '' : undefined}>{d.id}.</button>
+          ))}</span>
+          <span class="site__tally font-mono">{DECKS[0]!.plates} plates</span>
+        </span>
       </div>
+      <div class="site__row">
+        <span class="site__proposal">Proposal A</span>
+        <p class="site__copy">
+          Each proposal is a fixed sequence of plates. Every plate declares its ratio in the
+          caption rail beneath it, and each row takes its height from that declaration — a row of
+          four squares and a row of two 2:1 plates land on identical margins. Switching proposals
+          replaces the whole sheet under the same two baselines: the label and the plate tally
+          move, the chrome does not.
+        </p>
+      </div>
+    </header>
 
-      <footer class="site__foot">
-        <span class="site__mail" aria-hidden="true">Email</span>
-        <span>{w.title} — proposal deck</span>
-        <span class="font-mono">№ 0421</span>
-      </footer>
+    <div class="site__scroll" data-lenis-prevent>
+      {DECKS.map((d, di) => (
+          <section class="deck" data-deck={d.id} data-plates={d.plates} data-on={di === 0 ? '' : undefined}>
+            {d.rows.map((r) => (
+              <div class="row" style={`--cols:${r.count};--ar:${r.ratio.replace(':', ' / ')}`}>
+                {r.cells.map((label) => (
+                  <figure class="cell">
+                    <span class="cell__art"><span class="cell__num font-mono">{label}</span></span>
+                    <figcaption class="cell__tag font-mono">{label} — {r.ratio}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            ))}
+          </section>
+        ))}
     </div>
 
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          The chrome runs on thirds — copy column pinned at the right third — while the gallery
-          runs on quarters and halves, and the two systems never align; the per-plate caption
-          hairlines reconcile them, turning the grid into its own legend. Because row height is
-          derived from the declared ratio, a row of four squares and a row of two 2:1 plates land
-          on identical margins — the swap between proposals reads as one sheet replacing another,
-          not a layout re-flowing.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+    <footer class="site__foot">
+      <span class="site__mail" aria-hidden="true">Email</span>
+      <span class="site__meta">
+        <span>{w.title} — proposal deck</span>
+        <span class="font-mono">№ 0421</span>
+      </span>
+    </footer>
+  </main>
 </Base>
 
 <script>
@@ -129,29 +150,52 @@ const DECKS = SPECS.map(([id, specs]) => {
 </script>
 
 <style>
-  /* The rebuilt room: two chrome baselines pinned top, deck scrolling between,
-     colophon on the bottom edge. Stark white/black grafted inline; blue = accent. */
+  /* The rebuilt room, now the whole page: two chrome baselines pinned top, the
+     deck scrolling between, colophon on the bottom edge — one fold, exactly as
+     the reference frames itself (chrome 163px, footer 38px, deck 799px between).
+     The page is its own query container — the stage used to provide one, so cq*
+     units silently resolve against the viewport without this. */
   .site {
+    container-type: inline-size;
     display: flex;
     flex-direction: column;
-    aspect-ratio: 16 / 10;
+    min-height: 100dvh;
+    max-height: 100dvh;
     background-color: var(--site-paper, var(--paper));
     color: var(--site-ink, var(--ink));
-    font-size: clamp(0.6rem, 1.3vw, 0.95rem);
+    /* Reference chrome band y12→26 = 15px ink at 1600 → ~16px type. */
+    font-size: clamp(0.75rem, 1cqw, 1.05rem);
+    line-height: 1.2;
+    /* The room's own tones, derived from the grafted pair rather than kernel
+       --line/--ink-2, which follow the active mode and would break the graft. */
+    --site-line: color-mix(in oklab, var(--site-ink, var(--ink)) 20%, var(--site-paper, var(--paper)));
+    --site-ink-2: color-mix(in oklab, var(--site-ink, var(--ink)) 55%, var(--site-paper, var(--paper)));
   }
 
-  /* Chrome grid runs on thirds: 1fr | right third. The gallery below runs on
-     quarters — the mismatch is the source's, kept deliberately. */
-  .site__row {
+  /* Chrome and colophon share one grid on thirds: the right column runs
+     x1068→1587 in the reference — 519 of the 1576px content box. The gallery
+     below runs on quarters; the mismatch is the source's, kept deliberately. */
+  .site__row,
+  .site__foot {
     display: grid;
-    grid-template-columns: 1fr minmax(0, 33.5%);
+    grid-template-columns: 1fr minmax(0, 32.9%);
     gap: 0.5em 2em;
-    padding: 1em 2.5% 0.9em;
-    border-bottom: 1px solid var(--line, var(--ink-2));
+  }
+  .site__row {
+    border-bottom: 1px solid var(--site-line);
+  }
+  /* Row A: ink y12→26 under a rule at y37. */
+  .site__row:first-child {
+    padding: 0.55em 0.75cqw 0.5em;
+  }
+  /* Row B: the five-line spec block, ink y51→134 under a rule at y163. */
+  .site__row + .site__row {
+    padding: 0.65em 0.75cqw 1.6em;
   }
   .site__meta {
     display: flex;
     justify-content: space-between;
+    gap: 1em;
   }
   .sw {
     background: none;
@@ -169,46 +213,52 @@ const DECKS = SPECS.map(([id, specs]) => {
   }
   .site__copy {
     margin: 0;
-    font-size: 0.85em;
-    line-height: 1.45;
+    /* 519px measure, five lines, ink pitch ~17.8px in the reference. */
+    font-size: 0.82em;
+    line-height: 1.36;
   }
 
   .site__scroll {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
   }
+  /* Rule y163 → first art box y227 = 64px = 4cqw. */
   .deck {
     display: none;
-    padding: 4% 2.5% 5%;
+    padding: 4cqw 0.75cqw 5cqw;
   }
   .deck[data-on] {
     display: block;
   }
+  /* Columns are contiguous — the reference divides them with rules at
+     x406/800/1194, not with a gap. */
   .row {
     display: grid;
     grid-template-columns: repeat(var(--cols), 1fr);
-    column-gap: 0.3em;
   }
   .row + .row {
-    margin-top: 4.5%;
+    margin-top: 4.5cqw;
   }
 
-  /* Specimen plates: the ratio each caption declares IS the panel's geometry. */
+  /* Specimen plates: the ratio each caption declares IS the panel's geometry.
+     74% of a 394px column = the reference's 291px art block; the same 74% of a
+     788px column at 2:1 lands on the same 291px height, which is the sheet's
+     own rule and why the reference's two rows share a baseline. */
   .cell {
     margin: 0;
   }
   .cell__art {
-    width: 72%;
-    margin: 4% auto 7%;
-    aspect-ratio: var(--ar, 1);
     display: grid;
     place-items: center;
-    background-color: var(--paper-1, var(--paper));
-    border: 1px solid var(--line, var(--ink-2));
+    width: 74%;
+    margin: 0 auto 3.4cqw;
+    aspect-ratio: var(--ar, 1);
+    border: 1px solid var(--site-line);
   }
   .cell__num {
     font-size: clamp(0.9rem, 3.4cqw, 2.2rem);
-    color: var(--ink-3, var(--ink-2));
+    color: var(--site-ink-2);
   }
   /* Every third plate carries the work's blue — "artwork carries colour". */
   .cell:nth-child(3n + 1) .cell__num {
@@ -217,22 +267,45 @@ const DECKS = SPECS.map(([id, specs]) => {
   .site__tally,
   .cell__tag {
     letter-spacing: 0.06em;
-    color: var(--ink-2);
   }
+  /* Caption rail: rule at y573, ink y583→591 (capH 9), text inset 12px from the
+     column's own edge; the divider between cells is the rail's left border. */
   .cell__tag {
-    border-top: 1px solid var(--line, var(--ink-2));
-    padding: 0.55em 0.75em 0 0.15em;
-    font-size: clamp(0.5rem, 0.95vw, 0.7rem);
+    border-top: 1px solid var(--site-line);
+    padding: 0.55em 0.75em 0.55em 0.75cqw;
+    font-size: clamp(0.55rem, 0.78cqw, 0.85rem);
+  }
+  .cell + .cell .cell__tag {
+    border-left: 1px solid var(--site-line);
   }
 
+  /* Colophon: rule y962, ink y975→989 — the middle item hangs off the same
+     right column as the chrome above it, not off the page centre. */
   .site__foot {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.9em 2.5% 1em;
-    border-top: 1px solid var(--line, var(--ink-2));
+    padding: 0.55em 0.75cqw;
+    border-top: 1px solid var(--site-line);
   }
   .site__mail {
     color: var(--work-accent, var(--spot));
     text-decoration: underline;
+  }
+
+  /* Phone: the source sheet adapting, not a second design. The thirds collapse
+     to one column and the gallery degrades to one plate per row, so every plate
+     still declares its ratio at a legible size. */
+  @container (max-width: 40rem) {
+    .site__row,
+    .site__foot {
+      grid-template-columns: 1fr;
+    }
+    .row {
+      grid-template-columns: 1fr;
+    }
+    .cell + .cell {
+      margin-top: 4.5cqw;
+    }
+    .cell + .cell .cell__tag {
+      border-left: none;
+    }
   }
 </style>

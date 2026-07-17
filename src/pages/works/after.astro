@@ -1,25 +1,53 @@
 ---
-// After — bespoke in-kernel reconstruction.
+// After — bespoke in-kernel reconstruction, promoted to the full page.
 //
-// Signature layout, rebuilt 1:1: one centered column and nothing beside it —
-// a coarse pixel-display wordmark sitting directly over a mono grotesk, then
-// a dated tour list that serves as the site's entire index. No nav, no hero,
-// no sections; the face-contrast is the identity and the list is the map.
-// The mechanic is typographic rather than interactive, so the stage is static
-// by design: the wordmark is redrawn from 5×5 bitmaps (data, not an asset —
-// no image, no webfont) and the list rows are structural echoes with the
-// venue column reduced to a tickets cue. Dates carry no year. Everything
-// composes from kernel custom properties; the work's two blues stay inside
-// the stage — the pixel face carries the colour, the chrome stays ink.
+// The page IS the recreation: the reference's signature layout fills the
+// viewport edge-to-edge, exactly as the source frames itself. One centered
+// column and nothing beside it — a coarse pixel-display wordmark sitting
+// directly over a mono grotesk, then a dated tour list that serves as the
+// site's entire index. No nav, no hero, no sections; the face-contrast is the
+// identity and the list is the map. The mechanic is typographic rather than
+// interactive, and it is live, not pictured: the wordmark is redrawn from 5×5
+// bitmaps (data, not an asset — no image, no webfont) and the tickets cue
+// surfaces the second blue only on approach. The list rows are structural
+// echoes with the venue column reduced to a tickets cue; dates carry no year.
+// De-branded kernel specimens throughout: we rebuild the room, not the
+// client's artwork. Everything composes from kernel custom properties; the
+// work's two blues stay on the page root — the pixel face carries the colour,
+// the chrome stays ink.
+//
+// Reference: NONE. There is no refs/works/after.jpg, so unlike the rest of the
+// batch this page's geometry was never measured — ref-geometry.py has nothing
+// to read. The proportions below are the pre-promotion stage's own, carried
+// over intact and re-tuned only where a cap was pinned to the ~1000px stage
+// (see the clamp notes in the stylesheet). They are inherited, not transcribed,
+// and are the numbers a visual pass should settle.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   The whole site is one centered column doing two voices: a chunky pixel
+//   display face for the name, a small mono grotesk for everything under it.
+//   There is no navigation because the dated tour list is the navigation —
+//   date, city, tickets, next row. The page reads like a marquee over a
+//   timetable, and it needs nothing else to feel finished.
+//
+//   Study notes —
+//   The system works because the two faces never compete for a job: the pixel
+//   face is pure display — five glyphs, one colour, no small sizes — and the
+//   mono grotesk is pure utility, so every row of the list aligns for free off
+//   the character grid. Centering is what makes it hold; with a single axis of
+//   symmetry the eye only measures one thing, and the ragged city names against
+//   the fixed date column give the column its rhythm. That is why this study
+//   rebuilds the bitmap and the row grid rather than approximating either.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'after');
 const w = entry!.data;
-// CaseStudy grafts palette[0] as --work-accent; the second blue is read here
-// and grafted onto the stage root only (smac precedent).
-const blueLight = w.palette?.[1];
+// CaseStudy used to graft palette[0] as --work-accent; with the wrapper gone
+// both blues graft onto the page root here (smac precedent).
+const [blue, blueLight] = w.palette ?? [];
 
 // The pixel display face as data: A F T E R, 5×5 cells per glyph.
 const GLYPHS = [
@@ -42,86 +70,69 @@ const DATES: [string, string][] = [
 ];
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — static, pixel face over mono grotesk">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          The whole site is one centered column doing two voices: a chunky pixel display face for
-          the name, a small mono grotesk for everything under it. There is no navigation because
-          the dated tour list is the navigation — date, city, tickets, next row. The page reads
-          like a marquee over a timetable, and it needs nothing else to feel finished.
-        </p>
-      </section>
-    </Fragment>
-
-    <div class="site" style={blueLight ? `--blue-2:${blueLight}` : undefined}>
-      <div class="site__mark" role="img" aria-label={`${w.title} — pixel wordmark`}>
-        {
-          GLYPHS.map((glyph) => (
-            <span class="glyph">
-              {glyph.split('').map((bit) => (
-                <i data-on={bit === '1' ? '' : undefined} />
-              ))}
-            </span>
-          ))
-        }
-      </div>
-
-      <p class="site__tag font-mono ttu tracked">On tour</p>
-
-      <ol class="site__index font-mono">
-        {
-          DATES.map(([date, city], i) => (
-            <li class="row">
-              <span class="row__num">{String(i + 1).padStart(2, '0')}</span>
-              <span class="row__date">{date}</span>
-              <span class="row__city ttu tracked">{city}</span>
-              <span class="row__cta ttu">Tickets</span>
-            </li>
-          ))
-        }
-      </ol>
-
-      <p class="site__foot font-mono ttu tracked">Mailing list</p>
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main
+    class="site"
+    style={`--work-accent:${blue ?? 'var(--ink)'};--blue-2:${blueLight ?? 'var(--work-accent)'}`}
+  >
+    <div class="site__mark" role="img" aria-label={`${w.title} — pixel wordmark`}>
+      {
+        GLYPHS.map((glyph) => (
+          <span class="glyph">
+            {glyph.split('').map((bit) => (
+              <i data-on={bit === '1' ? '' : undefined} />
+            ))}
+          </span>
+        ))
+      }
     </div>
 
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          The system works because the two faces never compete for a job: the pixel face is pure
-          display — five glyphs, one colour, no small sizes — and the mono grotesk is pure
-          utility, so every row of the list aligns for free off the character grid. Centering is
-          what makes it hold; with a single axis of symmetry the eye only measures one thing, and
-          the ragged city names against the fixed date column give the column its rhythm. That is
-          why this study rebuilds the bitmap and the row grid rather than approximating either.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+    <p class="site__tag font-mono ttu tracked">On tour</p>
+
+    <ol class="site__index font-mono">
+      {
+        DATES.map(([date, city], i) => (
+          <li class="row">
+            <span class="row__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="row__date">{date}</span>
+            <span class="row__city ttu tracked">{city}</span>
+            <span class="row__cta ttu">Tickets</span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="site__foot font-mono ttu tracked">Mailing list</p>
+  </main>
 </Base>
 
 <style>
-  /* The rebuilt room: one centered column on empty paper — marquee, tag,
-     timetable, footer cue, each on its own band of the height. */
+  /* The rebuilt room, now the whole page: one centered column on empty paper —
+     marquee, tag, timetable, footer cue, each on its own band of the height.
+     The page is its own query container — the stage used to provide one, so
+     cq* units would otherwise resolve against the viewport width instead. */
   .site {
-    aspect-ratio: 16 / 10;
+    container-type: inline-size;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: var(--paper);
     color: var(--ink);
+    /* Percentages of the page's inline size, so the stage's proportions
+       survive the promotion unchanged. */
     padding: 7% 6% 4.5%;
   }
 
-  /* The pixel face carries the work's colour — "artwork carries colour". */
+  /* The pixel face carries the work's colour — "artwork carries colour".
+     Was min(46%, 22rem): on the ~1000px stage the 22rem cap always won, so the
+     mark really rendered at 352px = 35.2% of the stage. Held as 35.2cqw, the
+     cap no longer shrinks the mark to 22% of a 1600px page. */
   .site__mark {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 5.5%;
-    width: min(46%, 22rem);
+    width: 35.2cqw;
     color: var(--work-accent, var(--spot, var(--ink)));
   }
   .glyph {
@@ -136,20 +147,25 @@ const DATES: [string, string][] = [
     background-color: currentColor;
   }
 
+  /* Was clamp(.55rem, 1.1vw, .8rem) — the .8rem cap pinned it to 12.8px on the
+     stage (1.28% of it). Re-tuned to cqw so the ratio, not the cap, rules; the
+     floor is the phone size. */
   .site__tag {
     margin: 5.5% 0 0;
-    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+    font-size: clamp(0.7rem, 1.28cqw, 1.3rem);
     color: var(--ink-2);
   }
 
   /* The index: fixed mono columns, hairline rows. The date column is rigid,
-     the city rag is the only irregularity the page allows itself. */
+     the city rag is the only irregularity the page allows itself.
+     Width was min(58%, 28rem) — the 28rem cap won at 448px = 44.8% of the
+     stage; type was capped at .95rem = 15.2px = 1.52% of it. */
   .site__index {
-    width: min(58%, 28rem);
+    width: 44.8cqw;
     margin: 2.5% 0 0;
     padding: 0;
     list-style: none;
-    font-size: clamp(0.6rem, 1.3vw, 0.95rem);
+    font-size: clamp(0.8rem, 1.52cqw, 1.55rem);
   }
   .row {
     display: grid;
@@ -184,7 +200,18 @@ const DATES: [string, string][] = [
 
   .site__foot {
     margin: auto 0 0;
-    font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+    font-size: clamp(0.7rem, 1.28cqw, 1.3rem);
     color: var(--ink-3, var(--ink-2));
+  }
+
+  /* Phone: the source layout adapting, not a second design. The one column
+     simply takes the width it needs; nothing reflows or reorders. */
+  @container (max-width: 40rem) {
+    .site__mark {
+      width: 62cqw;
+    }
+    .site__index {
+      width: 82cqw;
+    }
   }
 </style>

@@ -1,19 +1,44 @@
 ---
 // Skrillex — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: the
-// entire viewport is the artwork, full bleed, and every character on the page
-// lives in one vertical rail pinned to the left edge — wordmark at the bottom,
-// a three-stroke glyph, then the nav words ascending. One typeface, one
-// weight, zero palette; the chrome is achromatic and the artwork carries all
-// the colour. The mechanic is live, not pictured — the rail's lines arrive
-// one per beat (click the room to replay). The artwork is a de-branded kernel
-// specimen: a full-bleed spot-colour field standing in for the photograph —
-// we rebuild the room, not the client's artwork. This work ships no palette
-// in its data, so the field composes from kernel --spot / --spot-2 only.
+// The page IS the recreation: the reference's signature layout fills the
+// viewport edge-to-edge, exactly as the source frames itself. There is no
+// layout to speak of — the artwork bleeds to all four edges and every
+// character lives in one vertical rail hugging the left edge, reading
+// bottom-to-top: wordmark, a three-stroke glyph, then five nav words
+// ascending. One typeface, one weight, one size, zero palette; the chrome is
+// achromatic and the artwork carries all the colour. The mechanic is live,
+// not pictured — the rail's lines arrive one per beat (click the room to
+// replay). The artwork is a de-branded kernel specimen: a full-bleed field
+// standing in for the photograph — we rebuild the room, not the client's
+// artwork. This work ships no palette in its data, so the field composes from
+// kernel --spot / --spot-2 only.
+//
+// Reference (internal, never shipped): refs/works/skrillex.jpg, 3200×2000.
+// ref-geometry degenerates here (design.md §Known tool limits): the rail is
+// light type over a dark photo and a *local* ground under a photo is not
+// modelled, so it collapses the rail into one 1712px "row". Every number below
+// was read off the jpg against the rail's own backdrop instead.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   There is no layout to speak of — that is the layout. The photograph runs
+//   edge to edge, and the whole interface is one vertical line of mono type
+//   climbing the left margin: wordmark, glyph, five nav words, all the same
+//   size and the same weight. No palette is declared anywhere in the chrome;
+//   the image supplies every ounce of colour, and the type stays as neutral as
+//   a caption on a contact sheet.
+//
+//   Study notes —
+//   Collapsing the type system to a single voice is what lets the page get away
+//   with a full-bleed image: with one typeface at one weight there is no
+//   hierarchy to defend, so the rail can sit on the artwork at any brightness
+//   and still read as chrome, not content. The vertical setting buys the same
+//   economy in space — seven items spend one text line of width and leave the
+//   other ninety-odd percent of the canvas untouched.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'skrillex');
 const w = entry!.data;
@@ -21,50 +46,20 @@ const w = entry!.data;
 const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — live, line-by-line arrival">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          There is no layout to speak of — that is the layout. The photograph runs edge to edge,
-          and the whole interface is one vertical line of mono type climbing the left margin:
-          wordmark, glyph, five nav words, all the same size and the same weight. No palette is
-          declared anywhere in the chrome; the image supplies every ounce of colour, and the type
-          stays as neutral as a caption on a contact sheet.
-        </p>
-      </section>
-    </Fragment>
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site">
+    <div class="art" aria-hidden="true"></div>
 
-    <div class="site">
-      <div class="art" aria-hidden="true">
-        <span class="art__meta font-mono ttu tracked">Plate 01 — full bleed</span>
-      </div>
+    <!-- Lines ship arrived (data-on) so the rail survives without JS; the
+         script strips and replays them on load. -->
+    <nav class="rail font-mono ttu" aria-label="Rebuilt rail navigation">
+      <span data-on>{w.title}</span>
+      <span class="rail__glyph" data-on aria-hidden="true">≡</span>
+      {RAIL.map((item) => <span data-on>{item}</span>)}
+    </nav>
 
-      <!-- Lines ship arrived (data-on) so the rail survives without JS; the
-           script strips and replays them on load. -->
-      <nav class="rail font-mono ttu" aria-label="Rebuilt rail navigation">
-        <span class="rail__mark" data-on>{w.title}</span>
-        <span class="rail__glyph" data-on aria-hidden="true">≡</span>
-        {RAIL.map((item) => <span data-on>{item}</span>)}
-      </nav>
-
-      <button class="replay" type="button" aria-label="Replay line-by-line arrival"></button>
-    </div>
-
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          Collapsing the type system to a single voice is what lets the page get away with a
-          full-bleed image: with one typeface at one weight there is no hierarchy to defend, so
-          the rail can sit on the artwork at any brightness and still read as chrome, not
-          content. The vertical setting buys the same economy in space — seven items spend one
-          text line of width and leave the other ninety-odd percent of the canvas untouched.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+    <button class="replay" type="button" aria-label="Replay line-by-line arrival"></button>
+  </main>
 </Base>
 
 <script>
@@ -86,54 +81,67 @@ const RAIL = ['Contact', 'Signup', 'Merch', 'Tour', 'Music'];
 </script>
 
 <style>
-  /* The rebuilt room. Proportions transcribed from the reference (a 16/10
-     frame): artwork bleeds to all four edges, the rail hugs the left edge
-     with a hair of padding, nothing else touches the canvas. */
+  /* The rebuilt room, now the whole page: the artwork bleeds to all four edges
+     and the rail is the only other object. The page is its own query container
+     — the stage used to provide one, so every cq* unit below would silently
+     re-resolve against the viewport without this. */
   .site {
+    container-type: inline-size;
     position: relative;
-    aspect-ratio: 16 / 10;
-    background-color: var(--paper);
+    min-height: 100dvh;
+    /* This room's ground is the artwork, not the paper, and the reference's
+       ground is dark (L=45). So the room inverts the kernel duotone: the field
+       is ink-weight and every mark on it is paper. Without this the promoted
+       page would ground itself in --paper (white in the light theme) and the
+       rail would invert against the reference. */
+    background-color: var(--ink);
+    color: var(--paper);
     overflow: hidden;
   }
 
-  /* The artwork, de-branded: a full-bleed specimen field. The source photo
-     is the page's only colour source, so the stand-in is the one coloured
-     object in the room — kernel spot inks, since this work declares none. */
+  /* The lone chrome mark inverts with the room, or it lands ink-on-ink. */
+  :global(.chrome-back) {
+    color: var(--paper);
+  }
+
+  /* The artwork, de-branded: a full-bleed specimen field standing in for the
+     photograph, and the room's only colour source. In generative mode --spot /
+     --spot-2 ARE the ink pair, so the field runs --ink-2 (L≈110) → --ink
+     (L≈20), bracketing the reference's detected ground (L=45). 115deg puts the
+     light end at the top-left, so the rail's local backdrop lightens at its
+     head and darkens toward the wordmark — the source's wall→hair fall
+     (measured L≈186 at MUSIC → L≈127 at SKRILLEX), rebuilt in ink. */
   .art {
     position: absolute;
     inset: 0;
     background-image: linear-gradient(115deg, var(--spot-2, var(--spot)) 0%, var(--spot) 62%);
   }
-  .art__meta {
-    position: absolute;
-    right: 2.6%;
-    bottom: 4%;
-    font-size: clamp(0.55rem, 1vw, 0.72rem);
-    color: var(--paper);
-    opacity: 0.7;
-  }
 
-  /* One rail, one typeface, one weight — the entire type system. Set
-     vertical and rotated so it reads bottom-to-top, as in the source;
-     DOM-first (the wordmark) lands at the bottom. */
+  /* One rail, one typeface, one weight, one size — the entire type system. Set
+     vertical and rotated so it reads bottom-to-top as in the source; DOM-first
+     (the wordmark) lands at the bottom. The box is content-height in the
+     top-left corner, NOT full-height: the reference's rail runs y3→1142 of
+     2000 and stops, so that length is content, not an anchor.
+
+     Transcribed from the reference at 3200×2000, all seven lines identical:
+     cap height 26px (0.81cqw) → 1.16cqw at IBM Plex Mono's 0.698 cap ratio;
+     letter advance 24.3px → 0.6em + 0.05em tracking; ink-to-ink line gap 45px
+     → 1.05em once the font's own side bearings (4.4px) and the tracking trail
+     (1.9px) are taken back out. Top edge: the box at top:0 lands MUSIC's cap
+     at y≈4 (reference y=3). */
   .rail {
     position: absolute;
-    inset: 0 auto 0 0;
-    padding-block: 4%;
-    padding-inline: 1.6%;
+    inset: 0 auto auto 0;
     writing-mode: vertical-rl;
     rotate: 180deg;
     display: flex;
-    gap: 2.4em;
-    font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+    gap: 1.05em;
+    font-size: clamp(0.75rem, 1.16cqw, 1.9rem);
     font-weight: 500;
-    letter-spacing: 0.14em;
-    color: var(--paper);
+    letter-spacing: 0.05em;
     z-index: 1;
   }
-  .rail__mark {
-    letter-spacing: 0.2em;
-  }
+  /* A single mark, not a word — tracking would only push it off its box. */
   .rail__glyph {
     letter-spacing: 0;
   }

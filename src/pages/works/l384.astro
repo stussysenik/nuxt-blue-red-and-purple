@@ -1,19 +1,45 @@
 ---
 // L384 — bespoke in-kernel reconstruction.
 //
-// Signature layout, rebuilt 1:1 from the owned reference screenshot: the whole
-// site is a numbered index pinned top-left on an otherwise empty page, with a
-// timestamp footer bottom-left and a narrow right column carrying everything
-// else — intro copy, a profile block, then one entry at a time: a hanging
-// gutter number, twin headings over meta stacks, and a plate that bleeds off
-// the bottom edge. The mechanic is live, not pictured — clicking an index line
-// swaps the entry inline, and the plate is split into two cursor zones that
-// hard-cut through that entry's numbered slides. Paragraph copy is echoed as
-// text-bar strokes (structure, not words); plates are de-branded kernel
-// specimens. The frozen 17:44:55 clock is transcribed from the reference.
+// The page IS the recreation: the reference's signature layout fills the
+// viewport edge-to-edge. The whole site is a numbered index pinned top-left on
+// an otherwise empty page, a timestamp footer bottom-left, and a narrow right
+// column carrying everything else — intro copy, a profile block, then one entry
+// at a time: a hanging gutter number, twin headings over meta stacks, and a
+// plate that bleeds off the bottom edge. The mechanic is live, not pictured —
+// clicking an index line swaps the entry inline, and the plate is split into two
+// cursor zones that hard-cut through that entry's numbered slides. Paragraph
+// copy is echoed as text-bar strokes (structure, not words); plates are
+// de-branded kernel specimens: we rebuild the room, not the client's artwork.
+// The frozen 17:44:55 clock is transcribed from the reference. All spacing/type
+// composes from kernel custom properties.
+//
+// Reference (internal, never shipped): refs/works/l384.jpg, 1600×1000, ground
+// L=255. ref-geometry merges this page's bands (rows sit inside the 8-blank-row
+// split), so the clusters below were sub-divided against the jpg by eye.
+//
+// Archived case-study copy (removed from DOM 2026-07-17):
+//
+//   The signature —
+//   The homepage is the table of contents. A numbered index sits top-left on a
+//   page that is mostly void, a timestamp keeps the bottom corner, and every
+//   piece of content — copy, credits, plates — is squeezed into one narrow
+//   column on the right. Selecting an index line doesn't navigate anywhere; the
+//   entry unfolds in place, its number hanging in the gutter, its plate cut by
+//   two invisible cursor zones and cropped by the fold as a promise that the
+//   column keeps going.
+//
+//   Study notes —
+//   Two vertical rules do all the work: the index numbers hang left of their
+//   labels, and the entry number hangs left of the content column in exactly the
+//   same relationship — so the near-empty left half and the dense right column
+//   read as one system, not two pages. The void in between is the margin that
+//   makes a thirty-percent column feel generous, and the plate breaking the
+//   bottom edge is the only cue the page scrolls. None of it survives sloppy
+//   alignment, which is why this study rebuilds the grid rather than screenshots
+//   it.
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import CaseStudy from '../../components/CaseStudy.astro';
 
 const entry = await getEntry('works', 'l384');
 const w = entry!.data;
@@ -21,86 +47,56 @@ const ENTRIES = 6;
 const SLIDES = 3;
 ---
 
-<Base title={`${w.title} — *blue red + purple/`}>
-  <CaseStudy work={w} stageLabel="Reconstruction — live, index-driven inline slideshows">
-    <Fragment slot="narrative">
-      <section class="prose">
-        <h2>The signature</h2>
-        <p>
-          The homepage is the table of contents. A numbered index sits top-left on a page that is
-          mostly void, a timestamp keeps the bottom corner, and every piece of content — copy,
-          credits, plates — is squeezed into one narrow column on the right. Selecting an index
-          line doesn't navigate anywhere; the entry unfolds in place, its number hanging in the
-          gutter, its plate cut by two invisible cursor zones and cropped by the fold as a promise
-          that the column keeps going.
-        </p>
-      </section>
-    </Fragment>
+<Base title={`${w.title} — *blue red + purple/`} chrome="work">
+  <main class="site">
+    <aside class="idx">
+      <p class="idx__head">Index</p>
+      <ol class="idx__list">
+        <li class="idx__row">
+          <span class="idx__num font-mono">00.</span><span>Information</span>
+        </li>
+        {
+          Array.from({ length: ENTRIES }, (_, i) => (
+            <li>
+              <button class="idx__row idx__item" type="button" data-on={i === 0 ? '' : undefined}>
+                <span class="idx__num font-mono">{String(i + 1).padStart(2, '0')}.</span>
+                <span class="idx__label">Entry {String.fromCharCode(65 + i)}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+    </aside>
 
-    <div class="site">
-      <aside class="idx">
-        <p class="idx__head">Index</p>
-        <ol class="idx__list">
-          <li class="idx__row">
-            <span class="idx__num font-mono">00.</span><span>Information</span>
-          </li>
-          {
-            Array.from({ length: ENTRIES }, (_, i) => (
-              <li>
-                <button class="idx__row idx__item" type="button" data-on={i === 0 ? '' : undefined}>
-                  <span class="idx__num font-mono">{String(i + 1).padStart(2, '0')}.</span>
-                  <span class="idx__label">Entry {String.fromCharCode(65 + i)}</span>
-                </button>
-              </li>
-            ))
-          }
-        </ol>
-      </aside>
+    <p class="site__clock font-mono">17:44:55&ensp;&ensp;{w.title}</p>
 
-      <p class="site__clock font-mono">17:44:55&ensp;&ensp;{w.title}</p>
+    <section class="detail">
+      <div class="bars" style="--n: 6"></div>
+      <p class="detail__profile">Profile</p>
+      <p class="detail__contact">Mail<br />Instagram</p>
 
-      <section class="detail">
-        <div class="bars" style="--n: 6"></div>
-        <p class="detail__profile">Profile</p>
-        <p class="detail__contact">Mail<br />Instagram</p>
-
-        <article class="entry">
-          <span class="entry__gutter font-mono" data-num>01.</span>
-          <div class="entry__grid">
-            <div>
-              <p class="entry__h" data-title>Entry A</p>
-              <p class="entry__meta">Paper / ink<br />Mono grid</p>
-            </div>
-            <div>
-              <p class="entry__h">Specimen</p>
-              <p class="entry__meta font-mono">235 × 324 mm<br />{SLIDES} plates</p>
-            </div>
+      <article class="entry">
+        <span class="entry__gutter font-mono" data-num>01.</span>
+        <div class="entry__grid">
+          <div>
+            <p class="entry__h" data-title>Entry A</p>
+            <p class="entry__meta">Kernel Editions<br />Paper / ink<br />1999</p>
           </div>
-          <div class="bars" style="--n: 4"></div>
-          <figure class="plate">
-            <span class="plate__num font-mono" data-plate>01.01</span>
-            <span class="plate__cur font-mono"><span data-cur>1</span> / {SLIDES}</span>
-            <button class="zone zone--prev" type="button" aria-label="Previous slide"></button>
-            <button class="zone zone--next" type="button" aria-label="Next slide"></button>
-          </figure>
-        </article>
-      </section>
-    </div>
-
-    <Fragment slot="notes">
-      <section class="prose">
-        <h2>Study notes</h2>
-        <p>
-          Two vertical rules do all the work: the index numbers hang left of their labels, and the
-          entry number hangs left of the content column in exactly the same relationship — so the
-          near-empty left half and the dense right column read as one system, not two pages. The
-          void in between is the margin that makes a thirty-percent column feel generous, and the
-          plate breaking the bottom edge is the only cue the page scrolls. None of it survives
-          sloppy alignment, which is why this study rebuilds the grid rather than screenshots it.
-        </p>
-      </section>
-    </Fragment>
-  </CaseStudy>
+          <div>
+            <p class="entry__h">Specimen</p>
+            <p class="entry__meta font-mono">Mono grid<br />235 × 324 mm<br />{SLIDES} plates</p>
+          </div>
+        </div>
+        <div class="bars" style="--n: 6"></div>
+        <figure class="plate">
+          <span class="plate__num font-mono" data-plate>01.01</span>
+          <span class="plate__cur font-mono"><span data-cur>1</span> / {SLIDES}</span>
+          <button class="zone zone--prev" type="button" aria-label="Previous slide"></button>
+          <button class="zone zone--next" type="button" aria-label="Next slide"></button>
+        </figure>
+      </article>
+    </section>
+  </main>
 </Base>
 
 <script>
@@ -129,26 +125,45 @@ const SLIDES = 3;
 </script>
 
 <style>
-  /* The rebuilt room. Proportions transcribed from the reference: index block
-     top-left, clock bottom-left, all content in a right column from 69% in,
-     the plate cropped by the room's bottom edge. */
+  /* The rebuilt room, now the whole page. Every number below is transcribed from
+     the reference at 1600×1000 and converted x/1600*100 → cqw|%: index block
+     top-left at x18/y19, clock bottom-left at x18, the content column from
+     x1108 to x1582 (69.25%→98.88%), the plate bleeding off the bottom edge.
+     The page is its own query container — the stage used to provide one, so cq*
+     units would otherwise resolve against the viewport. */
   .site {
+    container-type: inline-size;
     position: relative;
-    aspect-ratio: 16 / 10;
+    /* Inert at desktop width (every child is absolutely positioned); it is the
+       phone layout's flow, so it must be declared here — an element is never
+       its own query container, so .site cannot be restyled by @container. */
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
     background-color: var(--paper);
     color: var(--ink);
-    font-size: clamp(0.55rem, 1vw, 0.95rem);
-    line-height: 1.5;
+    line-height: 1.31; /* reference line pitch 18.4px over 14px type */
+    /* Reference body cap height ≈10px → 14px type at 1600 = 0.875cqw. Handed to
+       the children as a token because cq* on .site itself would resolve against
+       an ancestor container, not .site. */
+    --type: clamp(0.8rem, 0.875cqw, 1.15rem);
+  }
+  .idx,
+  .site__clock,
+  .detail {
+    font-size: var(--type);
   }
 
-  /* ── Index — numbers hang left of the labels, "Index" aligns with labels ── */
+  /* ── Index — numbers hang left of the labels, "Index" aligns with the labels.
+     Reference: numbers x18 (1.12%), labels x72 → a 54px / 3.86em gutter. ── */
   .idx {
     position: absolute;
-    inset: 2.4% auto auto 1.2%;
+    inset: 1.6% auto auto 1.12%;
     width: 32%;
   }
   .idx__head {
-    margin: 0 0 1.3em 3.6em;
+    /* "Index" baseline y29, "Information" baseline y68.8 — 2.17 line pitches. */
+    margin: 0 0 1.53em 3.86em;
   }
   .idx__list {
     list-style: none;
@@ -157,7 +172,7 @@ const SLIDES = 3;
   }
   .idx__row {
     display: grid;
-    grid-template-columns: 3.6em 1fr;
+    grid-template-columns: 3.86em 1fr;
     width: 100%;
     padding: 0;
     border: none;
@@ -165,7 +180,6 @@ const SLIDES = 3;
     font: inherit;
     color: inherit;
     text-align: left;
-    line-height: 1.85;
   }
   .idx__item {
     cursor: pointer;
@@ -173,6 +187,8 @@ const SLIDES = 3;
   .idx__item:hover .idx__label {
     text-decoration: underline;
   }
+  /* Numbers read full ink in the reference; only the live selection takes the
+     spot colour — the one place the mechanic shows itself. */
   .idx__item[data-on] .idx__num {
     color: var(--spot, var(--ink));
   }
@@ -180,22 +196,24 @@ const SLIDES = 3;
     outline: var(--border-w, 2px) solid var(--spot, var(--ink));
     outline-offset: 2px;
   }
-  .idx__num {
-    color: var(--ink-2);
-  }
 
+  /* Reference clock ink x18, baseline y978 → box bottom 982 (1.8%). */
   .site__clock {
     position: absolute;
-    inset: auto auto 2.4% 1.2%;
+    inset: auto auto 1.8% 1.12%;
     margin: 0;
     color: var(--ink-1, var(--ink));
   }
 
-  /* ── Right column — the only dense region of the page ── */
+  /* ── Right column — the only dense region of the page. x1108→1582 at 1600,
+     top ink y19. Flow is a column so the plate can claim what is left. ── */
   .detail {
     position: absolute;
-    inset: 2% 1.6% 0 69%;
+    inset: 1.9% 1.12% 0 69.25%;
+    display: flex;
+    flex-direction: column;
   }
+  /* Lede last line y125 → "Profile" ink y146: a 21px / 1.5em gap. */
   .detail__profile {
     margin: 1.5em 0 0;
   }
@@ -204,21 +222,26 @@ const SLIDES = 3;
     color: var(--ink-2);
   }
 
-  /* Echoed paragraphs: text-bar strokes keep the copy's mass without words. */
+  /* Echoed paragraphs: text-bar strokes keep the copy's mass without words, on
+     the reference's own 18.4px (1.31em) line pitch. */
   .bars {
-    height: calc(var(--n) * 1.35em - 0.75em);
+    height: calc(var(--n) * 1.31em - 0.61em);
     background-image: repeating-linear-gradient(
       180deg,
-      var(--ink-3, var(--ink-2)) 0 0.6em,
-      transparent 0.6em 1.35em
+      var(--ink-3, var(--ink-2)) 0 0.7em,
+      transparent 0.7em 1.31em
     );
   }
 
   /* ── One entry at a time; its number hangs into the void, same rule as the
-     index. The gutter offset lands the number at ~59% of the room. ── */
+     index. Reference: gutter ink x946 — 162px left of the column, i.e. −34% of
+     the 474px column. Entry ink top y292, 92px (6.6em) under the contact block. ── */
   .entry {
     position: relative;
-    margin-top: 2.6em;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-top: 6.6em;
   }
   .entry__gutter {
     position: absolute;
@@ -227,12 +250,13 @@ const SLIDES = 3;
   }
   .entry__grid {
     display: grid;
-    grid-template-columns: 1fr 1.05fr;
-    gap: 0 1em;
-    margin-bottom: 1.3em;
+    /* "Publication" starts x1327 — 219px into the 474px column. */
+    grid-template-columns: 46.2% 1fr;
+    gap: 0;
+    margin-bottom: 1.48em; /* grid ink ends y380 → second paragraph y401 */
   }
   .entry__h {
-    margin: 0 0 1.3em;
+    margin: 0 0 1.31em; /* heading y292 → meta y329: two line pitches */
     font-weight: 500;
   }
   .entry__meta {
@@ -240,18 +264,20 @@ const SLIDES = 3;
     color: var(--ink-2);
   }
 
-  /* Plate: ink field, specimen number, deliberately taller than the room —
-     the bottom-edge crop is part of the layout. Hard cut, no transition. */
+  /* Plate: an ink field starting y526 (1.68em under the bars) and running to the
+     room's bottom edge — the crop IS the layout, so it takes the remaining
+     height rather than an invented aspect. Hard cut, no transition. */
   .plate {
     position: relative;
-    margin: 1.6em 0 0;
-    aspect-ratio: 1 / 1.15;
+    flex: 1;
+    min-height: 0;
+    margin: 1.68em 0 0;
     display: grid;
     place-items: center;
     background-color: var(--ink);
   }
   .plate__num {
-    font-size: clamp(1.6rem, 3.4vw, 3.2rem);
+    font-size: clamp(1.6rem, 3.4cqw, 4rem);
     letter-spacing: 0.04em;
     color: var(--spot, var(--paper));
   }
@@ -259,6 +285,7 @@ const SLIDES = 3;
     position: absolute;
     top: 5%;
     right: 6%;
+    font-size: var(--type);
     color: var(--paper-1, var(--paper));
   }
 
@@ -283,5 +310,49 @@ const SLIDES = 3;
   .zone:focus-visible {
     outline: var(--border-w, 2px) solid var(--spot, var(--paper));
     outline-offset: -4px;
+  }
+
+  /* Phone: the source layout adapting, not a second design. The void between the
+     two halves is a luxury of width, so the index stacks above the column it
+     indexes, the gutter number loses the void it hangs into, and the plate takes
+     a shape instead of the fold. */
+  @container (max-width: 40rem) {
+    .idx,
+    .site__clock,
+    .detail {
+      position: static;
+      inset: auto;
+      width: auto;
+      margin-inline: 5cqw;
+      font-size: 0.95rem;
+    }
+    .idx {
+      order: 1;
+      margin-top: 8cqw;
+    }
+    .detail {
+      order: 2;
+      margin-top: 3em;
+    }
+    .site__clock {
+      order: 3;
+      margin-block: 2.5em 5cqw;
+    }
+    .entry {
+      flex: none;
+      margin-top: 3em;
+    }
+    .entry__gutter {
+      position: static;
+      margin-bottom: 0.8em;
+    }
+    .entry__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 0 1em;
+    }
+    .plate {
+      flex: none;
+      aspect-ratio: 1 / 1.15;
+    }
   }
 </style>

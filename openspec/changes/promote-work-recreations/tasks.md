@@ -49,11 +49,37 @@ frontmatter → kernel tokens only → `pnpm test && pnpm check` to zero.
       pointer-transparent except at the thumb; with no JS it never renders and
       the page rests on the delivered half. No inner scroller survives the
       promotion (the page is one 100dvh fold), so `data-lenis-prevent` is moot.
-- [ ] 4.2 `l384.astro` — restaurant. 8 text rows measured.
-- [ ] 4.3 `b421.astro` — hotel; h724's pattern transfers directly. 8 rows.
-- [ ] 4.4 `skrillex.astro` — music. Dark ground (L=45), 3 rows. Also live at
+- [x] 4.2 `l384.astro` — restaurant. 8 text rows measured.
+      Done. Tool merged the two columns into one band — the reported `y19→178`
+      cluster is really the lede's 6 lines *plus* the index head, 7 index rows
+      and `Profile`/contact. Sub-divided by eye. Biggest deltas: index row pitch
+      was 42% too loose, entry top 2.5× too tight. `--type` is declared on
+      `.site` and *used* on children — an element is never its own query
+      container, so a `cqw` font-size on `.site` would have re-resolved against
+      the viewport.
+- [x] 4.3 `b421.astro` — hotel; h724's pattern transfers directly. 8 rows.
+      Done. Hairlines are near-invisible to the tool (reported as 1px specks);
+      read by eye as four full-width rules + three dividers. The y602 specks
+      pinned the 4-column grid to x406/800/1194, proving the columns are
+      contiguous — the old `column-gap` was invented. Old `padding: 2.5%` was
+      ~3.3× the reference's 12px. `--work-accent` was orphaned when `CaseStudy`
+      stopped grafting it; it now grafts on `.site`, and the mode-dependent
+      kernel tokens that would invert to invisible on the grafted white sheet
+      derive from the grafted pair.
+- [x] 4.4 `skrillex.astro` — music. Dark ground (L=45), 3 rows. Also live at
       `skrillex.com` for reference.
-- [ ] 4.5 `after.astro` — music.
+      Done. Tool degenerated fully (one 1712px "row" + two noise specks, zero
+      usable numbers): the rail's *local* backdrop is a pale wall (L≈181–186),
+      not the page ground (L=45). Re-measured against a local mean. The rail
+      grounds in `--ink` because the artwork *is* the ground — which makes
+      Base's `← INDEX` (`color: var(--ink)`) invisible, fixed page-locally.
+      `padding-block` was on the wrong axis: in `vertical-rl` it is horizontal.
+- [x] 4.5 `after.astro` — music.
+      Done structurally, geometry UNMEASURED — **there is no `refs/works/after.jpg`**.
+      The tool fails closed and no numbers were invented; the page keeps its
+      existing proportions with caps re-tuned by holding each rule's effective
+      rendered ratio at the old 1000px stage. This is the one page whose numbers
+      the 6.1 visual pass must actually settle rather than confirm.
 - [ ] 4.6 `b508.astro` — music. 3 rows.
 - [ ] 4.7 `b374.astro` — books. **Tool degenerates** (ground L=187, full-bleed) —
       read the jpg by eye.
