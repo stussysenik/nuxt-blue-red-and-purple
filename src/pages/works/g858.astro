@@ -6,10 +6,11 @@
 // wordmark, four dated drops (date left, drop tag right, one struck through),
 // two pills splitting the card's bottom edge — and a chip dock bottom-right.
 // The mechanic is live, not pictured: Shop slides a twelve-product overlay up
-// over the whole room. The wallpaper photo is de-branded into a kernel
-// dot-screen; products become numbered specimen plates — we rebuild the room,
-// not the client's artwork. The work's two palette hexes (yellow, near-black)
-// graft onto the room as --g-yellow/--g-black; chrome stays kernel ink.
+// over the whole room. The wallpaper is the committed photo itself, ghost-loaded
+// full-bleed behind the card; products stay numbered specimen plates — the photo
+// is our curated field, not the client's artwork. The work's two palette hexes
+// (yellow, near-black) graft onto the room as --g-yellow/--g-black; chrome stays
+// kernel ink, kept legible over the photo by a soft top scrim.
 //
 // Reference (internal, never shipped): refs/works/g858.jpg, 1600×1000. The
 // ground is a dark forest photo (L=81), so ref-geometry degenerates — it locks
@@ -50,17 +51,27 @@ const entry = await getEntry('works', 'g858');
 const w = entry!.data;
 const [yellow, black] = w.palette ?? [];
 const PRODUCTS = 12;
+// Copy is lorem; the dated-drop structure (date left, tag right, one struck
+// through) is the point the reference trades on.
 const ENTRIES = [
-  { date: 'Mar. 15', tag: 'Drop 01', copy: 'First pressing, split run — paper on ink' },
-  { date: 'Mar. 22', tag: 'Drop 02', copy: 'Second pressing, single sheet', sold: true },
-  { date: 'Mar. 23', tag: 'Drop 03', copy: 'Proof set, numbered edition' },
-  { date: 'Aug. 3', tag: 'Drop 04', copy: 'Archive sheets, final run' },
+  { date: 'Mar. 15', tag: 'Drop 01', copy: 'Lorem ipsum dolor sit amet, consectetur' },
+  { date: 'Mar. 22', tag: 'Drop 02', copy: 'Sed do eiusmod tempor incididunt', sold: true },
+  { date: 'Mar. 23', tag: 'Drop 03', copy: 'Ut labore et dolore magna aliqua' },
+  { date: 'Aug. 3', tag: 'Drop 04', copy: 'Quis nostrud exercitation ullamco' },
 ];
 ---
 
 <Base title={`${w.title} — *blue red + purple/`} chrome="work">
   <div class="site" style={`--g-yellow:${yellow};--g-black:${black}`}>
-    <div class="wall" aria-hidden="true"></div>
+    <img
+      class="wall"
+      src={w.image}
+      alt={`${w.title} wallpaper`}
+      width="1600"
+      height="1000"
+      decoding="async"
+    />
+    <div class="scrim" aria-hidden="true"></div>
 
       <aside class="card">
         <p class="card__mark">{w.title}</p>
@@ -85,7 +96,7 @@ const ENTRIES = [
 
       <section class="shop" aria-label="Overlay shop" inert>
         <header class="shop__head font-mono ttu tracked">
-          <span>Shop — twelve products</span>
+          <span>Shop</span>
           <button class="shop__close" type="button">Close ×</button>
         </header>
         <ol class="shop__grid">
@@ -110,6 +121,10 @@ const ENTRIES = [
   const set = (on: boolean) => {
     shop?.toggleAttribute('data-open', on);
     if (shop) shop.inert = !on;
+    // While the modal shop owns the room, retire the page's ← Index: it would
+    // otherwise sit (illegibly, and still focusable) behind the dark plane in the
+    // exact corner as the shop's own Close. Restored on dismiss.
+    document.documentElement.toggleAttribute('data-shop-open', on);
     openBtn?.setAttribute('aria-expanded', String(on));
     (on ? closeBtn : openBtn)?.focus();
   };
@@ -131,27 +146,61 @@ const ENTRIES = [
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
-    background-color: var(--paper);
+    min-height: 100svh;
+    background-color: var(--paper-1, var(--paper));
     color: var(--ink);
-    overflow: hidden;
     --type: clamp(0.72rem, 0.85cqw, 0.95rem);
     font-size: var(--type);
   }
-  /* Wallpaper, de-branded: the photo reduces to its role — an even field of
-     grain behind the card — so it becomes a kernel dot screen. */
+  /* Wallpaper: the committed photo itself, full-bleed behind the card — the room
+     the source built with a photo, built with ours. The --paper-1 ground on
+     .site is the load-in skeleton; the image fades in over it on first render
+     (no JS — @starting-style), so nothing flashes before the bytes. */
   .wall {
     position: absolute;
     inset: 0;
-    background-color: var(--paper-1, var(--paper));
-    background-image: radial-gradient(var(--line, var(--ink-2)) 1px, transparent 1.5px);
-    background-size: 14px 14px;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
   }
-  /* Card: reference left x24 (1.5cqw), top y16 (1.6%), width 486px (30.4cqw).
+  @starting-style {
+    .wall {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wall {
+      transition: none;
+    }
+  }
+  /* A soft paper scrim at the top, over the photo but under the card: keeps the
+     top-right ← Index (kernel ink) legible over any brightness of the wallpaper
+     without tinting the field. Paper-based, so it stays inside the duotone. */
+  .scrim {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--chrome-band);
+    z-index: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--paper) 72%, transparent),
+      transparent
+    );
+  }
+  /* Card: reference left x24 (1.5cqw), width 486px (30.4cqw). The reference
+     pinned it at y16, but our room carries a pinned ← Index the source never had,
+     so the card opts into the shared chrome band — its top edge drops below the
+     reserved strip. That is what clears the mark at every width (on a phone the
+     90cqw card would otherwise run its top-right corner straight under ← Index).
      Internal padding 1em ≈ the reference's 20px inset off --type. */
   .card {
     position: absolute;
-    inset: 1.6% auto auto 1.5%;
+    inset: var(--chrome-band) auto auto 1.5%;
+    z-index: 1;
     width: 30.4cqw;
     padding: 0.85em 1em 1em;
     background-color: var(--g-yellow, var(--spot));
@@ -234,18 +283,48 @@ const ENTRIES = [
     border-radius: var(--radius);
   }
   /* The overlay shop: one dark plane, twelve plates, slides over everything. */
+  /* While the modal shop owns the room the page's ← Index steps aside entirely —
+     hidden and un-focusable — so the two exits never share the top-right corner
+     and no focus leaks behind the plane. (visibility:hidden also drops it from
+     the tab order; the shop is the sole affordance while open.) */
+  :global(html[data-shop-open] .chrome-back) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* Above the sitewide chrome (z 5): a full-screen modal legitimately covers the
+     room — the source's shop "never gets a page of its own", it takes everything.
+     .site is not a stacking context (position:relative, no z-index), so this z
+     competes directly with the chrome in the root layer. */
   .shop {
     position: absolute;
     inset: 0;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     background-color: var(--g-black, var(--ink));
     color: var(--paper);
     translate: 0 101%;
-    transition: translate var(--dur, 0.25s) var(--ease, ease);
+    transition:
+      translate var(--dur, 0.25s) var(--ease, ease),
+      display var(--dur, 0.25s) allow-discrete;
+  }
+  /* Closed: fully out of layout. The old build translated the plane off-screen
+     and clipped it with a root overflow clip; that trap is retired, so a merely
+     translated plane would add a screen of dead scroll below the room. Leaving
+     layout (display:none, discrete-animated) is the honest equivalent — it slides
+     up from the bottom on open and is simply gone when closed. */
+  .shop:not([data-open]) {
+    display: none;
   }
   .shop[data-open] {
     translate: 0 0;
+  }
+  @starting-style {
+    .shop[data-open] {
+      translate: 0 101%;
+    }
   }
   .shop__head {
     display: flex;
