@@ -3,15 +3,14 @@
 //
 // The page IS the recreation: the reference's signature layout fills the
 // viewport edge-to-edge, exactly as the source frames itself. Every word the
-// page owns lives in a single band on the top baseline, set across a twelve-
-// column grid as 3/3/6 — identity stack, italic display title with its roman
-// credit, and one paragraph closed by a Read more link. Everything below the
-// band is artwork, run full bleed to all four edges. The mechanic is live where
-// the source is live — Read more extends the essay in place; the band never
-// moves. The film still is echoed, not pictured: the room inverts to an ink
-// field with a tonal mass where the portrait sat, and the plate is credited
-// with a mono specimen label. All spacing/type composes from kernel custom
-// properties.
+// page owns lives in one band on the top baseline, set across a twelve-column
+// grid as 3/3/6 — identity stack, italic display title with its roman credit,
+// and one paragraph closed by a Read more link. Everything beneath the band is
+// the committed film still, run full bleed to all four edges. The mechanic is
+// live where the source is live — Read more extends the essay in place; the
+// band never descends into the field. Single-screen by concept (as skrillex):
+// the band and the full-bleed still are the whole page, so it fills 100svh and
+// grows — min-height, never a max-height trap — rather than inventing scroll.
 //
 // Reference (internal, never shipped): refs/works/b970.jpg, 1600×1000.
 // ref-geometry degenerates here (design.md §Known tool limits): the ground it
@@ -48,7 +47,17 @@ const w = entry!.data;
 
 <Base title={`${w.title} — *blue red + purple/`} chrome="work">
   <main class="site">
-    <div class="site__band">
+    <img
+      class="art"
+      src={w.image}
+      alt={`${w.title} film still`}
+      width="1600"
+      height="1000"
+      decoding="async"
+    />
+    <div class="scrim" aria-hidden="true"></div>
+
+    <div class="band chrome-safe">
       <header class="band__id">
         <span class="band__wordmark">{w.title} Archive</span>
         <span class="band__links" aria-hidden="true">
@@ -57,31 +66,30 @@ const w = entry!.data;
       </header>
 
       <div class="band__caption">
-        <em class="band__title">A Field in Three Columns</em>
-        <span class="band__credit font-mono">{w.title}</span>
+        <em class="band__title">Aliquam in tempus felis</em>
+        <span class="band__credit font-mono">{w.title} · 16MM · {w.year}</span>
       </div>
 
       <div class="band__essay">
         <p>
-          The page keeps its entire voice in this one strip: an identity, an italic title with
-          its credit, and a single paragraph, divided three, three and six across twelve
-          columns. Everything beneath the strip is given to the artwork, which runs full bleed
-          to every edge of the viewport.
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer feugiat, arcu nec
+          porttitor dignissim, sem urna dictum lorem, vel egestas nisl justo eu massa. Curabitur
+          sit amet ligula id sapien vulputate faucibus.
         </p>
         <p class="band__extra">
-          The band itself never moves. Extending the essay pushes nothing but these lines; the
-          field below absorbs the rest, and the two registers never compete.
+          Etiam consequat, mauris a laoreet volutpat, dui nibh porta est, non congue augue risus
+          nec velit. Nam in tortor sed ipsum tincidunt maximus. Suspendisse potenti.
         </p>
         <button class="band__more" type="button" aria-expanded="false">Read more</button>
       </div>
     </div>
 
-    <span class="site__plate font-mono ttu" aria-hidden="true">Plate 01 — 16 mm still</span>
+    <span class="site__plate font-mono ttu" aria-hidden="true">{w.title} · {w.category} · {w.year}</span>
   </main>
 </Base>
 
 <script>
-  // Read more: extend the essay in place, band stays pinned. Live, like the source.
+  // Read more: extend the essay in place, band stays put. Live, like the source.
   const more = document.querySelector<HTMLButtonElement>('.band__more');
   const extra = document.querySelector<HTMLElement>('.band__extra');
   more?.addEventListener('click', () => {
@@ -92,75 +100,85 @@ const w = entry!.data;
 </script>
 
 <style>
-  /* The rebuilt room, now the whole page and inverted: the full-bleed still
-     becomes an ink field, and every owned word sits in one top band. The page is
-     its own query container — the stage used to provide one, so every cq* unit
-     below would silently re-resolve against the viewport without this. */
+  /* The rebuilt room, now the whole page: the committed film still bleeds to
+     all four edges and every owned word sits in one top band. The page is its
+     own query container — the stage used to provide one, so every cq* unit below
+     would silently re-resolve against the viewport without this. min-height, so
+     the frame grows with content instead of trapping it at one screen; the ink
+     ground is the still's load-in skeleton. */
   .site {
     container-type: inline-size;
     position: relative;
-    min-height: 100dvh;
+    min-height: 100svh;
     background-color: var(--ink);
     color: var(--paper);
-    overflow: hidden;
   }
 
-  /* The artwork IS the ground here, so Base's chrome fails twice over: its
-     `← Index` is --ink on an --ink field (invisible in every mode, light and
-     dark alike), and its reserved top-right corner is exactly where the essay
-     column ends (measured ink to x=1566 of 1600, on the band's first line).
-     Re-ink it to --paper and drop it to the opposite corner — the reference's
-     lower field is unbroken still, and the specimen label holds the other side,
-     so it lands on empty field and stays in a corner, which is what the sitewide
-     rule is actually protecting. */
+  /* The lone chrome mark rides the top-right over the ink scrim below, so it
+     inverts to --paper or it lands ink-on-ink on the dark field. */
   :global(.chrome-back) {
-    top: auto;
-    bottom: max(var(--chrome-inset), env(safe-area-inset-bottom));
     color: var(--paper);
   }
 
-  /* Tonal echo of the portrait: a lighter mass low-centre, under a faint
-     scan texture — the artwork's weight without the artwork. */
-  .site::before {
-    content: '';
+  /* The artwork, now the committed still itself: full-bleed, covering every edge
+     of the (grown) page — absolute inset:0 stretches to the band's flow height,
+     so there is never a gap below the fold. Fades in over the ink ground on
+     first render (no JS — @starting-style), so there is no flash before bytes. */
+  .art {
     position: absolute;
     inset: 0;
-    background:
-      repeating-linear-gradient(
-        0deg,
-        color-mix(in oklab, var(--paper) 4%, transparent) 0 1px,
-        transparent 1px 4px
-      ),
-      radial-gradient(
-        58% 72% at 54% 64%,
-        color-mix(in oklab, var(--paper) 18%, transparent),
-        transparent 72%
-      );
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .art {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .art {
+      transition: none;
+    }
+  }
+
+  /* A top-down ink scrim under the band only: the reference's type sat on the
+     darker head of the still, so this keeps the paper band — and the pinned
+     ← Index — legible over any brightness of the committed image without tinting
+     the field below. Ink-based, so it stays inside the duotone (colour law). */
+  .scrim {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 42%;
+    z-index: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--ink) 78%, transparent),
+      transparent
+    );
   }
 
   /* Transcribed from the reference at 1600×1000. The 3/3/6 grid is measured, not
      assumed: ink starts x29 / x417 / x808 and the essay's longest line ends
      x1566, which solves to a 12-track grid spanning x29→1568 at a 129.8px pitch
-     — so column-gap 1.2% (18.6px), not the stage-era 1.5%, puts columns 4 and 7
-     back within a pixel of their measured starts.
-
-     One type size serves the whole band: cap top y34 → baseline y46 is capH=13px
-     in every column, and Archivo's cap is 0.686em (read from the woff2), so
-     13/0.686 = 18.95px = 1.184cqw at 1600. The old 0.95rem cap was sized for the
-     ~1000px stage and ran 1.25× small; the old `vw` also ignored the container.
-     Baselines step 46 → 70 → 94 → 118, so leading is 24px = 1.267. `lh-copy`
-     (1.5) is gone from the essay for exactly that reason — it fought the
-     measurement. With that leading Archivo's baseline sits 18.3px below the box
-     top, so a 2.77% top puts the first baseline back on y=46. */
-  .site__band {
-    position: absolute;
-    inset: 2.77% 2% auto 1.8%;
+     — so column-gap 1.2% (18.6px) puts columns 4 and 7 within a pixel of their
+     measured starts. One type size serves the whole band (capH 13px = 1.184cqw
+     at Archivo's 0.686 cap ratio); leading 24px = 1.267. The band is in normal
+     flow and opts into the chrome band (.chrome-safe), so its first line clears
+     the pinned marks instead of climbing into the reserved strip. */
+  .band {
+    position: relative;
+    z-index: 1;
+    padding-inline: 1.8% 2%;
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     column-gap: 1.2%;
     font-size: clamp(0.8rem, 1.184cqw, 1.25rem);
     line-height: 1.267;
-    z-index: 1;
   }
   .band__id {
     grid-column: 1 / 4;
@@ -178,17 +196,18 @@ const w = entry!.data;
     flex-direction: column;
   }
   /* The pairing the source trades on: italic display over a semi-mono roman
-     credit, at the shared band size. */
+     credit, at the shared band size. Balanced so the two-word title never leaves
+     an orphan against the narrow column. */
   .band__title {
     font-family: var(--font-display);
     font-style: italic;
     letter-spacing: 0.01em;
+    text-wrap: balance;
   }
   /* The source sets this credit in the same serif roman as the band; our kernel
-     answers that register shift with mono, so match it on cap height, not glyph
-     width. IBM Plex Mono's cap is 0.698em against Archivo's 0.686 (both read
-     from the woff2), so 0.686/0.698 = 0.983em lands its caps on the band's
-     13px exactly. */
+     answers that register shift with mono, matched on cap height not glyph width:
+     IBM Plex Mono's 0.698 cap against Archivo's 0.686 → 0.983em lands its caps on
+     the band's 13px exactly. */
   .band__credit {
     font-size: 0.983em;
     letter-spacing: 0.03em;
@@ -199,14 +218,11 @@ const w = entry!.data;
   }
   .band__essay p {
     margin: 0;
+    max-width: 42ch;
   }
   .band__extra {
     display: none;
   }
-  /* Read more sits one blank line under the essay — measured, its baseline is
-     y167 against the last essay line's y118, i.e. two 24px steps. 1.3em of the
-     band size is that step, so the expansion stays on the band's baseline grid
-     instead of the stage-era 1em. */
   .band__extra[data-open] {
     display: block;
     margin-top: 1.3em;
@@ -230,32 +246,40 @@ const w = entry!.data;
     outline-offset: 2px;
   }
 
-  /* Specimen credit for the echoed plate — mono, bottom margin, quiet. */
+  /* Film-slate credit for the still — mono, bottom-left, quiet, real metadata. */
   .site__plate {
     position: absolute;
     left: 1.8%;
     bottom: 4%;
+    z-index: 1;
     font-size: var(--type-meta, 0.65rem);
     letter-spacing: 0.14em;
-    color: color-mix(in oklab, var(--paper) 55%, transparent);
-    z-index: 1;
+    color: color-mix(in oklab, var(--paper) 62%, transparent);
   }
 
   /* Phone: the source layout adapting, not a second design. The band is still
-     one strip hung from the top baseline and the field still takes everything
-     below it — but three columns of a twelve-column grid cannot hold a wordmark
-     at this width, so the 3/3/6 sentence runs top-to-bottom instead of left-to-
-     right, keeping its reading order and its one shared type size. */
+     one strip hung from the top and the still still takes the field below it —
+     but three columns of a twelve-column grid cannot hold a wordmark at this
+     width, so the 3/3/6 sentence runs top-to-bottom instead of left-to-right,
+     keeping its reading order and one shared type size. */
   @container (max-width: 40rem) {
-    .site__band {
+    .band {
       grid-template-columns: 1fr;
       row-gap: 1.3em;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
     .band__id,
     .band__caption,
     .band__essay {
       grid-column: 1;
+    }
+    .band__essay p {
+      max-width: none;
+    }
+    /* The single-column band can run long on a short phone; keep the slate from
+       colliding with the essay by letting it ride just under the field's edge. */
+    .site__plate {
+      bottom: 2.5%;
     }
   }
 </style>
