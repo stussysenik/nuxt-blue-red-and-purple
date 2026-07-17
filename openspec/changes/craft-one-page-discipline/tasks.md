@@ -53,7 +53,8 @@ pages". The original §4 list dropped it.)
 - [x] b374 — open-book spreads; crease pinned fixed over natural scroll, photo
       is the book's plate, running head opts into the band (collision retired),
       spine progress scroll-driven (commit)
-- [ ] b421
+- [x] b421 — proposal deck; pinned chrome → sticky cover sheet over natural
+      scroll, A/B/C swap kept, plate A1 seats the committed photo (commit)
 - [ ] b508
 - [ ] b970
 - [ ] d429

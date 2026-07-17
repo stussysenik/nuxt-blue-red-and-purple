@@ -5,10 +5,13 @@
 // Two rows of pinned chrome — wordmark, A/B/C switcher, right-set spec
 // paragraph — sit on hairlines above a gallery grid whose plates each declare
 // their own ratio in a caption rail (A1 — 1:1 … 2:1), with a three-part
-// colophon on the bottom baseline. The mechanic is live, not pictured: A/B/C
+// colophon on the bottom baseline. The page scrolls naturally — the two chrome
+// baselines are a sticky cover sheet seated in the band, not a locked viewport,
+// and the deck flows under them. The mechanic is live, not pictured: A/B/C
 // hard-swaps the whole sheet — label, plate tally, grid — under chrome that
-// never moves. Plates are de-branded kernel specimens: we rebuild the room, not
-// the client's artwork. The work's white/black grafts inline as
+// never moves. Plates are de-branded kernel specimens; plate A1 seats the
+// committed photograph as the deck's one artwork ("artwork carries colour"). The
+// work's white/black grafts inline as
 // --site-paper/--site-ink; its blue rides in as --work-accent ("artwork carries
 // colour"). The room's hairline + muted tone derive from that grafted pair, not
 // from mode-dependent kernel tokens, so the sheet stays stark in every mode.
@@ -102,14 +105,27 @@ const DECKS = SPECS.map(([id, specs]) => {
       </div>
     </header>
 
-    <div class="site__scroll" data-lenis-prevent>
+    <div class="site__scroll">
       {DECKS.map((d, di) => (
           <section class="deck" data-deck={d.id} data-plates={d.plates} data-on={di === 0 ? '' : undefined}>
             {d.rows.map((r) => (
               <div class="row" style={`--cols:${r.count};--ar:${r.ratio.replace(':', ' / ')}`}>
                 {r.cells.map((label) => (
                   <figure class="cell">
-                    <span class="cell__art"><span class="cell__num font-mono">{label}</span></span>
+                    <span class="cell__art">
+                      {label === 'A1' ? (
+                        <img
+                          class="cell__img"
+                          src={w.image}
+                          alt={`${w.title} plate`}
+                          width="1600"
+                          height="1000"
+                          decoding="async"
+                        />
+                      ) : (
+                        <span class="cell__num font-mono">{label}</span>
+                      )}
+                    </span>
                     <figcaption class="cell__tag font-mono">{label} — {r.ratio}</figcaption>
                   </figure>
                 ))}
@@ -144,23 +160,27 @@ const DECKS = SPECS.map(([id, specs]) => {
     if (label) label.textContent = `Proposal ${id}`;
     const on = decks.find((d) => d.dataset.deck === id);
     if (tally && on) tally.textContent = `${on.dataset.plates} plates`;
-    if (scroll) scroll.scrollTop = 0;
+    // Natural document scroll now — reset to the top so the new deck reads from
+    // its first plate, under the sticky chrome that never leaves the band.
+    if (scroll) window.scrollTo({ top: 0 });
   };
   for (const b of btns) b.addEventListener('click', () => pick(b.dataset.deck ?? 'A'));
 </script>
 
 <style>
-  /* The rebuilt room, now the whole page: two chrome baselines pinned top, the
-     deck scrolling between, colophon on the bottom edge — one fold, exactly as
-     the reference frames itself (chrome 163px, footer 38px, deck 799px between).
-     The page is its own query container — the stage used to provide one, so cq*
-     units silently resolve against the viewport without this. */
+  /* The rebuilt room, now the whole page and a continuous scroll: the two chrome
+     baselines pin as a sticky cover sheet, the deck flows and the window scrolls
+     between them and the colophon — no inner scroller, no locked viewport. The
+     page is its own query container — the stage used to provide one, so cq* units
+     silently resolve against the viewport without this. */
   .site {
     container-type: inline-size;
     display: flex;
     flex-direction: column;
-    min-height: 100dvh;
-    max-height: 100dvh;
+    min-height: 100svh;
+    /* Top pad seats the sticky chrome in the band, clear of the pinned ← Index —
+       the shared band opt-in, so no page content sits under chrome. */
+    padding-top: var(--chrome-band);
     background-color: var(--site-paper, var(--paper));
     color: var(--site-ink, var(--ink));
     /* Reference chrome band y12→26 = 15px ink at 1600 → ~16px type. */
@@ -170,6 +190,15 @@ const DECKS = SPECS.map(([id, specs]) => {
        --line/--ink-2, which follow the active mode and would break the graft. */
     --site-line: color-mix(in oklab, var(--site-ink, var(--ink)) 20%, var(--site-paper, var(--paper)));
     --site-ink-2: color-mix(in oklab, var(--site-ink, var(--ink)) 55%, var(--site-paper, var(--paper)));
+  }
+
+  /* The cover sheet stays put: sticky at the band while the deck scrolls under
+     it. Its own paper backs it so plates never bleed through as they pass. */
+  .site__chrome {
+    position: sticky;
+    top: var(--chrome-band);
+    z-index: 4;
+    background-color: var(--site-paper, var(--paper));
   }
 
   /* Chrome and colophon share one grid on thirds: the right column runs
@@ -218,10 +247,11 @@ const DECKS = SPECS.map(([id, specs]) => {
     line-height: 1.36;
   }
 
+  /* The gallery flows in the document now; flex:1 only floats the colophon to
+     the foot when a deck is short. No inner scroller, no clipping. */
   .site__scroll {
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
   }
   /* Rule y163 → first art box y227 = 64px = 4cqw. */
   .deck {
@@ -249,16 +279,40 @@ const DECKS = SPECS.map(([id, specs]) => {
     margin: 0;
   }
   .cell__art {
+    position: relative;
     display: grid;
     place-items: center;
     width: 74%;
     margin: 0 auto 3.4cqw;
     aspect-ratio: var(--ar, 1);
     border: 1px solid var(--site-line);
+    /* Paper-tint ground = the load-in skeleton behind the plate photograph. */
+    background-color: color-mix(in oklab, var(--site-paper, var(--paper)) 92%, var(--site-ink, var(--ink)));
   }
   .cell__num {
     font-size: clamp(0.9rem, 3.4cqw, 2.2rem);
     color: var(--site-ink-2);
+  }
+  /* Plate A1 is the committed photograph — the deck's one artwork. Fills its
+     declared-ratio box, fading in over the skeleton on first render (no JS). */
+  .cell__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .cell__img {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cell__img {
+      transition: none;
+    }
   }
   /* Every third plate carries the work's blue — "artwork carries colour". */
   .cell:nth-child(3n + 1) .cell__num {
