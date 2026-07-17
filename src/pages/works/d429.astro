@@ -1,17 +1,19 @@
 ---
 // D429 — bespoke in-kernel reconstruction.
 //
-// The page IS the recreation: a document sheet centred on the ground, running
-// off the bottom edge, ruled by one axis — the running-text column's left edge.
-// Masthead and body hang off that axis; a step-smaller note column hangs left
-// of it in the margin, each entry on a hanging indent, with the artwork parked
-// at the foot of the margin. The mechanic here IS the grid — the source has no
-// interaction, so the page is static and the crop at the fold is the point, not
-// an accident of viewport height. De-branded: the source masthead becomes the
-// work title, its line-drawing doodle becomes a kernel specimen plate, and the
-// sheet's yellow ground drops to paper tones (the entry carries no palette, so
-// there is nothing to graft and the colour law holds — only --spot marks where
-// the artwork sat).
+// The page IS the recreation: a document sheet centred on the ground, ruled by
+// one axis — the running-text column's left edge. Masthead and body hang off
+// that axis; a step-smaller note column hangs left of it in the margin, each
+// entry on a hanging indent, with the artwork parked at the foot of the margin.
+// The mechanic here IS the grid — the source has no interaction, so the page is
+// static. The old build proved "the system runs deeper than the viewport" by
+// CLIPPING at the fold behind a fixed viewport-height ceiling; that is the trap
+// this change retires. It now proves the same thing honestly — the document runs
+// down the page and you scroll it, a document not a website, exactly as the
+// study notes claimed. De-branded: the source masthead becomes the work title,
+// its line-drawing doodle becomes the committed photo parked in the margin, and
+// the sheet's yellow ground drops to paper tones (the entry carries no palette,
+// so the colour law holds).
 //
 // Reference (internal, never shipped): refs/works/d429.jpg, 1600×1000, ground
 // L=255. Measured with scripts/ref-geometry.py + per-glyph probes, then
@@ -67,12 +69,12 @@ const w = entry!.data;
 
 // The margin column — a second, subordinate voice. Italic entries echo the
 // source's asides; the grid never moves for them. Four entries, one italic:
-// the reference's own count.
+// the reference's own count. Copy is lorem; the structure is the point.
 const notes = [
-  { text: 'The note column sets a step smaller and hangs every entry from its first line.' },
-  { text: 'Asides and citations drop to italic; the measure and the gutter hold.', em: true },
-  { text: 'Continuation lines indent, so the margin reads as a ledger of first words.' },
-  { text: 'The figure parks at the foot of the margin and never crosses the gutter.' },
+  { text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.' },
+  { text: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.', em: true },
+  { text: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.' },
+  { text: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.' },
 ];
 ---
 
@@ -82,7 +84,7 @@ const notes = [
       <div class="sheet__grid">
         <header class="masthead">
           <p class="masthead__title ttu">{w.title} Study Doc</p>
-          <p class="masthead__sub ttu">Margin note · Running text</p>
+          <p class="masthead__sub ttu">{w.category} · {w.year}</p>
         </header>
 
         <aside class="margin">
@@ -90,35 +92,42 @@ const notes = [
             {notes.map((n) => <li class:list={{ em: n.em }}>{n.text}</li>)}
           </ul>
           <figure class="margin__plate">
-            <span class="font-mono">fig. 01</span>
+            <img
+              src={w.image}
+              alt={`${w.title} plate`}
+              width="536"
+              height="536"
+              loading="lazy"
+              decoding="async"
+            />
           </figure>
         </aside>
 
         <div class="body">
           <p class="body__lead">
-            <em>One axis rules the sheet,</em> and it belongs to this column. The masthead hangs
-            from it, the text hangs from it, and nothing else on the page is allowed an opinion
-            about where the left edge sits. What looks like a wide inner margin is the cost of that
-            rule — and the page pays it without flinching.
+            <em>Lorem ipsum dolor sit amet,</em> consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
           </p>
           <p>
-            The notes opposite are the second voice. They comment, cite, and digress at a smaller
-            size, <em>never interrupting the measure of this column,</em> because the gutter between
-            the two is a wall, not a suggestion. Each note announces itself with a flush first line
-            and tucks the rest behind it.
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident, <em>sunt in culpa qui
+            officia deserunt</em> mollit anim id est laborum et dolorum fuga.
           </p>
           <p>
-            Below the fold the text simply keeps going. The sheet is cropped, not concluded — the
-            document grid promises continuity, and the crop is proof that the system runs deeper
-            than the viewport. A reader scrolls a document here, not a website, and the grid never
-            once breaks character to remind them otherwise.
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque
+            laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
+            architecto beatae vitae dicta sunt explicabo, nemo enim ipsam voluptatem.
           </p>
           <p>
-            <em>Nothing announces the edge,</em> which is why it convinces. The masthead does not
-            sit on a rule, the columns are not boxed, and the note column is separated from the text
-            by air alone. Rank arrives as position before it arrives as size, so the page can afford
-            to set its second voice only a step down and still be read in the right order — and the
-            sentence that runs past the bottom of the screen is
+            <em>Neque porro quisquam est,</em> qui dolorem ipsum quia dolor sit amet, consectetur,
+            adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore
+            magnam aliquam quaerat voluptatem, ut enim ad minima veniam quis nostrum.
+          </p>
+          <p>
+            Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil
+            molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur, at
+            vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis.
           </p>
         </div>
       </div>
@@ -127,26 +136,29 @@ const notes = [
 </Base>
 
 <style>
-  /* The rebuilt room, now the whole page. The sheet is centred, starts 43px off
-     the top edge, and runs off the bottom — the crop IS the layout, so the page
-     is exactly one viewport and clips. Static by design: the source has no
-     mechanic, the grid is the mechanic.
+  /* The rebuilt room, now the whole page. The sheet is centred and starts 43px
+     off the top edge, then runs DOWN the page — the document genuinely runs
+     deeper than the viewport and you scroll it (the old fixed-viewport clip is
+     retired; min-height lets the sheet grow with its content). Static by
+     design: the source has no mechanic, the grid is the mechanic.
 
-     The page is its own query container. This page already declared one on
-     .site, and every cqw below sits on a DESCENDANT of it, so the transcription
-     survived the promotion intact — but it now resolves against the viewport
-     (1600) rather than the old ~1000px stage, which is the whole point. */
+     Top clearance opts into the shared chrome band via max(): the sheet's own
+     2.69cqw inset holds on wide screens, but never less than --chrome-band, so
+     the masthead's first line clears the pinned ← Index at every width (the
+     narrow-screen collision the sweep flagged is gone).
+
+     The page is its own query container. Every cqw below sits on a DESCENDANT of
+     it and resolves against the viewport (1600) rather than the old ~1000px
+     stage, which is the whole point. */
   .site {
     container-type: inline-size;
     display: grid;
     grid-template-columns: 60.56cqw;
     justify-content: center;
-    padding-top: 2.69cqw;
-    min-height: 100dvh;
-    max-height: 100dvh;
+    padding-top: max(2.69cqw, var(--chrome-band));
+    min-height: 100svh;
     background-color: var(--paper);
     color: var(--ink);
-    overflow: hidden;
   }
 
   /* Sheet ink starts 43px in on both sides; the bottom border is omitted
@@ -182,6 +194,7 @@ const notes = [
     font-size: clamp(1.6rem, 3.28cqw, 4.1rem);
     line-height: 1.05;
     letter-spacing: var(--tracking-display, -0.02em);
+    text-wrap: balance;
   }
   .masthead__sub {
     margin: 0.64cqw 0 0;
@@ -214,22 +227,35 @@ const notes = [
     font-style: italic;
   }
 
-  /* Where the source parks its line drawing: a de-branded specimen plate at the
-     foot of the margin, spanning the column and standing as tall as it is wide
-     (the reference's drawing is 268px in a 268px column). The spot ink marks
-     "artwork carries colour". */
+  /* Where the source parks its line drawing: now the committed photo itself, a
+     square plate at the foot of the margin, spanning the column and standing as
+     tall as it is wide (the reference's drawing is 268px in a 268px column). The
+     paper-tint fill is the ghost skeleton — the image reserves its square and
+     fades in over it on load (no JS — @starting-style), so the margin never
+     shifts as the bytes arrive. */
   .margin__plate {
     margin: 3.08cqw 0 0;
     aspect-ratio: 1;
-    display: grid;
-    place-items: center;
-    background-color: var(--paper);
+    background-color: var(--paper-2, var(--paper-1, var(--paper)));
     border: 1px solid var(--line, var(--ink-2));
   }
-  .margin__plate span {
-    font-size: clamp(0.6rem, 0.9cqw, 1.1rem);
-    letter-spacing: 0.08em;
-    color: var(--spot, var(--ink));
+  .margin__plate img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    transition: opacity 0.6s var(--ease, ease);
+  }
+  @starting-style {
+    .margin__plate img {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .margin__plate img {
+      transition: none;
+    }
   }
 
   .body {
