@@ -101,7 +101,7 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
           aria-label="blue red + purple — home"
           aria-current={onHome ? 'page' : undefined}
         >
-          ✳
+          /
         </a>
         <a
           href="/works"
@@ -183,12 +183,15 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         gap: var(--space-3);
       }
 
-      /* The ✳ brand mark is home — display weight, the site's signature glyph. */
+      /* The / brand mark is home — the wordmark's closing glyph elevated: the
+         "switch / either-or" that names the product (four systems, switched
+         live). Display weight is what makes the lone stroke read as a mark, not
+         a divider; a hair more size than body chrome gives it presence. */
       .chrome__home {
         position: relative;
         font-family: var(--font-display);
         font-weight: var(--wght-display);
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         line-height: 1;
         color: var(--ink);
         text-decoration: none;
