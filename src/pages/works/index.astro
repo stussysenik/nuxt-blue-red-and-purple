@@ -8,6 +8,7 @@
 // else — live client first, then newest, then alphabetical.
 import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
+import { toRoman } from '../../lib/roman';
 
 const works = (await getCollection('works'))
   .map((entry) => entry.data)
@@ -28,6 +29,13 @@ const groups = [...new Set(works.map((w) => w.category))]
     category,
     items: works.filter((w) => w.category === category),
   }));
+
+// Catalogue numbering follows the on-page reading order — groups top-to-bottom,
+// items in the shared deterministic sort — so the numerals climb I → XIV straight
+// down the index. Stable because both the group rank and the item sort are fixed.
+const numeralOf = new Map(
+  groups.flatMap((g) => g.items).map((w, i) => [w.slug, toRoman(i + 1)] as const),
+);
 ---
 
 <Base title="Project index — *blue red + purple/" chrome="close">
@@ -38,12 +46,18 @@ const groups = [...new Set(works.map((w) => w.category))]
     {
       groups.map(({ category, items }) => (
         <section class="group">
-          <h2 class="group__label font-mono ttu tracked">{category}</h2>
+          <h2 class="group__label font-mono ttu tracked">{category} store</h2>
           <ul class="index__list">
             {items.map((w) => (
               <li>
-                <a class="row" href={`/works/${w.slug}`} data-image={w.image}>
-                  <span class="row__title">{w.title}</span>
+                <a
+                  class="row"
+                  href={`/works/${w.slug}`}
+                  data-image={w.image}
+                  aria-label={`${numeralOf.get(w.slug)} — ${w.category} store`}
+                >
+                  <span class="row__dot" aria-hidden="true" />
+                  <span class="row__title">{numeralOf.get(w.slug)}</span>
                 </a>
               </li>
             ))}
@@ -134,8 +148,8 @@ const groups = [...new Set(works.map((w) => w.category))]
   .row {
     position: relative;
     display: inline-flex;
-    align-items: flex-start;
-    gap: 0.35rem;
+    align-items: center;
+    gap: 0.5rem;
     padding: 0.1rem 0.6rem;
     text-decoration: none;
     color: var(--ink-2);
@@ -146,6 +160,26 @@ const groups = [...new Set(works.map((w) => w.category))]
     color: var(--ink);
     outline: none;
   }
+  /* The "you are here" dot — the active element in the index's information
+     architecture. It scales in on the hovered/focused row, a small satisfying
+     mark that says which catalogue number you're about to open. */
+  .row__dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background-color: currentColor;
+    flex: none;
+    opacity: 0;
+    transform: scale(0.3);
+    transition:
+      opacity 0.25s var(--ease),
+      transform 0.25s var(--ease);
+  }
+  .row:hover .row__dot,
+  .row:focus-visible .row__dot {
+    opacity: 1;
+    transform: scale(1);
+  }
   .row__title {
     font-family: var(--font-display);
     font-weight: var(--wght-display);
@@ -153,10 +187,21 @@ const groups = [...new Set(works.map((w) => w.category))]
     line-height: 1.08;
     letter-spacing: var(--tracking-display);
     color: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Preview reveal — hovering a row wakes the background ghost: the work's image
+     comes forward (clearer, nearer) so the cryptic numeral immediately suggests
+     what it opens. Compositor-only (opacity / filter / transform). */
+  .index:has(.row:hover) .index__ghost,
+  .index:has(.row:focus-visible) .index__ghost {
+    opacity: 0.34;
+    filter: blur(40px) saturate(1.18);
+    transform: scale(1.08);
   }
   @media (prefers-reduced-motion: reduce) {
     .index__ghost,
-    .row {
+    .row,
+    .row__dot {
       transition: none;
     }
   }

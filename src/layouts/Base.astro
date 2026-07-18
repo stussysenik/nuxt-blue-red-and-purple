@@ -185,6 +185,7 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
 
       /* The ✳ brand mark is home — display weight, the site's signature glyph. */
       .chrome__home {
+        position: relative;
         font-family: var(--font-display);
         font-weight: var(--wght-display);
         font-size: 1.4rem;
@@ -221,8 +222,8 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         align-items: center;
         gap: 0.4em;
         padding: 0.42em 0.72em;
-        font-family: var(--font-display);
-        font-weight: var(--wght-display);
+        font-family: var(--font-mono);
+        font-weight: 400;
         font-size: var(--type-label);
         line-height: 1;
         letter-spacing: 0.1em;
@@ -249,11 +250,25 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         box-shadow: 0 0 0 var(--ink);
       }
 
-      /* You are here: the matching item steps back rather than link to itself. */
+      /* You are here: the current item stops linking to itself and grows a small
+         centred dot beneath it — the satisfying "active element" mark, the same
+         language as the index rows, so wayfinding tells you where you are the
+         same way everywhere. */
       .chrome__home[aria-current='page'],
       .chrome__index[aria-current='page'] {
-        opacity: 0.4;
         pointer-events: none;
+      }
+      .chrome__home[aria-current='page']::after,
+      .chrome__index[aria-current='page']::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: calc(100% + 0.32em);
+        transform: translateX(-50%);
+        width: 0.34em;
+        height: 0.34em;
+        border-radius: 50%;
+        background-color: currentColor;
       }
 
       .chrome__home:focus-visible,
