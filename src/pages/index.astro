@@ -18,6 +18,12 @@ const works = (await getCollection('works'))
       b.year - a.year ||
       a.title.localeCompare(b.title),
   );
+
+// The agency roster — who makes up blue red + purple right now. Extendable: add
+// a name and it renders in the contact block automatically.
+const MEMBERS = ['Alex Wedderburn', 'Meng Xuan Zou'];
+const PHONE = '(404) 422-5517';
+const PHONE_HREF = 'tel:+14044225517';
 ---
 
 <Base>
@@ -143,6 +149,12 @@ const works = (await getCollection('works'))
         hi@blueredandpurple.world
       </a>
     </p>
+    <p class="contact-phone font-mono">
+      <a href={PHONE_HREF}>{PHONE}</a>
+    </p>
+    <ul class="contact-roster font-mono" aria-label="Who makes up the agency">
+      {MEMBERS.map((name) => <li>{name}</li>)}
+    </ul>
   </section>
 
 </Base>
@@ -353,17 +365,61 @@ const works = (await getCollection('works'))
     align-items: center;
     gap: 0.6rem;
     margin-top: 1.8rem;
-    color: var(--ink);
+    /* The acid green (#00FF00, hue 120 — inside the yellow→green territory, so
+       colour-law legal) is the one loud accent on the contact, the address in
+       the brand's own signal colour. A hard ink offset anchors it so it stays
+       legible on the light paper and echoes the Get-in-touch button's
+       comic-brutalist language — the two conversion points speak as one. */
+    color: #00ff00;
+    text-shadow: 3px 3px 0 var(--ink);
     font-family: var(--font-display);
     font-weight: var(--wght-display);
     font-size: clamp(1.4rem, 5vw, 3rem);
     text-transform: none;
+    transition: text-shadow var(--dur) var(--ease);
   }
-  .contact-link:hover {
-    /* Canonical Riso Green — mode-independent, legible on both papers (the same
-       green the Project Index trigger uses). --spot resolves to --ink in
-       generative mode, so this is the deliberate hover accent. */
-    color: #00a95c;
+  @media (hover: hover) {
+    .contact-link:hover {
+      text-shadow: 5px 5px 0 var(--ink);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .contact-link {
+      transition: none;
+    }
+  }
+
+  /* Phone sits directly under the address — the second line of the same reach. */
+  .contact-phone {
+    margin: 0.9rem 0 0;
+    font-size: var(--type-meta);
+    letter-spacing: 0.04em;
+    color: var(--ink);
+  }
+  .contact-phone a {
+    color: inherit;
+    text-decoration: none;
+  }
+  @media (hover: hover) {
+    .contact-phone a:hover {
+      color: #00ff00;
+    }
+  }
+
+  /* The roster — who makes up the agency right now. A plain tracked-mono list
+     that extends by adding a name to MEMBERS; no visual weight competes with the
+     address, it simply names the people behind the reach. */
+  .contact-roster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--type-label);
+    letter-spacing: var(--tracking-label, 0.08em);
+    text-transform: uppercase;
+    color: var(--ink-2);
   }
 
   /* Ledger. */

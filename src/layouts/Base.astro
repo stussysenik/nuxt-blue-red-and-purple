@@ -95,31 +95,36 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
          never lands on a recreation's own layout. ── -->
     <header class="chrome">
       <div class="chrome__bar">
-        <nav class="chrome__group" aria-label="Primary">
-          <a
-            href="/"
-            class="chrome__home"
-            aria-label="blue red + purple — home"
-            aria-current={onHome ? 'page' : undefined}
-          >
-            ✳
-          </a>
-          <a
-            href="/works"
-            class="chrome__link font-mono"
-            aria-current={onIndex ? 'page' : undefined}
-          >
-            Index
-          </a>
-        </nav>
+        <a
+          href="/"
+          class="chrome__home"
+          aria-label="blue red + purple — home"
+          aria-current={onHome ? 'page' : undefined}
+        >
+          ✳
+        </a>
+        <a
+          href="/works"
+          class="chrome__index font-mono"
+          aria-current={onIndex ? 'page' : undefined}
+        >
+          Index
+        </a>
         <div class="chrome__group">
-          <a href={INQUIRY} class="chrome__cta font-mono">
-            Get in touch<span aria-hidden="true"> ↗</span>
+          <a href={INQUIRY} class="chrome__cta">
+            Get in touch<span class="chrome__arrow" aria-hidden="true">↗</span>
           </a>
           <ThemeToggle client:load />
         </div>
       </div>
     </header>
+
+    <!-- Film grain — a monochrome, static tactile layer over the whole surface
+         so every mode (not just the generative shader) reads as a printed ground,
+         the grain a creative director expects on paper. Desaturated in the SVG
+         itself so it introduces no hue (colour law) and pointer-transparent so it
+         never intercepts a click. -->
+    <div class="grain" aria-hidden="true"></div>
 
     <slot />
 
@@ -157,9 +162,11 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         pointer-events: auto;
       }
 
-      /* The bar spans the reserved band, flush to the safe-area insets, brand
-         mark left, inquiry + theme right. justify-content pins the two groups to
-         the edges so the coordinates are identical page to page. */
+      /* The bar spans the reserved band, flush to the safe-area insets: brand
+         mark hard-left, theme + inquiry hard-right, Index pinned dead-centre
+         (absolute, out of the flow) so it stays optically centred on the page
+         no matter what the side clusters weigh. Identical coordinates page to
+         page. */
       .chrome__bar {
         position: absolute;
         top: max(var(--chrome-inset), env(safe-area-inset-top));
@@ -187,58 +194,125 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         transition: opacity var(--dur) var(--ease);
       }
 
-      /* Index + inquiry: plain tracked mono, the ink/paper duotone (colour law),
-         no chip, no tail. The CTA carries a hairline underline so the conversion
-         path reads as the action without shouting. */
-      .chrome__link,
-      .chrome__cta {
+      /* Index — the centred wayfinding anchor. Plain tracked mono in the ink/
+         paper duotone (colour law), pinned to the page centre. */
+      .chrome__index {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
         font-size: var(--type-label);
         line-height: 1;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.22em;
         text-transform: uppercase;
         color: var(--ink);
         text-decoration: none;
         white-space: nowrap;
         transition: opacity var(--dur) var(--ease);
       }
+
+      /* Get in touch — the one loud mark on the page. A brutalist-grotesque
+         block: display type, hard border, a hard offset that pops the button off
+         the ground the way a comic panel does. Stays strictly ink/paper (colour
+         law) so it re-skins with every mode and reads on any ground. This is the
+         attention the conversion path earns. */
       .chrome__cta {
-        border-bottom: 1.5px solid currentColor;
-        padding-bottom: 0.15em;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4em;
+        padding: 0.42em 0.72em;
+        font-family: var(--font-display);
+        font-weight: var(--wght-display);
+        font-size: var(--type-label);
+        line-height: 1;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink);
+        background: var(--paper);
+        border: var(--border-w, 2px) solid var(--ink);
+        box-shadow: 3px 3px 0 var(--ink);
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+          transform var(--dur) var(--ease),
+          box-shadow var(--dur) var(--ease);
+      }
+      /* The arrow is the one standardised glyph across the chrome; it nudges out
+         on hover so the whole button reads as "go". */
+      .chrome__arrow {
+        transition: transform var(--dur) var(--ease);
+      }
+      /* Press: the button travels onto its own shadow — the satisfying brutalist
+         click. */
+      .chrome__cta:active {
+        transform: translate(3px, 3px);
+        box-shadow: 0 0 0 var(--ink);
       }
 
       /* You are here: the matching item steps back rather than link to itself. */
       .chrome__home[aria-current='page'],
-      .chrome__link[aria-current='page'] {
+      .chrome__index[aria-current='page'] {
         opacity: 0.4;
         pointer-events: none;
       }
 
       .chrome__home:focus-visible,
-      .chrome__link:focus-visible,
+      .chrome__index:focus-visible,
       .chrome__cta:focus-visible {
-        opacity: 1;
         outline: var(--border-w, 2px) solid var(--ink);
         outline-offset: 3px;
       }
-      /* Hover dim only on real hover pointers — never latched on touch. */
+      /* Hover only on real hover pointers — never latched on touch (the green-
+         icon-on-mobile guard, applied across the bar). */
       @media (hover: hover) {
         .chrome__home:hover,
-        .chrome__link:hover,
-        .chrome__cta:hover {
+        .chrome__index:hover {
           opacity: 0.6;
+        }
+        .chrome__cta:hover {
+          transform: translate(-1px, -1px);
+          box-shadow: 5px 5px 0 var(--ink);
+        }
+        .chrome__cta:hover .chrome__arrow {
+          transform: translate(0.15em, -0.15em);
         }
       }
 
-      /* Narrow phones: tighten the tracking + gaps so the two groups still clear
-         each other on a 320px stage. */
-      @media (max-width: 26rem) {
+      /* Narrow phones: keep the centred Index clear of the side clusters and
+         tighten the CTA so the three marks still breathe on a 320px stage. */
+      @media (max-width: 30rem) {
         .chrome__group {
           gap: var(--space-2);
         }
-        .chrome__link,
+        .chrome__index {
+          letter-spacing: 0.12em;
+        }
         .chrome__cta {
+          padding: 0.4em 0.6em;
           letter-spacing: 0.06em;
         }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .chrome__cta,
+        .chrome__arrow {
+          transition: none;
+        }
+      }
+
+      /* Film grain — fixed above everything, blended into the surface. The tile
+         is desaturated fractal noise (no hue → colour-law safe); opacity is kept
+         low enough that text contrast is unaffected. Sits over the chrome too so
+         the whole page shares one ground. */
+      .grain {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0.05;
+        mix-blend-mode: overlay;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+        background-size: 160px 160px;
       }
     </style>
   </body>
