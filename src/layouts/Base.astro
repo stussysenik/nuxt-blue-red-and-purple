@@ -253,25 +253,14 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         box-shadow: 0 0 0 var(--ink);
       }
 
-      /* You are here: the current item stops linking to itself and grows a small
-         centred dot beneath it — the satisfying "active element" mark, the same
-         language as the index rows, so wayfinding tells you where you are the
-         same way everywhere. */
+      /* You are here: the current item simply stops linking to itself. No dot —
+         the dot is a single concept in this product, reserved for the index
+         rows' active element (the numeral your pointer is on). Doubling it in
+         the chrome made two dots read as one language and muddled the meaning;
+         aria-current + the non-linking state carry "current page" on their own. */
       .chrome__home[aria-current='page'],
       .chrome__index[aria-current='page'] {
         pointer-events: none;
-      }
-      .chrome__home[aria-current='page']::after,
-      .chrome__index[aria-current='page']::after {
-        content: '';
-        position: absolute;
-        left: 50%;
-        top: calc(100% + 0.32em);
-        transform: translateX(-50%);
-        width: 0.34em;
-        height: 0.34em;
-        border-radius: 50%;
-        background-color: currentColor;
       }
 
       .chrome__home:focus-visible,
