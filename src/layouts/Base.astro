@@ -293,14 +293,22 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         }
       }
 
-      /* Narrow phones: keep the centred Index clear of the side clusters and
-         tighten the CTA so the three marks still breathe on a 320px stage. */
+      /* Narrow phones: viewport-centring the Index (absolute, left:50%) makes it
+         overlap the right cluster, since it reserves no space in the bar. On a
+         phone it rejoins the flow instead — space-between then gives the mark,
+         Index and inquiry cluster real, non-overlapping room. `relative` (not
+         static) keeps it a positioning context so the active-element dot still
+         anchors to it. The CTA and tracking tighten so all three breathe at
+         320px. */
       @media (max-width: 30rem) {
+        .chrome__index {
+          position: relative;
+          inset: auto;
+          transform: none;
+          letter-spacing: 0.12em;
+        }
         .chrome__group {
           gap: var(--space-2);
-        }
-        .chrome__index {
-          letter-spacing: 0.12em;
         }
         .chrome__cta {
           padding: 0.4em 0.6em;

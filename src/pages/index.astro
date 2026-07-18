@@ -144,17 +144,25 @@ const PHONE_HREF = 'tel:+14044225517';
   <section id="contacts" class="band band--last" data-section="06">
     <p class="band__index font-mono">(06)</p>
     <h2 class="band__title">Contacts</h2>
-    <p class="band__lead measure lh-copy">
-      <a href="mailto:hi@blueredandpurple.world" class="contact-link">
+    <div class="identity">
+      <a href="mailto:hi@blueredandpurple.world" class="identity__line">
         hi@blueredandpurple.world
       </a>
-    </p>
-    <p class="contact-phone font-mono">
-      <a href={PHONE_HREF}>{PHONE}</a>
-    </p>
-    <ul class="contact-roster font-mono" aria-label="Who makes up the agency">
-      {MEMBERS.map((name) => <li>{name}</li>)}
-    </ul>
+      <a href={PHONE_HREF} class="identity__line identity__line--mono font-mono">
+        {PHONE}
+      </a>
+      <p class="identity__team font-mono">
+        <span class="identity__team-key" aria-hidden="true">Team:</span>
+        <span class="identity__team-names" aria-label="Team">
+          {MEMBERS.map((name, i) => (
+            <>
+              {i > 0 && <span class="identity__sep" aria-hidden="true">/</span>}
+              <span>{name}</span>
+            </>
+          ))}
+        </span>
+      </p>
+    </div>
   </section>
 
 </Base>
@@ -296,6 +304,9 @@ const PHONE_HREF = 'tel:+14044225517';
     z-index: 1;
     padding: clamp(3rem, 12vh, 9rem) var(--edge);
     border-top: 1px solid var(--line);
+    /* Query container: descendants size to the band's own inline width, not the
+       viewport (parent-relative type — the Dan Hollick discipline). */
+    container-type: inline-size;
   }
   .band--last {
     min-height: 60svh;
@@ -360,66 +371,82 @@ const PHONE_HREF = 'tel:+14044225517';
     font-variant-numeric: tabular-nums;
   }
 
-  .contact-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
+  /* ── §06 Identity block ───────────────────────────────────────────────────
+     Email + phone are matched-size sibling rows — one shared reach, two lines
+     of the same voice — with the roster woven beneath as the "Team:" byline.
+     At rest the block is quiet ink; on hover a line becomes *reflexive*: it
+     takes the brand's acid green (#00FF00, hue 120 — inside the yellow→green
+     territory, so colour-law legal) and a hard ink offset, the risograph
+     mis-registration / comic-panel look shared with the Get-in-touch button. */
+  .identity {
     margin-top: 1.8rem;
-    /* The acid green (#00FF00, hue 120 — inside the yellow→green territory, so
-       colour-law legal) is the one loud accent on the contact, the address in
-       the brand's own signal colour. A hard ink offset anchors it so it stays
-       legible on the light paper and echoes the Get-in-touch button's
-       comic-brutalist language — the two conversion points speak as one. */
-    color: #00ff00;
-    text-shadow: 3px 3px 0 var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  .identity__line {
+    /* The shared contact size — email and phone read as equal siblings. Sized
+       in container units (cqi = 1% of the band's inline width), not vw: type
+       tracks the parent column, never the raw viewport. */
+    font-size: clamp(1.5rem, 5cqi, 2.6rem);
+    line-height: 1.05;
+    color: var(--ink);
+    text-decoration: none;
+    text-shadow: 0 0 0 transparent;
+    transition:
+      color var(--dur) var(--ease),
+      text-shadow var(--dur) var(--ease);
+  }
+  .identity__line:not(.identity__line--mono) {
     font-family: var(--font-display);
     font-weight: var(--wght-display);
-    font-size: clamp(1.4rem, 5vw, 3rem);
-    text-transform: none;
-    transition: text-shadow var(--dur) var(--ease);
   }
+  /* The reflexive state — the paper-comic reveal. Keyboard focus earns it too. */
   @media (hover: hover) {
-    .contact-link:hover {
-      text-shadow: 5px 5px 0 var(--ink);
+    .identity__line:hover {
+      color: #00ff00;
+      text-shadow: 4px 4px 0 var(--ink);
     }
   }
+  .identity__line:focus-visible {
+    color: #00ff00;
+    text-shadow: 4px 4px 0 var(--ink);
+    outline: none;
+  }
   @media (prefers-reduced-motion: reduce) {
-    .contact-link {
+    .identity__line {
       transition: none;
     }
   }
 
-  /* Phone sits directly under the address — the second line of the same reach. */
-  .contact-phone {
+  /* The byline — who makes up blue red + purple right now. Extends by adding a
+     name to MEMBERS; a keyed "Team:" label anchors it under the reach without
+     competing with the two contact lines. */
+  .identity__team {
     margin: 0.9rem 0 0;
-    font-size: var(--type-meta);
-    letter-spacing: 0.04em;
-    color: var(--ink);
-  }
-  .contact-phone a {
-    color: inherit;
-    text-decoration: none;
-  }
-  @media (hover: hover) {
-    .contact-phone a:hover {
-      color: #00ff00;
-    }
-  }
-
-  /* The roster — who makes up the agency right now. A plain tracked-mono list
-     that extends by adding a name to MEMBERS; no visual weight competes with the
-     address, it simply names the people behind the reach. */
-  .contact-roster {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1.4rem;
-    margin: 1.6rem 0 0;
-    padding: 0;
-    list-style: none;
+    align-items: baseline;
+    gap: 0.35rem 0.7rem;
     font-size: var(--type-label);
     letter-spacing: var(--tracking-label, 0.08em);
     text-transform: uppercase;
     color: var(--ink-2);
+  }
+  .identity__team-key {
+    color: var(--ink-1);
+    font-weight: 600;
+  }
+  .identity__team-names {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.7rem;
+  }
+  .identity__sep {
+    color: var(--ink-3, var(--ink-2));
+    opacity: 0.6;
   }
 
   /* Ledger. */
