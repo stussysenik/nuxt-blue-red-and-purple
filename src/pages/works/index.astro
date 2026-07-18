@@ -39,7 +39,7 @@ const numeralOf = new Map(
 ---
 
 <Base title="Project index — *blue red + purple/" chrome="close">
-  <main class="index" data-lenis-prevent>
+  <main class="index">
     <span class="index__ghost" aria-hidden="true"></span>
 
     <h1 class="visually-hidden">Project index</h1>
@@ -149,7 +149,12 @@ const numeralOf = new Map(
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    /* ≥44px hit target: the display numeral clears this on desktop, but the
+       clamped mobile size (~31px) does not — min-height guarantees a tappable
+       row at 320/375 without disturbing the desktop rhythm. */
+    min-height: 2.75rem;
     padding: 0.1rem 0.6rem;
     text-decoration: none;
     color: var(--ink-2);

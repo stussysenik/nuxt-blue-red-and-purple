@@ -31,11 +31,14 @@ contract test grows first so pages are re-crafted against a failing gate
 
 ## 3. Imagery pipeline (parallel with §2)
 
-- [ ] 3.1 Curate 14 Gratisography candidates (category-coherent, quirky
+- [x] 3.1 Curate 14 Gratisography candidates (category-coherent, quirky
       register); view each; **batch one user approval round** before commit.
-- [ ] 3.2 Optimize + commit to `public/works/<slug>.jpg` (≤200KB each,
+      (User gave blanket approval for the Gratisography set — "any random
+      Gratisography image is fine" — closing the approval round.)
+- [x] 3.2 Optimize + commit to `public/works/<slug>.jpg` (≤200KB each,
       ~1600px). Shared ghost-load CSS: paper-tint skeleton, reserved
-      aspect-ratio, fade-in on load, no JS, no layout shift.
+      aspect-ratio, fade-in on load, no JS, no layout shift. (All 14 committed
+      in `public/works/`, 46–149KB each, rendering on every page — §4.3.)
 
 ## 4. Re-craft the 14 work pages (the bulk; one commit each, gate green per page)
 
@@ -109,12 +112,14 @@ skrillex, smac — keeping its bespoke concept:
 
 ## 5. Project index + close-out
 
-- [ ] 5.1 /works: natural document scroll (drop `data-lenis-prevent` +
-      inner-scroll assumptions), chrome-safe padding at all sizes, row tap
-      targets ≥44px, ghost backdrop non-blocking; template titles wrapped in
-      typographic quotes (“Title”), smac unquoted (real client, not template).
-- [ ] 5.2 Full gate: `pnpm check` + `pnpm test` zero; build; `grep` dist for
-      gsap (must be absent) and for self-annotation strings (must be absent).
+- [x] 5.1 /works: natural document scroll (dropped `data-lenis-prevent`),
+      chrome-safe padding at all sizes, row tap targets ≥44px (min-height added
+      for the clamped mobile numeral), ghost backdrop non-blocking. (The
+      typographic-quotes clause is obsolete: the index pivoted to Roman numerals
+      in 5715302 — no titles are rendered, so nothing to quote.)
+- [x] 5.2 Full gate: `pnpm check` + `pnpm test` zero (0 errors / 188 passed);
+      build (17 pages); `grep` dist for gsap (no library ships — only the word
+      "GSAP" in removal-rationale comments) and self-annotation (absent).
 - [ ] 5.3 Update `openspec` specs via archive flow when deployed; note GSAP
       dep removal as follow-up tied to the wheel's P2 fate.
 
