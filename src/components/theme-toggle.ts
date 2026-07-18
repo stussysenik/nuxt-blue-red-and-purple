@@ -34,11 +34,11 @@ export class ThemeToggle extends LitElement {
   }
 
   static override styles = css`
+    /* Flows inline inside the persistent chrome cluster (Base.astro owns the
+       positioning now) — no longer a lone fixed island, so it can never collide
+       with a page's own bottom-right content and it re-skins with the kernel. */
     :host {
-      position: fixed;
-      right: max(var(--chrome-inset, 1.4rem), env(safe-area-inset-right));
-      bottom: max(var(--chrome-inset, 1.4rem), env(safe-area-inset-bottom));
-      z-index: 4;
+      display: inline-flex;
     }
     /* Minimal: a single icon, no border/radius/shadow/surface — just the glyph. */
     button {
@@ -51,10 +51,17 @@ export class ThemeToggle extends LitElement {
       transition: color var(--dur) var(--ease);
       -webkit-tap-highlight-color: transparent;
     }
-    button:hover,
     button:focus-visible {
       color: var(--spot);
       outline: none;
+    }
+    /* Hover tint only where a real hover pointer exists. On touch, :hover
+       latches after a tap, so an unguarded rule leaves the glyph stuck on the
+       spot hue (green in clay) — the "green icon on mobile". This is the fix. */
+    @media (hover: hover) {
+      button:hover {
+        color: var(--spot);
+      }
     }
     svg {
       display: block;

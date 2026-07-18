@@ -27,8 +27,18 @@ const {
   title = '*blue red + purple/',
   description = 'A design agency with one specialization: one-page systems. One fixed content structure, four interchangeable design systems — switched live.',
   noindex = false,
-  chrome = 'index',
 } = Astro.props;
+
+// Persistent chrome — identical coordinates on every page (home · index ·
+// inquiry · theme), so wayfinding is the same solved problem everywhere and a
+// prospect is always one click from getting in touch. The current page is
+// resolved from the path so its nav item reads aria-current instead of linking
+// back to where you already are. `chrome` is still accepted (work pages pass it)
+// but no longer branches the layout — the bar is the same for all.
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const onHome = pathname === '/';
+const onIndex = pathname === '/works';
+const INQUIRY = 'mailto:hi@blueredandpurple.world';
 ---
 
 <!doctype html>
@@ -78,36 +88,38 @@ const {
 
   </head>
   <body>
-    <!-- ── Global pinned chrome. The centred slot is the wayfinding anchor: the
-         "Template index" pill (→ /works) on content pages, or Close (→ home) on
-         the index itself, swapping in place. The corner mark stays; the home
-         slash-mark is archived (below). ── -->
+    <!-- ── Global pinned chrome — one bar, identical on every page. The brand
+         mark is home, Index reaches the catalogue, the inquiry CTA is always a
+         click away (the negotiation path), and the theme toggle rides along.
+         All of it sits in the reserved --chrome-band above page content, so it
+         never lands on a recreation's own layout. ── -->
     <header class="chrome">
-      <!-- Archived: the top-left /// home mark. Restore by uncommenting — it was
-           the link back to `/`. Wayfinding now runs through the centred index
-           pill and the index's Close, so a persistent home mark is redundant.
-      <a href="/" class="slash-mark" aria-label="blue red + purple — home">
-        <span></span><span></span><span></span>
-      </a>
-      -->
-      {
-        chrome === 'work' ? (
-          <a href="/works" class="chrome-back font-mono">
-            ← Index
+      <div class="chrome__bar">
+        <nav class="chrome__group" aria-label="Primary">
+          <a
+            href="/"
+            class="chrome__home"
+            aria-label="blue red + purple — home"
+            aria-current={onHome ? 'page' : undefined}
+          >
+            ✳
           </a>
-        ) : chrome === 'close' ? (
-          <a href="/" class="chrome-index chrome-index--close font-mono">
-            Close
+          <a
+            href="/works"
+            class="chrome__link font-mono"
+            aria-current={onIndex ? 'page' : undefined}
+          >
+            Index
           </a>
-        ) : (
-          <a href="/works" class="chrome-index">
-            Project Index
+        </nav>
+        <div class="chrome__group">
+          <a href={INQUIRY} class="chrome__cta font-mono">
+            Get in touch<span aria-hidden="true"> ↗</span>
           </a>
-        )
-      }
-      {chrome !== 'work' && <span class="corner-mark" aria-hidden="true">✳</span>}
+          <ThemeToggle client:load />
+        </div>
+      </div>
     </header>
-    {chrome !== 'work' && <ThemeToggle client:load />}
 
     <slot />
 
@@ -129,11 +141,10 @@ const {
     </script>
 
     <style>
-      /* Global pinned chrome (moved out of the home page so work pages inherit
-         the identical nav). Composes only from kernel custom properties, and
-         snaps to the shared layout tokens (--chrome-inset). A full-viewport,
-         click-through overlay: children opt back into pointer events. Sits above
-         the theme toggle (z 4). */
+      /* Global pinned chrome. One bar, identical on every page. Composes only
+         from kernel custom properties and snaps to the shared layout tokens
+         (--chrome-inset / --chrome-band). A full-viewport, click-through
+         overlay: children opt back into pointer events. */
       .chrome {
         position: fixed;
         inset: 0;
@@ -142,83 +153,92 @@ const {
         color: var(--ink);
       }
       .chrome a,
-      .chrome > span {
+      .chrome theme-toggle {
         pointer-events: auto;
       }
 
-      /* Centred index anchor. On content pages: clean plain-text wayfinding —
-         the label in --ink display type, no chip, no tail, staying inside the
-         ink/paper duotone (colour law). On the index: plain Close text
-         (--close modifier). */
-      .chrome-index {
+      /* The bar spans the reserved band, flush to the safe-area insets, brand
+         mark left, inquiry + theme right. justify-content pins the two groups to
+         the edges so the coordinates are identical page to page. */
+      .chrome__bar {
         position: absolute;
         top: max(var(--chrome-inset), env(safe-area-inset-top));
-        left: 50%;
-        transform: translateX(-50%);
-        display: inline-flex;
+        left: max(var(--chrome-inset), env(safe-area-inset-left));
+        right: max(var(--chrome-inset), env(safe-area-inset-right));
+        display: flex;
         align-items: center;
-        padding: var(--space-1) var(--space-2);
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+      .chrome__group {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+      }
+
+      /* The ✳ brand mark is home — display weight, the site's signature glyph. */
+      .chrome__home {
         font-family: var(--font-display);
-        font-weight: var(--wght-body);
-        font-size: var(--type-meta);
+        font-weight: var(--wght-display);
+        font-size: 1.4rem;
         line-height: 1;
-        letter-spacing: 0.01em;
+        color: var(--ink);
+        text-decoration: none;
+        transition: opacity var(--dur) var(--ease);
+      }
+
+      /* Index + inquiry: plain tracked mono, the ink/paper duotone (colour law),
+         no chip, no tail. The CTA carries a hairline underline so the conversion
+         path reads as the action without shouting. */
+      .chrome__link,
+      .chrome__cta {
+        font-size: var(--type-label);
+        line-height: 1;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
         color: var(--ink);
         text-decoration: none;
         white-space: nowrap;
         transition: opacity var(--dur) var(--ease);
       }
-      .chrome-index:hover,
-      .chrome-index:focus-visible {
-        opacity: 0.6;
-        outline: none;
+      .chrome__cta {
+        border-bottom: 1.5px solid currentColor;
+        padding-bottom: 0.15em;
       }
-      /* Index → Close: plain tracked text, no chip, no tail. */
-      .chrome-index--close {
-        padding: var(--space-2) var(--space-3);
-        color: var(--ink);
-        background: none;
-        text-transform: uppercase;
-        letter-spacing: 0.22em;
-        transition: color var(--dur) var(--ease);
+
+      /* You are here: the matching item steps back rather than link to itself. */
+      .chrome__home[aria-current='page'],
+      .chrome__link[aria-current='page'] {
+        opacity: 0.4;
+        pointer-events: none;
       }
-      .chrome-index--close::after {
-        display: none;
-      }
-      .chrome-index--close:hover,
-      .chrome-index--close:focus-visible {
+
+      .chrome__home:focus-visible,
+      .chrome__link:focus-visible,
+      .chrome__cta:focus-visible {
         opacity: 1;
-        color: var(--spot);
+        outline: var(--border-w, 2px) solid var(--ink);
+        outline-offset: 3px;
+      }
+      /* Hover dim only on real hover pointers — never latched on touch. */
+      @media (hover: hover) {
+        .chrome__home:hover,
+        .chrome__link:hover,
+        .chrome__cta:hover {
+          opacity: 0.6;
+        }
       }
 
-      /* Work pages: the lone mark the portfolio leaves on a recreation. Sits in
-         the corner-mark slot (the reserved chrome corner sitewide) so it clears
-         the source navs, which are top-left in nearly every reconstruction. */
-      .chrome-back {
-        position: absolute;
-        top: max(var(--chrome-inset), env(safe-area-inset-top));
-        right: max(var(--chrome-inset), env(safe-area-inset-right));
-        font-size: var(--type-label);
-        line-height: 1;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--ink);
-        text-decoration: none;
-        transition: opacity var(--dur) var(--ease);
-      }
-      .chrome-back:hover,
-      .chrome-back:focus-visible {
-        opacity: 0.6;
-      }
-
-      .corner-mark {
-        position: absolute;
-        top: max(var(--chrome-inset), env(safe-area-inset-top));
-        right: max(var(--chrome-inset), env(safe-area-inset-right));
-        font-family: var(--font-display);
-        font-weight: var(--wght-display);
-        font-size: 1.4rem;
-        color: var(--ink);
+      /* Narrow phones: tighten the tracking + gaps so the two groups still clear
+         each other on a 320px stage. */
+      @media (max-width: 26rem) {
+        .chrome__group {
+          gap: var(--space-2);
+        }
+        .chrome__link,
+        .chrome__cta {
+          letter-spacing: 0.06em;
+        }
       }
     </style>
   </body>
