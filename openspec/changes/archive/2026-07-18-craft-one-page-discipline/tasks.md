@@ -120,8 +120,10 @@ skrillex, smac — keeping its bespoke concept:
 - [x] 5.2 Full gate: `pnpm check` + `pnpm test` zero (0 errors / 188 passed);
       build (17 pages); `grep` dist for gsap (no library ships — only the word
       "GSAP" in removal-rationale comments) and self-annotation (absent).
-- [ ] 5.3 Update `openspec` specs via archive flow when deployed; note GSAP
-      dep removal as follow-up tied to the wheel's P2 fate.
+- [x] 5.3 Update `openspec` specs via archive flow when deployed (85ce87b, prod
+      READY). Follow-up: the `gsap` dep stays in package.json for the archived
+      wheel — no runtime path imports it (dist is gsap-free); its removal rides
+      the wheel's P2 fate.
 
 Dependencies: 1 → 2 → 4; 3 can run parallel to 2; 5 last. P2 (dialkit island)
 and P3 (config-as-order) are separate future changes building on 1.2's schema.
