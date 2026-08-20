@@ -103,7 +103,6 @@ const PHONE_HREF = 'tel:+14044225517';
 
   <!-- ── §04 About ── -->
   <section id="about" class="band" data-section="04">
-    <p class="band__index font-mono">(04)</p>
     <h2 class="band__title">About us</h2>
     <p class="band__lead measure-wide lh-copy">
      We are a multi-disciplinary design communication studio that connects the unconnected by creating coherent and intuitive design. Every great idea begins with something fragile. Whether an idea is just at the beginning, taking shape, or ready to scale, we partner with our clients to build thoughtful work that feel intuitive, memorable and true to your vision. <br>
@@ -142,7 +141,6 @@ const PHONE_HREF = 'tel:+14044225517';
 
   <!-- ── §06 Contacts ── -->
   <section id="contacts" class="band band--last" data-section="06">
-    <p class="band__index font-mono">(06)</p>
     <h2 class="band__title">Contacts</h2>
     <div class="identity">
       <a href="mailto:hi@blueredandpurple.world" class="identity__line">
@@ -401,6 +399,14 @@ const PHONE_HREF = 'tel:+14044225517';
   .identity__line:not(.identity__line--mono) {
     font-family: var(--font-display);
     font-weight: var(--wght-display);
+  }
+  /* The phone rides the mono register (a dialable string, not display prose).
+     Tabular figures keep the digits on an even rhythm and a hair of negative
+     tracking pulls the numerals into one number rather than spaced glyphs, so
+     it reads as a phone line the eye can group — sibling in size to the email. */
+  .identity__line--mono {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
   /* The reflexive state — the paper-comic reveal. Keyboard focus earns it too. */
   @media (hover: hover) {
