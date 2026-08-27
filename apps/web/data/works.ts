@@ -18,6 +18,44 @@ export const works: Work[] = [
     real: true,
   },
   {
+    slug: 'olive-thyme',
+    title: 'Olive & Thyme',
+    category: 'restaurant',
+    year: 2026,
+    image: '/works/olive-thyme.jpg',
+    summary:
+      'A neighborhood bistro with a daily-changing chalkboard menu and a warm, editorial feel.',
+    palette: ['#5a7d3f', '#e8d5b7', '#2d2a26'],
+    mechanic:
+      'Chalkboard-as-menu: daily specials rendered as a hand-lettered grid, reservation CTA pinned bottom-right.',
+    source: 'olivethyme.blueredandpurple.world',
+    real: true,
+  },
+  {
+    slug: 'midnight-noodle',
+    title: 'Midnight Noodle',
+    category: 'restaurant',
+    year: 2025,
+    image: '/works/midnight-noodle.jpg',
+    summary:
+      'A late-night ramen counter — neon-on-dark, one menu column, order flow reduced to three taps.',
+    palette: ['#ff3d5a', '#1a1a1a', '#f5f0e8'],
+    mechanic:
+      'Neon-on-dark single column: one menu, three-tap order, the counter is the whole page.',
+  },
+  {
+    slug: 'veranda',
+    title: 'Veranda',
+    category: 'restaurant',
+    year: 2025,
+    image: '/works/veranda.jpg',
+    summary:
+      'A rooftop bar with a panoramic hero, a cocktail list as a type specimen, and a booking rail.',
+    palette: ['#d4a853', '#1e3a5f', '#f0ece2'],
+    mechanic:
+      'Panoramic hero with a cocktail-type specimen overlay; booking rail slides up from the bottom.',
+  },
+  {
     slug: 'after',
     title: 'After',
     category: 'music',
@@ -104,6 +142,18 @@ export const works: Work[] = [
       'A serif display and semi-mono captions share an asymmetric editorial stack.',
     mechanic:
       'Serif display paired with semi-mono captions across a 3/3/6 asymmetric editorial stack.',
+  },
+  {
+    slug: 'echo-chamber',
+    title: 'Echo Chamber',
+    category: 'music',
+    year: 2025,
+    image: '/works/echo-chamber.jpg',
+    summary:
+      'A recording studio\'s booking page — one hero, one calendar, one rate card. The session is the sell.',
+    palette: ['#2b2b2b', '#c4a882', '#f5f0e8'],
+    mechanic:
+      'One hero, one calendar, one rate card — the booking flow is the whole site.',
   },
   {
     slug: 'g858',
