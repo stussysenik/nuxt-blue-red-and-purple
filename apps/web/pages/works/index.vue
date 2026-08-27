@@ -75,6 +75,19 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
         </li>
       </ul>
     </section>
+
+    <!-- Generator CTA -->
+    <section class="gen-cta">
+      <h2 class="gen-cta__h2">Or describe what you need</h2>
+      <p class="gen-cta__blurb measure">
+        Tell us about your project in plain English. Our generator maps your
+        intent to a complete design system — mode, palette, typography — in
+        real time. No templates. No subscriptions.
+      </p>
+      <NuxtLink to="/generator" class="gen-cta__link">
+        Try the generator<span class="gen-cta__arrow" aria-hidden="true">↗</span>
+      </NuxtLink>
+    </section>
   </main>
 </template>
 
@@ -207,10 +220,73 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   transform: scale(1.08);
 }
 
+/* ── Generator CTA ──────────────────────────────────────────────────── */
+
+.gen-cta {
+  text-align: center;
+  padding: clamp(3rem, 8vh, 5rem) 0;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gen-cta__h2 {
+  font-family: var(--font-display);
+  font-weight: var(--wght-display);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+}
+
+.gen-cta__blurb {
+  font-size: var(--type-body);
+  line-height: 1.55;
+  color: var(--ink-1);
+  margin: 0;
+}
+
+.gen-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 0.6rem;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  text-decoration: none;
+  border-radius: 2rem;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.gen-cta__link:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.gen-cta__arrow {
+  transition: transform var(--dur) var(--ease);
+}
+
+.gen-cta__link:hover .gen-cta__arrow {
+  transform: translate(0.15em, -0.15em);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .index__ghost,
   .row,
-  .row__dot {
+  .row__dot,
+  .gen-cta__link,
+  .gen-cta__arrow {
     transition: none;
   }
 }

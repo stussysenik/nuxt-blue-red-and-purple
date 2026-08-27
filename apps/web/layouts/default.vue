@@ -8,6 +8,7 @@ const route = useRoute();
 const pathname = computed(() => route.path.replace(/\/+$/, '') || '/');
 const onHome = computed(() => pathname.value === '/');
 const onIndex = computed(() => pathname.value === '/works');
+const onGenerator = computed(() => pathname.value === '/generator');
 
 const INQUIRY = 'mailto:hi@blueredandpurple.world';
 </script>
@@ -22,6 +23,9 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
         </NuxtLink>
         <NuxtLink to="/works" class="chrome__index font-mono" :aria-current="onIndex ? 'page' : undefined">
           Index
+        </NuxtLink>
+        <NuxtLink to="/generator" class="chrome__generator font-mono" :aria-current="onGenerator ? 'page' : undefined">
+          Generator
         </NuxtLink>
         <div class="chrome__group">
           <a :href="INQUIRY" class="chrome__cta">
@@ -81,11 +85,10 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   transition: opacity var(--dur) var(--ease);
 }
 
-.chrome__index {
+.chrome__index,
+.chrome__generator {
   position: absolute;
-  left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
   font-size: var(--type-label);
   line-height: 1;
   letter-spacing: 0.22em;
@@ -94,6 +97,16 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   text-decoration: none;
   white-space: nowrap;
   transition: opacity var(--dur) var(--ease);
+}
+
+.chrome__index {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.chrome__generator {
+  left: calc(50% + 5.5rem);
+  transform: translate(-50%, -50%);
 }
 
 .chrome__cta {
@@ -128,12 +141,14 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
 }
 
 .chrome__home[aria-current='page'],
-.chrome__index[aria-current='page'] {
+.chrome__index[aria-current='page'],
+.chrome__generator[aria-current='page'] {
   pointer-events: none;
 }
 
 .chrome__home:focus-visible,
 .chrome__index:focus-visible,
+.chrome__generator:focus-visible,
 .chrome__cta:focus-visible {
   outline: var(--border-w, 2px) solid var(--ink);
   outline-offset: 3px;
@@ -141,7 +156,8 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
 
 @media (hover: hover) {
   .chrome__home:hover,
-  .chrome__index:hover {
+  .chrome__index:hover,
+  .chrome__generator:hover {
     opacity: 0.6;
   }
   .chrome__cta:hover {
@@ -154,7 +170,8 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
 }
 
 @media (max-width: 30rem) {
-  .chrome__index {
+  .chrome__index,
+  .chrome__generator {
     position: relative;
     inset: auto;
     transform: none;
