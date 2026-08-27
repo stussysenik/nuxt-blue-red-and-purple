@@ -4,6 +4,11 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@unocss/nuxt'],
   css: ['~/assets/css/fonts.css', '~/assets/css/base.css'],
+  router: {
+    options: {
+      trailingSlash: false,
+    },
+  },
   app: {
     head: {
       title: '*blue red + purple/',

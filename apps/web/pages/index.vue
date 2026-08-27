@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { getVisibleWorks } from '~/data/works';
+import { useGenerativeCanvas } from '~/composables/useGenerativeCanvas';
 
 const works = getVisibleWorks();
 
 const MEMBERS = ['Alex Wedderburn', 'Meng Xuan Zou'];
 const PHONE = '(404) 422-5517';
 const PHONE_HREF = 'tel:+14044225517';
+
+useGenerativeCanvas();
 </script>
 
 <template>
@@ -26,9 +29,7 @@ const PHONE_HREF = 'tel:+14044225517';
 
     <!-- Hero -->
     <section id="hero" class="hero" data-section="00">
-      <h1 class="wordmark" aria-label="blue red + purple">
-        <img src="/done.svg" alt="blue red + purple" />
-      </h1>
+      <h1 class="wordmark" aria-label="blue red + purple"><svg viewBox="0 0 461.66 152.16" xmlns="http://www.w3.org/2000/svg"><path d="m22.97 19.35 5.86 9.6 6.28-7.42 6.12 5.43-6.19 7.57 10.28 4.37-2.75 7.47-10.47-4.36-.98 11.35-7.9-.97.88-11.19-9.56 2.05-2.04-7.93 9.47-2.2-5.86-9.6 6.86-4.19z"/><path d="m356.98 50.87h-12.99v13.67h-8.89v-13.67h-12.99v-9.36h12.99v-13.76h8.89v13.76h12.99z"/><path d="m256 87.05c11.06 0 14.43 7.95 14.43 14.75 0 10.05-4.67 16.7-14.01 16.7h-3.16v18.29h-9.55v-49.75h12.3zm-2.74 21.11h2.34c5.43 0 5.22-4.05 5.22-6.15 0-1.74-.41-5.13-4.81-5.13h-2.75z"/><path d="m282.34 87.05v33.48c0 2.1-.21 7.09 3.57 7.09s3.57-4.99 3.57-7.09v-33.48h9.75v36.01c0 8.6-4.74 14.68-13.33 14.68s-13.33-6.15-13.33-14.68v-36.01h9.75z"/><path d="m322.85 115.97 6.66 20.83h-10.24l-5.98-19.02h-1.58v19.02h-9.62v-49.75h12.98c9.69 0 13.74 8.17 13.74 15.33 0 6.44-1.92 11.21-5.98 13.59zm-9.61-8.1c5.43 0 6.04-3.18 6.04-5.5 0-2.1-.62-5.5-5.63-5.5h-1.92v10.99h1.51z"/><path d="m344.5 87.05c11.06 0 14.43 7.95 14.43 14.75 0 10.05-4.67 16.7-14.01 16.7h-3.16v18.29h-9.55v-49.75h12.3zm-2.75 21.11h2.34c5.43 0 5.22-4.05 5.22-6.15 0-1.74-.41-5.13-4.81-5.13h-2.75z"/><path d="m361.05 87.05h9.96v39.27h16.76v10.49h-26.72v-49.75z"/><path d="m390.33 136.8v-49.75h26.72v10.05h-16.76v9.62h14.63v10.05h-14.63v9.91h16.76v10.12z"/><path d="m430.24 136.8h-10.92l18.44-49.75h10.92z"/><path d="m84.4 60.65c0 8.75-4.74 15.4-14.43 15.4h-12.3v-49.74h11.47c9.62 0 13.74 5.86 13.74 14.03 0 7.09-3.78 9.47-3.78 9.47s5.29 2.68 5.29 10.85zm-17.59-24.73v10.27h2.13c4.19 0 4.6-3.33 4.6-5.13s-.41-5.13-4.6-5.13h-2.13zm3.16 19.67h-3.16v10.85h3.16c3.71 0 4.81-3.33 4.81-5.42s-.69-5.42-4.81-5.42z"/><path d="m86.92 26.31h9.96v39.27h16.76v10.49h-26.72z"/><path d="m125.92 26.31v33.48c0 2.1-.21 7.09 3.57 7.09s3.57-4.99 3.57-7.09v-33.48h9.76v36.01c0 8.6-4.74 14.68-13.33 14.68s-13.33-6.15-13.33-14.68v-36.01h9.75z"/><path d="m145.72 76.06v-49.75h26.72v10.05h-16.76v9.62h14.63v10.05h-14.63v9.91h16.76v10.12z"/><path d="m226.85 55.23 6.66 20.83h-10.23l-5.98-19.02h-1.58v19.02h-9.62v-49.75h12.98c9.69 0 13.74 8.17 13.74 15.33 0 6.44-1.92 11.21-5.98 13.59zm-9.62-8.1c5.43 0 6.04-3.18 6.04-5.5 0-2.1-.62-5.5-5.63-5.5h-1.92v10.99h1.51z"/><path d="m235.79 76.06v-49.75h26.72v10.05h-16.76v9.62h14.63v10.05h-14.63v9.91h16.76v10.12z"/><path d="m265.04 26.31h12.3c9.69 0 14.43 6.58 14.43 14.03v21.77c0 7.23-4.74 14.17-14.43 13.96h-12.3zm9.41 39.91h1.99c5.77 0 5.84-4.84 5.84-6.87v-16.27c0-2.1-.07-6.94-5.84-6.94h-1.99z"/></svg></h1>
       <p class="tagline font-mono ttu tracked">
         Too much blue will never amount to any red
       </p>
@@ -198,10 +199,11 @@ const PHONE_HREF = 'tel:+14044225517';
   margin: 0;
 }
 
-.wordmark img {
+.wordmark svg {
   display: block;
   width: 100%;
   height: auto;
+  fill: var(--ink);
 }
 
 .tagline {
@@ -281,13 +283,13 @@ const PHONE_HREF = 'tel:+14044225517';
 
 @media (hover: hover) {
   .identity__line:hover {
-    color: #00ff00;
+    color: #0f0;
     text-shadow: 4px 4px 0 var(--ink);
   }
 }
 
 .identity__line:focus-visible {
-  color: #00ff00;
+  color: #0f0;
   text-shadow: 4px 4px 0 var(--ink);
   outline: none;
 }
@@ -362,5 +364,61 @@ const PHONE_HREF = 'tel:+14044225517';
     grid-template-columns: 1fr;
     gap: 0.35rem;
   }
+}
+
+.index-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.8rem;
+  padding: 0.7rem 1.1rem;
+  color: var(--ink);
+  background-color: var(--surface);
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition:
+    color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.index-trigger:hover,
+.index-trigger:focus-visible {
+  color: #00a95c;
+}
+
+.index-trigger:hover .dot,
+.index-trigger:focus-visible .dot {
+  background-color: currentColor;
+}
+
+.index-trigger__count {
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger {
+  display: grid;
+  gap: 0.9rem;
+  max-width: 34rem;
+}
+
+.ledger__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-1);
+}
+
+.ledger__row dd {
+  font-family: var(--font-display);
+  font-weight: var(--wght-display);
+  font-size: 2rem;
+  color: var(--ink);
 }
 </style>
