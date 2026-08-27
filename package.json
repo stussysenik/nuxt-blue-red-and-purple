@@ -1,0 +1,28 @@
+{
+  "name": "nuxt-blue-red-and-purple",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@11.5.1",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@unocss/nuxt": "66.8.1",
+    "nuxt": "3.21.11",
+    "unocss": "66.8.1",
+    "vue": "3.5.18"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.10",
+    "typescript": "5.9.3",
+    "vue-tsc": "2.2.10"
+  }
+}
