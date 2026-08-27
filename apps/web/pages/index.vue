@@ -31,35 +31,53 @@ useGenerativeCanvas();
     <section id="hero" class="hero" data-section="00">
       <h1 class="wordmark" aria-label="blue red + purple"><svg viewBox="0 0 461.66 152.16" xmlns="http://www.w3.org/2000/svg"><path d="m22.97 19.35 5.86 9.6 6.28-7.42 6.12 5.43-6.19 7.57 10.28 4.37-2.75 7.47-10.47-4.36-.98 11.35-7.9-.97.88-11.19-9.56 2.05-2.04-7.93 9.47-2.2-5.86-9.6 6.86-4.19z"/><path d="m356.98 50.87h-12.99v13.67h-8.89v-13.67h-12.99v-9.36h12.99v-13.76h8.89v13.76h12.99z"/><path d="m256 87.05c11.06 0 14.43 7.95 14.43 14.75 0 10.05-4.67 16.7-14.01 16.7h-3.16v18.29h-9.55v-49.75h12.3zm-2.74 21.11h2.34c5.43 0 5.22-4.05 5.22-6.15 0-1.74-.41-5.13-4.81-5.13h-2.75z"/><path d="m282.34 87.05v33.48c0 2.1-.21 7.09 3.57 7.09s3.57-4.99 3.57-7.09v-33.48h9.75v36.01c0 8.6-4.74 14.68-13.33 14.68s-13.33-6.15-13.33-14.68v-36.01h9.75z"/><path d="m322.85 115.97 6.66 20.83h-10.24l-5.98-19.02h-1.58v19.02h-9.62v-49.75h12.98c9.69 0 13.74 8.17 13.74 15.33 0 6.44-1.92 11.21-5.98 13.59zm-9.61-8.1c5.43 0 6.04-3.18 6.04-5.5 0-2.1-.62-5.5-5.63-5.5h-1.92v10.99h1.51z"/><path d="m344.5 87.05c11.06 0 14.43 7.95 14.43 14.75 0 10.05-4.67 16.7-14.01 16.7h-3.16v18.29h-9.55v-49.75h12.3zm-2.75 21.11h2.34c5.43 0 5.22-4.05 5.22-6.15 0-1.74-.41-5.13-4.81-5.13h-2.75z"/><path d="m361.05 87.05h9.96v39.27h16.76v10.49h-26.72v-49.75z"/><path d="m390.33 136.8v-49.75h26.72v10.05h-16.76v9.62h14.63v10.05h-14.63v9.91h16.76v10.12z"/><path d="m430.24 136.8h-10.92l18.44-49.75h10.92z"/><path d="m84.4 60.65c0 8.75-4.74 15.4-14.43 15.4h-12.3v-49.74h11.47c9.62 0 13.74 5.86 13.74 14.03 0 7.09-3.78 9.47-3.78 9.47s5.29 2.68 5.29 10.85zm-17.59-24.73v10.27h2.13c4.19 0 4.6-3.33 4.6-5.13s-.41-5.13-4.6-5.13h-2.13zm3.16 19.67h-3.16v10.85h3.16c3.71 0 4.81-3.33 4.81-5.42s-.69-5.42-4.81-5.42z"/><path d="m86.92 26.31h9.96v39.27h16.76v10.49h-26.72z"/><path d="m125.92 26.31v33.48c0 2.1-.21 7.09 3.57 7.09s3.57-4.99 3.57-7.09v-33.48h9.76v36.01c0 8.6-4.74 14.68-13.33 14.68s-13.33-6.15-13.33-14.68v-36.01h9.75z"/><path d="m145.72 76.06v-49.75h26.72v10.05h-16.76v9.62h14.63v10.05h-14.63v9.91h16.76v10.12z"/><path d="m226.85 55.23 6.66 20.83h-10.23l-5.98-19.02h-1.58v19.02h-9.62v-49.75h12.98c9.69 0 13.74 8.17 13.74 15.33 0 6.44-1.92 11.21-5.98 13.59zm-9.62-8.1c5.43 0 6.04-3.18 6.04-5.5 0-2.1-.62-5.5-5.63-5.5h-1.92v10.99h1.51z"/><path d="m235.79 76.06v-49.75h26.72v10.05h-16.76v9.62h14.63v10.05h-14.63v9.91h16.76v10.12z"/><path d="m265.04 26.31h12.3c9.69 0 14.43 6.58 14.43 14.03v21.77c0 7.23-4.74 14.17-14.43 13.96h-12.3zm9.41 39.91h1.99c5.77 0 5.84-4.84 5.84-6.87v-16.27c0-2.1-.07-6.94-5.84-6.94h-1.99z"/></svg></h1>
       <p class="tagline font-mono ttu tracked">
-        Too much blue will never amount to any red
+        One page. Plain English. Done.
       </p>
+      <p class="hero__sub measure">
+        Describe what you need in plain English. We map it to a design system
+        that's already built — mode, palette, typography, layout. No templates.
+        No subscriptions. Restaurants, music, hotels, books. One page that works.
+      </p>
+      <div class="hero__actions">
+        <NuxtLink to="/generator" class="hero__cta hero__cta--primary">
+          Try the generator<span class="hero__cta-arrow" aria-hidden="true">↗</span>
+        </NuxtLink>
+        <NuxtLink to="/works" class="hero__cta hero__cta--secondary">
+          See our work
+        </NuxtLink>
+      </div>
     </section>
 
-    <!-- About -->
-    <section id="about" class="band" data-section="04">
-      <h2 class="band__title">About us</h2>
+    <!-- How it works -->
+    <section id="how" class="band" data-section="04">
+      <h2 class="band__title">How it works</h2>
       <p class="band__lead measure-wide lh-copy">
-        We are a multi-disciplinary design communication studio that connects the
-        unconnected by creating coherent and intuitive design. Every great idea
-        begins with something fragile. Whether an idea is just at the beginning,
-        taking shape, or ready to scale, we partner with our clients to build
-        thoughtful work that feel intuitive, memorable and true to your vision.
+        You describe what you need in plain English. Our system extracts your
+        intent — industry, mood, features — and maps it to a complete design
+        system: mode, palette, typography, layout. The output is a one-page
+        site built on our four interchangeable kernels. No templates. No
+        subscriptions. No bloat.
       </p>
       <p class="band__lead measure-wide lh-copy">
-        <br />Our Formula:<br />–1 → 0 <br />Discovering possibilities through
-        curiosity, research, and brainstorming. <br />0 → 1 <br />Bringing ideas
-        to life through thoughtful design and technology. <br />1+<br />Helping
-        brands grow through continued creativity, refinement, and evolution.
+        <br />The flow:<br />1. Describe it<br />Tell us about your
+        restaurant, band, hotel, or shop in your own words. <br />2. We map it<br />
+        Intent extraction maps your words to design tokens. <br />3. One page,<br />
+        four modes<br />Your site renders live. Switch between essential, brutal,
+        clay, and generative — same content, different design system.
       </p>
 
       <dl class="lineage font-mono">
         <div class="lineage__row">
-          <dt>Previously</dt>
-          <dd>BFA, The Cooper Union for the Advancement of Science and Art.</dd>
+          <dt>Built on</dt>
+          <dd>BFA, The Cooper Union. After Virgil Abloh — the method is open-source; take it, pass it on.</dd>
         </div>
         <div class="lineage__row">
-          <dt>Free game</dt>
-          <dd>After Virgil Abloh — the method is open-source; take it, pass it on.</dd>
+          <dt>Stack</dt>
+          <dd>Nuxt 3 · UnoCSS · WebGL · Local-first. No CMS, no SaaS, no lock-in.</dd>
+        </div>
+        <div class="lineage__row">
+          <dt>Verticals</dt>
+          <dd>Restaurants · Music · Hotels · Books · Vintage — one-page systems for any single-focus business.</dd>
         </div>
       </dl>
     </section>
@@ -211,6 +229,60 @@ useGenerativeCanvas();
   font-size: var(--type-label);
 }
 
+.hero__sub {
+  font-size: var(--type-body);
+  line-height: 1.55;
+  color: var(--ink-1);
+  margin: 0.8rem 0 0;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2rem;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.hero__cta--primary {
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.hero__cta--secondary {
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--border-w) solid var(--ink);
+}
+
+.hero__cta:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.hero__cta-arrow {
+  transition: transform var(--dur) var(--ease);
+}
+
+.hero__cta:hover .hero__cta-arrow {
+  transform: translate(0.15em, -0.15em);
+}
+
 .band {
   position: relative;
   z-index: 1;
@@ -295,7 +367,9 @@ useGenerativeCanvas();
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .identity__line {
+  .identity__line,
+  .hero__cta,
+  .hero__cta-arrow {
     transition: none;
   }
 }

@@ -18,7 +18,7 @@ export default defineNuxtConfig({
         {
           name: 'description',
           content:
-            'A design agency with one specialization: one-page systems. One fixed content structure, four interchangeable design systems — switched live.',
+            'Describe what you need in plain English. We map it to a design system that\'s already built — mode, palette, typography, layout. No templates. No subscriptions. Restaurants, music, hotels, books. One page that works.',
         },
         { name: 'theme-color', content: '#F7F3EC', media: '(prefers-color-scheme: light)' },
         { name: 'theme-color', content: '#16130F', media: '(prefers-color-scheme: dark)' },
@@ -26,7 +26,7 @@ export default defineNuxtConfig({
         {
           property: 'og:description',
           content:
-            'A design agency with one specialization: one-page systems. One fixed content structure, four interchangeable design systems — switched live.',
+            'Describe what you need in plain English. We map it to a design system that\'s already built. No templates. No subscriptions. One page that works.',
         },
         { property: 'og:type', content: 'website' },
         { property: 'og:url', content: 'https://blueredandpurple.world/' },
