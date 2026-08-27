@@ -2,10 +2,13 @@
 node_modules/
 .pnpm-store/
 
-# Nuxt
+# Build outputs
 .nuxt/
 .output/
 dist/
+*.tsbuildinfo
+
+# Env
 .env
 .env.*
 !.env.example
@@ -27,6 +30,3 @@ pnpm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
-
-# TypeScript
-*.tsbuildinfo
