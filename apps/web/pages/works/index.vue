@@ -15,6 +15,34 @@ const hoveredImage = ref<string | null>(allWorks[0]?.image ?? null);
 function paintImage(url: string | null) {
   hoveredImage.value = url;
 }
+
+const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> = {
+  restaurant: {
+    tagline: 'Menus, counters, and one-page ordering',
+    blurb:
+      'A restaurant site is a menu that works. We build single-page systems where the food does the talking — editorial menus, one-flow ordering, and a brand that feels as warm as the room.',
+  },
+  music: {
+    tagline: 'Tour dates, releases, and artist worlds',
+    blurb:
+      'A band\'s site is a poster that lives online. Pixel type, full-bleed artwork, tour lists that read like a timetable — one page that does the whole job.',
+  },
+  hotel: {
+    tagline: 'Booking-first, restraint as the brand',
+    blurb:
+      'A hotel page is a reservation. One hero, one amenity column, one CTA — quiet luxury that converts without shouting.',
+  },
+  books: {
+    tagline: 'Reading-mode, the book is the interface',
+    blurb:
+      'A book site is a document. Margins, measure, and a reading rhythm that makes the page disappear.',
+  },
+  vintage: {
+    tagline: 'Editorial stacks and dated drops',
+    blurb:
+      'A vintage shop is a journal. Asymmetric grids, wallpaper, and a shop that slides up as an overlay.',
+  },
+};
 </script>
 
 <template>
@@ -24,7 +52,15 @@ function paintImage(url: string | null) {
     <h1 class="visually-hidden">Project index</h1>
 
     <section v-for="group in groups" :key="group.category" class="group">
-      <h2 class="group__label font-mono ttu tracked">{{ group.category }} store</h2>
+      <div class="group__head">
+        <h2 class="group__label font-mono ttu tracked">{{ group.category }}</h2>
+        <p class="group__tagline font-mono">
+          {{ VERTICAL_DESCRIPTIONS[group.category]?.tagline ?? '' }}
+        </p>
+        <p class="group__blurb measure">
+          {{ VERTICAL_DESCRIPTIONS[group.category]?.blurb ?? '' }}
+        </p>
+      </div>
       <ul class="index__list">
         <li v-for="w in group.items" :key="w.slug">
           <NuxtLink
@@ -60,18 +96,37 @@ function paintImage(url: string | null) {
   z-index: 1;
   min-height: 100svh;
   display: grid;
-  align-content: center;
-  row-gap: clamp(2.2rem, 5.5vh, 3.6rem);
+  align-content: start;
+  row-gap: clamp(2.4rem, 6vh, 4rem);
   color: var(--ink);
-  padding: clamp(4.5rem, 11vh, 7rem) 1rem clamp(4rem, 9vh, 5.5rem);
+  padding: clamp(5.5rem, 13vh, 8rem) var(--edge) clamp(4rem, 9vh, 5.5rem);
+}
+
+.group__head {
+  text-align: center;
+  margin: 0 auto 0.4rem;
+  max-width: 36rem;
 }
 
 .group__label {
-  text-align: center;
   font-size: var(--type-label);
   font-weight: 500;
   color: var(--ink-2);
-  margin: 0 0 0.7rem;
+  margin: 0 0 0.5rem;
+}
+
+.group__tagline {
+  font-size: 0.78rem;
+  color: var(--ink-1);
+  margin: 0 0 0.6rem;
+  letter-spacing: 0.02em;
+}
+
+.group__blurb {
+  font-size: var(--type-body);
+  line-height: 1.5;
+  color: var(--ink-1);
+  margin: 0;
 }
 
 .index__ghost {
