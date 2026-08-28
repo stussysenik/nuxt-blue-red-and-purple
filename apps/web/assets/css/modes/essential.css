@@ -1,0 +1,42 @@
+/* essential — minimal essentialist, the DEFAULT. Hairlines, whitespace,
+   progressing weight, no spot ink (achromatic). Restraint greets first. */
+
+[data-mode='essential'] {
+  --border-w: 1px;
+  --radius: 0;
+  --shadow: none;
+  --surface: transparent;
+
+  --type-display: clamp(3rem, 8vw, 6.5rem);
+  --wght-display: 300;
+  --wght-body: 380;
+  --wght-label: 450;
+  --tracking-display: -0.005em;
+  --tracking-label: 0.28em;
+
+  --dur: 0.5s;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --spot: var(--ink);
+  --spot-2: var(--ink-2);
+}
+
+[data-mode='essential'][data-theme='light'] {
+  --paper: #f7f3ec;
+  --paper-1: #efeae0;
+  --ink: #16130f;
+  --ink-1: #3d3a34;
+  --ink-2: #5c5850;
+  --ink-3: #706b58;
+  --line: #d7d0c4;
+}
+
+[data-mode='essential'][data-theme='dark'] {
+  --paper: #16130f;
+  --paper-1: #1e1a15;
+  --ink: #f7f3ec;
+  --ink-1: #d8d3c9;
+  --ink-2: #b8b3a8;
+  --ink-3: #9a9488;
+  --line: #33302a;
+}

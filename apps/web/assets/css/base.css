@@ -1,0 +1,98 @@
+/* Base tokens that never change with mode or theme (the two families) plus the
+   page ground. Everything else is set by the mode kernels in ./modes/*.css and
+   consumed through custom properties. */
+
+:root {
+  --font-display: 'Archivo', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --transparent: transparent;
+  --inherit: inherit;
+
+  --type-label: 0.82rem;
+  --type-meta: 0.95rem;
+  --type-body: 1.2rem;
+
+  --edge: clamp(1.4rem, 6vw, 8rem);
+  --chrome-inset: 1.4rem;
+  --chrome-band: calc(
+    max(var(--chrome-inset), env(safe-area-inset-top)) + 1lh + var(--chrome-inset)
+  );
+
+  --space-1: 0.4rem;
+  --space-2: 0.8rem;
+  --space-3: 1.2rem;
+  --space-4: 1.8rem;
+  --space-5: 2.6rem;
+  --space-6: 4rem;
+
+  --rig-v-1: var(--edge);
+  --rig-v-2: 20%;
+  --rig-v-3: 30%;
+  --rig-h-1: 24%;
+  --rig-h-2: 76%;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+.chrome-safe {
+  padding-top: var(--chrome-band);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    @keyframes band-rise {
+      from {
+        opacity: 0;
+        transform: translateY(2rem);
+      }
+    }
+    .band {
+      animation: band-rise both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: brp-vt-out 0.28s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  ::view-transition-new(root) {
+    animation: brp-vt-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes brp-vt-out {
+    to {
+      opacity: 0;
+      transform: scale(0.99);
+    }
+  }
+  @keyframes brp-vt-in {
+    from {
+      opacity: 0;
+      transform: translateY(1.2rem);
+    }
+  }
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: var(--wght-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, p, a, span, li, dt, dd {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}

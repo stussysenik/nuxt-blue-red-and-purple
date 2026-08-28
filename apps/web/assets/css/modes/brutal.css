@@ -1,0 +1,42 @@
+/* brutal — neo-brutalist. Structural lines, heavy grotesque display, hard
+   OFFSET shadows (never blur), Riso Orange pop. */
+
+[data-mode='brutal'] {
+  --border-w: 3px;
+  --radius: 0;
+  --shadow: 5px 5px 0 var(--ink);
+  --surface: var(--paper);
+
+  --type-display: clamp(3.2rem, 11vw, 9rem);
+  --wght-display: 800;
+  --wght-body: 480;
+  --wght-label: 600;
+  --tracking-display: -0.02em;
+  --tracking-label: 0.12em;
+
+  --dur: 0.18s;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  --spot: #ff6c2f;
+  --spot-2: var(--ink);
+
+  --line: var(--ink);
+}
+
+[data-mode='brutal'][data-theme='light'] {
+  --paper: #f7f3ec;
+  --paper-1: #ffffff;
+  --ink: #16130f;
+  --ink-1: #16130f;
+  --ink-2: #3d3a34;
+  --ink-3: #6e6a61;
+}
+
+[data-mode='brutal'][data-theme='dark'] {
+  --paper: #16130f;
+  --paper-1: #221e18;
+  --ink: #f7f3ec;
+  --ink-1: #f7f3ec;
+  --ink-2: #d8d3c9;
+  --ink-3: #a8a399;
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@brp/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "nuxt typecheck",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run"
+  },
+  "dependencies": {
+    "@brp/tokens": "workspace:*",
+    "@brp/types": "workspace:*",
+    "@brp/unocss-preset": "workspace:*",
+    "@unocss/nuxt": "66.8.1",
+    "better-sqlite3": "^13.0.3",
+    "lenis": "1.3.25",
+    "nuxt": "3.21.11",
+    "unocss": "66.8.1",
+    "vue": "3.5.18"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.10",
+    "@cypress/vue": "^6.0.3",
+    "@cypress/webpack-dev-server": "^5.6.3",
+    "@types/node": "^26.3.0",
+    "cypress": "^15.21.1",
+    "start-server-and-test": "^3.0.12",
+    "typescript": "5.9.3",
+    "vue-tsc": "2.2.10"
+  }
+}

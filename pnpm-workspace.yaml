@@ -1,4 +1,7 @@
-# Allow native build scripts for the toolchain's platform binaries.
+packages:
+  - 'packages/*'
+  - 'apps/*'
 allowBuilds:
+  better-sqlite3: true
+  cypress: true
   esbuild: true
-  sharp: true

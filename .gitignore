@@ -1,15 +1,39 @@
+# Dependencies
 node_modules/
+.pnpm-store/
+
+# Build outputs
+.nuxt/
+.output/
 dist/
-.astro/
-.env.local
-.env*.local
-.vercel/
+*.tsbuildinfo
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# SQLite database
+.data/
+*.db
+*.db-shm
+*.db-wal
+
+# OS
 .DS_Store
+Thumbs.db
 .vercel
-
-# scrape:works drafts — staging for human review, promoted by hand into src/content/works
-scripts/scraped/
-
-# Reference screenshots of the third-party source sites (scrape:works writes here).
-# Build-time input for rebuilding each work in-kernel — never ours, never shipped.
-refs/
