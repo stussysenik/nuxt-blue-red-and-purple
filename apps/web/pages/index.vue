@@ -8,18 +8,20 @@ const MEMBERS = ['Alex Wedderburn', 'Meng Xuan Zou'];
 const PHONE = '(404) 422-5517';
 const PHONE_HREF = 'tel:+14044225517';
 
+// Generative canvas is initialized but hidden from main page view
+// It remains in the codebase for the generator/showcase pages
 useGenerativeCanvas();
 </script>
 
 <template>
   <div>
-    <!-- Generative-mode background -->
-    <div class="gen-bg" aria-hidden="true">
+    <!-- Generative-mode background — hidden from main page, code preserved for generator/showcase -->
+    <div class="gen-bg gen-bg--hidden" aria-hidden="true">
       <canvas id="gen-canvas"></canvas>
     </div>
 
-    <!-- Construction grid -->
-    <div class="grid-rig" aria-hidden="true">
+    <!-- Construction grid — hidden from main page, code preserved -->
+    <div class="grid-rig grid-rig--hidden" aria-hidden="true">
       <span class="grid-rig__v grid-rig__v--1"></span>
       <span class="grid-rig__v grid-rig__v--2"></span>
       <span class="grid-rig__v grid-rig__v--3"></span>
@@ -119,7 +121,20 @@ useGenerativeCanvas();
     visibility var(--dur) var(--ease);
 }
 
-:root[data-mode='generative'] .gen-bg {
+/* Generative canvas hidden from main page — only visible on generator/showcase */
+.gen-bg--hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  display: none;
+}
+
+.grid-rig--hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  display: none;
+}
+
+:root[data-mode='generative'] .gen-bg:not(.gen-bg--hidden) {
   opacity: 1;
   visibility: visible;
 }
@@ -207,8 +222,8 @@ useGenerativeCanvas();
   min-height: 100svh;
   display: grid;
   align-content: center;
-  gap: 1.6rem;
-  padding: 6rem var(--edge) 4rem;
+  gap: 1.2rem;
+  padding: clamp(5rem, 15vh, 8rem) var(--edge) clamp(3rem, 8vh, 5rem);
 }
 
 .wordmark {
@@ -227,20 +242,22 @@ useGenerativeCanvas();
 .tagline {
   color: var(--ink);
   font-size: var(--type-label);
+  line-height: 1.4;
 }
 
 .hero__sub {
   font-size: var(--type-body);
   line-height: 1.55;
   color: var(--ink-1);
-  margin: 0.8rem 0 0;
+  margin: 0;
+  max-width: 30em;
 }
 
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .hero__cta {
@@ -304,7 +321,7 @@ useGenerativeCanvas();
 .band__title {
   font-family: var(--font-display);
   font-weight: var(--wght-display);
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: var(--tracking-display);
   text-transform: uppercase;
   font-size: var(--type-display);
@@ -316,6 +333,11 @@ useGenerativeCanvas();
   font-size: var(--type-body);
   line-height: 1.55;
   color: var(--ink-1);
+  margin: 0 0 1rem;
+}
+
+.band__lead:last-child {
+  margin-bottom: 0;
 }
 
 .band__lead code {
@@ -329,18 +351,20 @@ useGenerativeCanvas();
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 .identity__line {
-  font-size: clamp(1.5rem, 5cqi, 2.6rem);
-  line-height: 1.05;
+  font-size: clamp(1.3rem, 4cqi, 2.6rem);
+  line-height: 1.2;
   color: var(--ink);
   text-decoration: none;
   text-shadow: 0 0 0 transparent;
   transition:
     color var(--dur) var(--ease),
     text-shadow var(--dur) var(--ease);
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .identity__line:not(.identity__line--mono) {
@@ -355,13 +379,13 @@ useGenerativeCanvas();
 
 @media (hover: hover) {
   .identity__line:hover {
-    color: #0f0;
+    color: var(--ink-1);
     text-shadow: 4px 4px 0 var(--ink);
   }
 }
 
 .identity__line:focus-visible {
-  color: #0f0;
+  color: var(--ink-1);
   text-shadow: 4px 4px 0 var(--ink);
   outline: none;
 }
@@ -412,7 +436,7 @@ useGenerativeCanvas();
 
 .lineage__row {
   display: grid;
-  grid-template-columns: 7rem 1fr;
+  grid-template-columns: 6rem 1fr;
   gap: 1rem;
   align-items: baseline;
   padding-top: 0.7rem;
@@ -424,6 +448,7 @@ useGenerativeCanvas();
   letter-spacing: 0.08em;
   font-size: 0.7rem;
   color: var(--ink-2);
+  line-height: 1.4;
 }
 
 .lineage__row dd {
@@ -436,7 +461,7 @@ useGenerativeCanvas();
 @media (max-width: 28rem) {
   .lineage__row {
     grid-template-columns: 1fr;
-    gap: 0.35rem;
+    gap: 0.25rem;
   }
 }
 
@@ -460,7 +485,7 @@ useGenerativeCanvas();
 
 .index-trigger:hover,
 .index-trigger:focus-visible {
-  color: #00a95c;
+  color: var(--ink-1);
 }
 
 .index-trigger:hover .dot,

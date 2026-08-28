@@ -2,6 +2,13 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-08-27',
   devtools: { enabled: false },
+  devServer: {
+    host: '127.0.0.1',
+    port: 3000,
+  },
+  nitro: {
+    preset: 'vercel',
+  },
   modules: ['@unocss/nuxt'],
   css: ['~/assets/css/fonts.css', '~/assets/css/base.css'],
   router: {

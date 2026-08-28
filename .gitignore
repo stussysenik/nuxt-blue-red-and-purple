@@ -27,6 +27,13 @@ pnpm-debug.log*
 *.swo
 *~
 
+# SQLite database
+.data/
+*.db
+*.db-shm
+*.db-wal
+
 # OS
 .DS_Store
 Thumbs.db
+.vercel

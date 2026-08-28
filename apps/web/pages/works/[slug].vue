@@ -351,13 +351,14 @@ function updateContrast(e: Event) {
   background-color: var(--paper);
   color: var(--ink);
   padding: max(7%, var(--chrome-band)) 6% 4.5%;
+  overflow-x: hidden;
 }
 
 .site__mark {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 5.5%;
-  width: 35.2cqw;
+  width: min(35.2cqw, 20rem);
   color: var(--work-accent, var(--spot, var(--ink)));
 }
 
@@ -382,7 +383,7 @@ function updateContrast(e: Event) {
 }
 
 .site__index {
-  width: 44.8cqw;
+  width: min(44.8cqw, 30rem);
   margin: 2.5% 0 0;
   padding: 0;
   list-style: none;
@@ -391,9 +392,9 @@ function updateContrast(e: Event) {
 
 .row {
   display: grid;
-  grid-template-columns: 2.4em 4.6em 1fr auto;
+  grid-template-columns: 2em 4em 1fr auto;
   align-items: baseline;
-  gap: 1em;
+  gap: 0.75em;
   padding: 0.55em 0;
   border-top: 1px solid var(--line, var(--ink-2));
 }
@@ -428,6 +429,7 @@ function updateContrast(e: Event) {
 .site__poster {
   width: min(56cqw, 40rem);
   margin: 6% 0 0;
+  max-width: 100%;
 }
 
 .site__poster-img {
@@ -485,6 +487,13 @@ function updateContrast(e: Event) {
   }
   .site__poster {
     width: 82cqw;
+  }
+  .row {
+    grid-template-columns: 1.5em 3.5em 1fr;
+    gap: 0.5em;
+  }
+  .row__cta {
+    display: none;
   }
 }
 
@@ -546,6 +555,8 @@ function updateContrast(e: Event) {
   border-right: 0.4cqw solid var(--amber);
   text-align: center;
   z-index: 2;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .found__mark {
@@ -774,8 +785,8 @@ function updateContrast(e: Event) {
   margin: 0;
   font-family: var(--serif);
   font-weight: 900;
-  font-size: clamp(2.1rem, 6cqw, 4.25rem);
-  line-height: 1.08;
+  font-size: clamp(1.5rem, 5cqw, 4.25rem);
+  line-height: 1.1;
   letter-spacing: -0.01em;
   text-wrap: balance;
   text-shadow: 0 2px 24px rgba(0, 0, 0, 0.45);
@@ -957,10 +968,11 @@ function updateContrast(e: Event) {
 
 .sheet__grid {
   display: grid;
-  grid-template-columns: 268fr 583fr;
+  grid-template-columns: 1fr;
   grid-template-areas:
-    '.      masthead'
-    'margin body';
+    'masthead'
+    'margin'
+    'body';
   column-gap: 3.62%;
   align-items: start;
 }
@@ -974,8 +986,8 @@ function updateContrast(e: Event) {
   margin: 0;
   font-family: var(--font-display);
   font-weight: var(--wght-display, 700);
-  font-size: clamp(1.6rem, 3.28cqw, 4.1rem);
-  line-height: 1.05;
+  font-size: clamp(1.4rem, 3.28cqw, 4.1rem);
+  line-height: 1.1;
   letter-spacing: var(--tracking-display, -0.02em);
   text-wrap: balance;
 }
@@ -1042,7 +1054,8 @@ function updateContrast(e: Event) {
 .body {
   grid-area: body;
   font-size: clamp(0.95rem, 1.275cqw, 1.6rem);
-  line-height: 1.225;
+  line-height: 1.3;
+  max-width: 65ch;
 }
 
 .body p {
@@ -1057,18 +1070,15 @@ function updateContrast(e: Event) {
   text-indent: 1.65em;
 }
 
-@container (max-width: 48rem) {
-  .site {
-    grid-template-columns: 94cqw;
-  }
+@container (min-width: 48rem) {
   .sheet__grid {
-    grid-template-columns: 34fr 66fr;
+    grid-template-columns: 268fr 583fr;
+    grid-template-areas:
+      '.      masthead'
+      'margin body';
   }
   .masthead {
-    margin-bottom: 3.2rem;
-  }
-  .margin__plate {
-    margin-top: 2rem;
+    margin-bottom: 9.77cqw;
   }
 }
 
@@ -1098,18 +1108,19 @@ function updateContrast(e: Event) {
 
 .rail {
   position: fixed;
-  left: 2rem;
-  bottom: 2rem;
+  left: 1rem;
+  bottom: 1rem;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   color: var(--ink);
+  max-width: calc(100vw - 2rem);
 }
 
 .rail__word {
   font-family: var(--font-mono);
-  font-size: 1.2rem;
+  font-size: 1rem;
   letter-spacing: 0.05em;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
@@ -1127,7 +1138,7 @@ function updateContrast(e: Event) {
 }
 
 .rail__item {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
@@ -1167,9 +1178,10 @@ function updateContrast(e: Event) {
   position: fixed;
   top: max(7%, var(--chrome-band));
   right: 4%;
-  font-size: clamp(1.5rem, 3cqw, 2.5rem);
+  font-size: clamp(1rem, 2.5cqw, 2.5rem);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+  z-index: 1;
 }
 
 .f853__plate {
@@ -1178,6 +1190,7 @@ function updateContrast(e: Event) {
   left: 4%;
   right: 4%;
   margin: 0;
+  z-index: 0;
 }
 
 .f853__plate img {
@@ -1230,16 +1243,17 @@ function updateContrast(e: Event) {
 .spread__folio {
   font-family: var(--font-display);
   font-weight: var(--wght-display);
-  font-size: clamp(4rem, 12vw, 10rem);
+  font-size: clamp(3rem, 10vw, 10rem);
   color: var(--ink);
+  line-height: 1;
 }
 
 /* ── Generic work fallback ─────────────────────────────────────────────── */
 .generic {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   min-height: 100svh;
-  gap: 2rem;
+  gap: 1.5rem;
   padding: max(7%, var(--chrome-band)) var(--edge) 4rem;
 }
 
@@ -1266,7 +1280,7 @@ function updateContrast(e: Event) {
   font-family: var(--font-display);
   font-weight: var(--wght-display);
   font-size: var(--type-display);
-  line-height: 1;
+  line-height: 1.05;
   text-transform: uppercase;
   color: var(--ink);
   margin: 0;
@@ -1281,6 +1295,7 @@ function updateContrast(e: Event) {
   font-size: var(--type-body);
   line-height: 1.55;
   color: var(--ink-1);
+  max-width: 30em;
 }
 
 .generic__mechanic {
@@ -1289,9 +1304,10 @@ function updateContrast(e: Event) {
   line-height: 1.5;
 }
 
-@media (max-width: 48rem) {
+@media (min-width: 48rem) {
   .generic {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
   }
 }
 </style>

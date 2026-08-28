@@ -9,27 +9,43 @@ const pathname = computed(() => route.path.replace(/\/+$/, '') || '/');
 const onHome = computed(() => pathname.value === '/');
 const onIndex = computed(() => pathname.value === '/works');
 const onGenerator = computed(() => pathname.value === '/generator');
+const onWorld = computed(() => pathname.value === '/world');
+const onShowcase = computed(() => pathname.value === '/showcase');
 
 const INQUIRY = 'mailto:hi@blueredandpurple.world';
+
+// Toolbar show/hide on scroll with SQLite persistence
+const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
 </script>
 
 <template>
   <div>
-    <!-- Global pinned chrome -->
-    <header class="chrome">
+    <!-- Global pinned chrome — shows first, hides on scroll down, reappears on scroll up -->
+    <header
+      class="chrome"
+      :class="{ 'chrome--hidden': toolbarReady && !toolbarVisible }"
+    >
       <div class="chrome__bar">
         <NuxtLink to="/" class="chrome__home" aria-label="blue red + purple — home" :aria-current="onHome ? 'page' : undefined">
           /
         </NuxtLink>
-        <NuxtLink to="/works" class="chrome__index font-mono" :aria-current="onIndex ? 'page' : undefined">
-          Index
-        </NuxtLink>
-        <NuxtLink to="/generator" class="chrome__generator font-mono" :aria-current="onGenerator ? 'page' : undefined">
-          Generator
-        </NuxtLink>
+        <div class="chrome__nav-links">
+          <NuxtLink to="/works" class="chrome__index font-mono" :aria-current="onIndex ? 'page' : undefined">
+            Index
+          </NuxtLink>
+          <NuxtLink to="/generator" class="chrome__generator font-mono" :aria-current="onGenerator ? 'page' : undefined">
+            Generator
+          </NuxtLink>
+          <NuxtLink to="/world" class="chrome__generator font-mono" :aria-current="onWorld ? 'page' : undefined">
+            World
+          </NuxtLink>
+          <NuxtLink to="/showcase" class="chrome__generator font-mono" :aria-current="onShowcase ? 'page' : undefined">
+            Showcase
+          </NuxtLink>
+        </div>
         <div class="chrome__group">
           <a :href="INQUIRY" class="chrome__cta">
-            Get in touch<span class="chrome__arrow" aria-hidden="true">↗</span>
+            Contact<span class="chrome__arrow" aria-hidden="true">↗</span>
           </a>
           <ThemeToggle />
         </div>
@@ -50,10 +66,22 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   z-index: 5;
   pointer-events: none;
   color: var(--ink);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.chrome--hidden {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.chrome--hidden a,
+.chrome--hidden button {
+  pointer-events: none;
 }
 
 .chrome a,
-.chrome theme-toggle {
+.chrome button {
   pointer-events: auto;
 }
 
@@ -66,6 +94,13 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: 0.5rem 0.9rem;
+  background: color-mix(in oklab, var(--paper) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
 }
 
 .chrome__group {
@@ -87,11 +122,10 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
 
 .chrome__index,
 .chrome__generator {
-  position: absolute;
-  top: 50%;
   font-size: var(--type-label);
+  font-weight: 500;
   line-height: 1;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink);
   text-decoration: none;
@@ -99,31 +133,27 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   transition: opacity var(--dur) var(--ease);
 }
 
-.chrome__index {
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.chrome__generator {
-  left: calc(50% + 5.5rem);
-  transform: translate(-50%, -50%);
+.chrome__nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .chrome__cta {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  padding: 0.42em 0.72em;
+  padding: 0.5em 0.85em;
   font-family: var(--font-mono);
-  font-weight: 400;
+  font-weight: 500;
   font-size: var(--type-label);
   line-height: 1;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--ink);
-  background: var(--paper);
+  color: var(--paper);
+  background: var(--ink);
   border: var(--border-w, 2px) solid var(--ink);
-  box-shadow: 3px 3px 0 var(--ink);
   text-decoration: none;
   white-space: nowrap;
   transition:
@@ -136,14 +166,14 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
 }
 
 .chrome__cta:active {
-  transform: translate(3px, 3px);
-  box-shadow: 0 0 0 var(--ink);
+  transform: scale(0.97);
 }
 
 .chrome__home[aria-current='page'],
 .chrome__index[aria-current='page'],
 .chrome__generator[aria-current='page'] {
   pointer-events: none;
+  opacity: 0.45;
 }
 
 .chrome__home:focus-visible,
@@ -158,24 +188,24 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   .chrome__home:hover,
   .chrome__index:hover,
   .chrome__generator:hover {
-    opacity: 0.6;
+    opacity: 0.7;
   }
   .chrome__cta:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 5px 5px 0 var(--ink);
+    transform: scale(1.03);
   }
   .chrome__cta:hover .chrome__arrow {
     transform: translate(0.15em, -0.15em);
   }
 }
 
-@media (max-width: 30rem) {
+@media (max-width: 40rem) {
   .chrome__index,
   .chrome__generator {
-    position: relative;
-    inset: auto;
-    transform: none;
     letter-spacing: 0.12em;
+    font-size: 0.7rem;
+  }
+  .chrome__nav-links {
+    gap: var(--space-2);
   }
   .chrome__group {
     gap: var(--space-2);
@@ -183,6 +213,10 @@ const INQUIRY = 'mailto:hi@blueredandpurple.world';
   .chrome__cta {
     padding: 0.4em 0.6em;
     letter-spacing: 0.06em;
+    font-size: 0.7rem;
+  }
+  .chrome__bar {
+    gap: var(--space-1) var(--space-2);
   }
 }
 

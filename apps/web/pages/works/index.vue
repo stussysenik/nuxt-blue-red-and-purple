@@ -119,6 +119,7 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   text-align: center;
   margin: 0 auto 0.4rem;
   max-width: 36rem;
+  padding: 0 var(--edge);
 }
 
 .group__label {
@@ -133,6 +134,7 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   color: var(--ink-1);
   margin: 0 0 0.6rem;
   letter-spacing: 0.02em;
+  line-height: 1.4;
 }
 
 .group__blurb {
@@ -140,6 +142,9 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   line-height: 1.5;
   color: var(--ink-1);
   margin: 0;
+  max-width: 30em;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .index__ghost {
@@ -206,8 +211,8 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
 .row__title {
   font-family: var(--font-display);
   font-weight: var(--wght-display);
-  font-size: clamp(1.8rem, 5.5vw, 4rem);
-  line-height: 1.08;
+  font-size: clamp(1.5rem, 5vw, 4rem);
+  line-height: 1.1;
   letter-spacing: var(--tracking-display);
   color: inherit;
   font-variant-numeric: tabular-nums;
@@ -235,8 +240,8 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
 .gen-cta__h2 {
   font-family: var(--font-display);
   font-weight: var(--wght-display);
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  line-height: 1.05;
+  font-size: clamp(1.5rem, 4vw, 2.8rem);
+  line-height: 1.1;
   text-transform: uppercase;
   color: var(--ink);
   margin: 0;
@@ -247,6 +252,7 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   line-height: 1.55;
   color: var(--ink-1);
   margin: 0;
+  max-width: 30em;
 }
 
 .gen-cta__link {

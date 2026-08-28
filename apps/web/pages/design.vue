@@ -60,14 +60,14 @@ useHead({
 .doc {
   max-width: 60rem;
   margin: 0 auto;
-  padding: clamp(2rem, 6vw, 5rem);
+  padding: clamp(5.5rem, 13vh, 8rem) var(--edge) clamp(4rem, 9vh, 5.5rem);
 }
 
 .doc__h1 {
   font-family: var(--font-display);
   font-weight: var(--wght-display);
   font-size: var(--type-display);
-  line-height: 1;
+  line-height: 1.05;
   text-transform: uppercase;
   color: var(--ink);
   margin: 0 0 1rem;
@@ -118,6 +118,7 @@ code {
   justify-content: space-between;
   gap: 0.5rem;
   color: var(--ink-2);
+  font-size: 0.65rem;
 }
 
 .swatch__meta strong {
