@@ -1,5 +1,6 @@
 {
-  "framework": "nuxtjs",
-  "buildCommand": "cd apps/web && NUXT_IGNORE_LOCK=1 npx nuxt build",
-  "installCommand": "pnpm install"
+  "framework": null,
+  "buildCommand": "cd apps/web && npx nuxt build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/web/.vercel/output/static"
 }
