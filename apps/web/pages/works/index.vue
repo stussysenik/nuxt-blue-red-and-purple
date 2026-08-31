@@ -16,33 +16,16 @@ function paintImage(url: string | null) {
   hoveredImage.value = url;
 }
 
-const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> = {
-  restaurant: {
-    tagline: 'Menus, counters, and one-page ordering',
-    blurb:
-      'A restaurant site is a menu that works. We build single-page systems where the food does the talking — editorial menus, one-flow ordering, and a brand that feels as warm as the room.',
-  },
-  music: {
-    tagline: 'Tour dates, releases, and artist worlds',
-    blurb:
-      'A band\'s site is a poster that lives online. Pixel type, full-bleed artwork, tour lists that read like a timetable — one page that does the whole job.',
-  },
-  hotel: {
-    tagline: 'Booking-first, restraint as the brand',
-    blurb:
-      'A hotel page is a reservation. One hero, one amenity column, one CTA — quiet luxury that converts without shouting.',
-  },
-  books: {
-    tagline: 'Reading-mode, the book is the interface',
-    blurb:
-      'A book site is a document. Margins, measure, and a reading rhythm that makes the page disappear.',
-  },
-  vintage: {
-    tagline: 'Editorial stacks and dated drops',
-    blurb:
-      'A vintage shop is a journal. Asymmetric grids, wallpaper, and a shop that slides up as an overlay.',
-  },
-};
+// Archived: vertical descriptions (tagline + blurb per category). The live
+// site uses plain "{category} store" labels. These were generator-direction
+// copy. Restore by uncommenting VERTICAL_DESCRIPTIONS and the blurb elements.
+// const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> = {
+//   restaurant: { tagline: 'Menus, counters, and one-page ordering', blurb: '...' },
+//   music: { tagline: 'Tour dates, releases, and artist worlds', blurb: '...' },
+//   hotel: { tagline: 'Booking-first, restraint as the brand', blurb: '...' },
+//   books: { tagline: 'Reading-mode, the book is the interface', blurb: '...' },
+//   vintage: { tagline: 'Editorial stacks and dated drops', blurb: '...' },
+// };
 </script>
 
 <template>
@@ -52,15 +35,7 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
     <h1 class="visually-hidden">Project index</h1>
 
     <section v-for="group in groups" :key="group.category" class="group">
-      <div class="group__head">
-        <h2 class="group__label font-mono ttu tracked">{{ group.category }}</h2>
-        <p class="group__tagline font-mono">
-          {{ VERTICAL_DESCRIPTIONS[group.category]?.tagline ?? '' }}
-        </p>
-        <p class="group__blurb measure">
-          {{ VERTICAL_DESCRIPTIONS[group.category]?.blurb ?? '' }}
-        </p>
-      </div>
+      <h2 class="group__label font-mono ttu tracked">{{ group.category }} store</h2>
       <ul class="index__list">
         <li v-for="w in group.items" :key="w.slug">
           <NuxtLink
@@ -76,7 +51,7 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
       </ul>
     </section>
 
-    <!-- Generator CTA -->
+    <!-- ── Archived: Generator CTA (unfinished generator-direction content) ──
     <section class="gen-cta">
       <h2 class="gen-cta__h2">Or describe what you need</h2>
       <p class="gen-cta__blurb measure">
@@ -88,6 +63,7 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
         Try the generator<span class="gen-cta__arrow" aria-hidden="true">↗</span>
       </NuxtLink>
     </section>
+    -->
   </main>
 </template>
 
@@ -115,36 +91,12 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   padding: clamp(5.5rem, 13vh, 8rem) var(--edge) clamp(4rem, 9vh, 5.5rem);
 }
 
-.group__head {
-  text-align: center;
-  margin: 0 auto 0.4rem;
-  max-width: 36rem;
-  padding: 0 var(--edge);
-}
-
 .group__label {
+  text-align: center;
   font-size: var(--type-label);
   font-weight: 500;
   color: var(--ink-2);
-  margin: 0 0 0.5rem;
-}
-
-.group__tagline {
-  font-size: 0.78rem;
-  color: var(--ink-1);
-  margin: 0 0 0.6rem;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
-}
-
-.group__blurb {
-  font-size: var(--type-body);
-  line-height: 1.5;
-  color: var(--ink-1);
-  margin: 0;
-  max-width: 30em;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 0 0.7rem;
 }
 
 .index__ghost {
@@ -225,74 +177,23 @@ const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> 
   transform: scale(1.08);
 }
 
-/* ── Generator CTA ──────────────────────────────────────────────────── */
-
-.gen-cta {
-  text-align: center;
-  padding: clamp(3rem, 8vh, 5rem) 0;
-  border-top: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-}
-
-.gen-cta__h2 {
-  font-family: var(--font-display);
-  font-weight: var(--wght-display);
-  font-size: clamp(1.5rem, 4vw, 2.8rem);
-  line-height: 1.1;
-  text-transform: uppercase;
-  color: var(--ink);
-  margin: 0;
-}
-
-.gen-cta__blurb {
-  font-size: var(--type-body);
-  line-height: 1.55;
-  color: var(--ink-1);
-  margin: 0;
-  max-width: 30em;
-}
-
-.gen-cta__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  margin-top: 0.6rem;
-  padding: 0.7rem 1.2rem;
-  font-family: var(--font-mono);
-  font-size: var(--type-label);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--paper);
-  background: var(--ink);
-  text-decoration: none;
-  border-radius: 2rem;
-  transition:
-    transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
-}
-
-.gen-cta__link:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--ink);
-}
-
-.gen-cta__arrow {
-  transition: transform var(--dur) var(--ease);
-}
-
-.gen-cta__link:hover .gen-cta__arrow {
-  transform: translate(0.15em, -0.15em);
-}
+/* ── Archived: Generator CTA styles ───────────────────────────────────
+   The gen-cta section is archived in the template above. These styles are
+   kept for restore-on-uncomment but could be removed if the section stays
+   hidden long-term.
+.gen-cta { ... }
+.gen-cta__h2 { ... }
+.gen-cta__blurb { ... }
+.gen-cta__link { ... }
+.gen-cta__link:hover { ... }
+.gen-cta__arrow { ... }
+.gen-cta__link:hover .gen-cta__arrow { ... }
+── */
 
 @media (prefers-reduced-motion: reduce) {
   .index__ghost,
   .row,
-  .row__dot,
-  .gen-cta__link,
-  .gen-cta__arrow {
+  .row__dot {
     transition: none;
   }
 }

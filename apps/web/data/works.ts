@@ -30,6 +30,7 @@ export const works: Work[] = [
       'Chalkboard-as-menu: daily specials rendered as a hand-lettered grid, reservation CTA pinned bottom-right.',
     source: 'olivethyme.blueredandpurple.world',
     real: true,
+    hidden: true, // Not yet on live site — unfinished
   },
   {
     slug: 'midnight-noodle',
@@ -42,6 +43,7 @@ export const works: Work[] = [
     palette: ['#ff3d5a', '#1a1a1a', '#f5f0e8'],
     mechanic:
       'Neon-on-dark single column: one menu, three-tap order, the counter is the whole page.',
+    hidden: true, // Not yet on live site — unfinished
   },
   {
     slug: 'veranda',
@@ -54,6 +56,7 @@ export const works: Work[] = [
     palette: ['#d4a853', '#1e3a5f', '#f0ece2'],
     mechanic:
       'Panoramic hero with a cocktail-type specimen overlay; booking rail slides up from the bottom.',
+    hidden: true, // Not yet on live site — unfinished
   },
   {
     slug: 'after',
@@ -154,6 +157,7 @@ export const works: Work[] = [
     palette: ['#2b2b2b', '#c4a882', '#f5f0e8'],
     mechanic:
       'One hero, one calendar, one rate card — the booking flow is the whole site.',
+    hidden: true, // Not yet on live site — unfinished
   },
   {
     slug: 'g858',

@@ -17,6 +17,7 @@
     "test:e2e": "start-server-and-test dev http://localhost:3000 cy:run"
   },
   "dependencies": {
+    "@ark-ui/vue": "5.39.1",
     "@brp/tokens": "workspace:*",
     "@brp/types": "workspace:*",
     "@brp/unocss-preset": "workspace:*",

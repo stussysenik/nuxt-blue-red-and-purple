@@ -8,11 +8,14 @@ const route = useRoute();
 const pathname = computed(() => route.path.replace(/\/+$/, '') || '/');
 const onHome = computed(() => pathname.value === '/');
 const onIndex = computed(() => pathname.value === '/works');
-const onGenerator = computed(() => pathname.value === '/generator');
-const onWorld = computed(() => pathname.value === '/world');
-const onShowcase = computed(() => pathname.value === '/showcase');
 
 const INQUIRY = 'mailto:hi@blueredandpurple.world';
+
+// Archived: Generator/World/Showcase nav links. The live site ships with just
+// home + Index. These are the unfinished product-direction ideas.
+// const onGenerator = computed(() => pathname.value === '/generator');
+// const onWorld = computed(() => pathname.value === '/world');
+// const onShowcase = computed(() => pathname.value === '/showcase');
 
 // Toolbar show/hide on scroll with SQLite persistence
 const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
@@ -29,23 +32,23 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
         <NuxtLink to="/" class="chrome__home" aria-label="blue red + purple — home" :aria-current="onHome ? 'page' : undefined">
           /
         </NuxtLink>
-        <div class="chrome__nav-links">
-          <NuxtLink to="/works" class="chrome__index font-mono" :aria-current="onIndex ? 'page' : undefined">
-            Index
-          </NuxtLink>
-          <NuxtLink to="/generator" class="chrome__generator font-mono" :aria-current="onGenerator ? 'page' : undefined">
-            Generator
-          </NuxtLink>
-          <NuxtLink to="/world" class="chrome__generator font-mono" :aria-current="onWorld ? 'page' : undefined">
-            World
-          </NuxtLink>
-          <NuxtLink to="/showcase" class="chrome__generator font-mono" :aria-current="onShowcase ? 'page' : undefined">
-            Showcase
-          </NuxtLink>
-        </div>
+        <NuxtLink to="/works" class="chrome__index font-mono" :aria-current="onIndex ? 'page' : undefined">
+          Index
+        </NuxtLink>
+        <!-- Archived: Generator/World/Showcase nav links.
+        <NuxtLink to="/generator" class="chrome__generator font-mono" :aria-current="onGenerator ? 'page' : undefined">
+          Generator
+        </NuxtLink>
+        <NuxtLink to="/world" class="chrome__generator font-mono" :aria-current="onWorld ? 'page' : undefined">
+          World
+        </NuxtLink>
+        <NuxtLink to="/showcase" class="chrome__generator font-mono" :aria-current="onShowcase ? 'page' : undefined">
+          Showcase
+        </NuxtLink>
+        -->
         <div class="chrome__group">
           <a :href="INQUIRY" class="chrome__cta">
-            Contact<span class="chrome__arrow" aria-hidden="true">↗</span>
+            Get in touch<span class="chrome__arrow" aria-hidden="true">↗</span>
           </a>
           <ThemeToggle />
         </div>
@@ -120,8 +123,7 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
   transition: opacity var(--dur) var(--ease);
 }
 
-.chrome__index,
-.chrome__generator {
+.chrome__index {
   font-size: var(--type-label);
   font-weight: 500;
   line-height: 1;
@@ -131,13 +133,6 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
   text-decoration: none;
   white-space: nowrap;
   transition: opacity var(--dur) var(--ease);
-}
-
-.chrome__nav-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  flex-wrap: wrap;
 }
 
 .chrome__cta {
@@ -170,15 +165,13 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
 }
 
 .chrome__home[aria-current='page'],
-.chrome__index[aria-current='page'],
-.chrome__generator[aria-current='page'] {
+.chrome__index[aria-current='page'] {
   pointer-events: none;
   opacity: 0.45;
 }
 
 .chrome__home:focus-visible,
 .chrome__index:focus-visible,
-.chrome__generator:focus-visible,
 .chrome__cta:focus-visible {
   outline: var(--border-w, 2px) solid var(--ink);
   outline-offset: 3px;
@@ -186,8 +179,7 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
 
 @media (hover: hover) {
   .chrome__home:hover,
-  .chrome__index:hover,
-  .chrome__generator:hover {
+  .chrome__index:hover {
     opacity: 0.7;
   }
   .chrome__cta:hover {
@@ -199,13 +191,9 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
 }
 
 @media (max-width: 40rem) {
-  .chrome__index,
-  .chrome__generator {
+  .chrome__index {
     letter-spacing: 0.12em;
     font-size: 0.7rem;
-  }
-  .chrome__nav-links {
-    gap: var(--space-2);
   }
   .chrome__group {
     gap: var(--space-2);
