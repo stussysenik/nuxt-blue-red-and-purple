@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Field } from '@ark-ui/vue';
 
+definePageMeta({ ssr: false });
+
 useHead({
   title: 'Admin — *blue red + purple/',
   meta: [{ name: 'robots', content: 'noindex, nofollow' }],
