@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Field } from '@ark-ui/vue';
-
 definePageMeta({ ssr: false });
 
 useHead({
@@ -164,9 +162,10 @@ onMounted(async () => {
         <p class="login__sub">Sign in to manage site content.</p>
 
         <form class="login__form" @submit.prevent="login">
-          <Field.Root class="login__field">
-            <Field.Label class="login__label font-mono">Email</Field.Label>
-            <Field.Input
+          <div class="login__field">
+            <label for="login-email" class="login__label font-mono">Email</label>
+            <input
+              id="login-email"
               v-model="loginEmail"
               type="email"
               autocomplete="email"
@@ -174,11 +173,12 @@ onMounted(async () => {
               class="login__input"
               placeholder="you@blueredandpurple.world"
             />
-          </Field.Root>
+          </div>
 
-          <Field.Root class="login__field">
-            <Field.Label class="login__label font-mono">Password</Field.Label>
-            <Field.Input
+          <div class="login__field">
+            <label for="login-password" class="login__label font-mono">Password</label>
+            <input
+              id="login-password"
               v-model="loginPassword"
               type="password"
               autocomplete="current-password"
@@ -186,7 +186,7 @@ onMounted(async () => {
               class="login__input"
               placeholder="••••••••"
             />
-          </Field.Root>
+          </div>
 
           <p v-if="loginError" class="login__error font-mono">{{ loginError }}</p>
 
@@ -255,9 +255,9 @@ onMounted(async () => {
 
               <div v-for="field in section.fields" :key="field.key">
                 <!-- Textarea fields -->
-                <Field.Root v-if="field.type === 'textarea'" class="panel__field">
-                  <Field.Label class="panel__label font-mono">{{ field.key }}</Field.Label>
-                  <Field.Textarea
+                <div v-if="field.type === 'textarea'" class="panel__field">
+                  <label :for="field.key" class="panel__label font-mono">{{ field.key }}</label>
+                  <textarea
                     v-model="content[field.key]"
                     class="panel__input panel__input--multiline"
                     rows="5"
@@ -269,12 +269,12 @@ onMounted(async () => {
                       {{ saving[field.key] ? 'Saving…' : 'Save' }}
                     </button>
                   </div>
-                </Field.Root>
+                </div>
 
                 <!-- Text input fields -->
-                <Field.Root v-else class="panel__field">
-                  <Field.Label class="panel__label font-mono">{{ field.key }}</Field.Label>
-                  <Field.Input
+                <div v-else class="panel__field">
+                  <label :for="field.key" class="panel__label font-mono">{{ field.key }}</label>
+                  <input
                     v-model="content[field.key]"
                     type="text"
                     class="panel__input"
@@ -286,7 +286,7 @@ onMounted(async () => {
                       {{ saving[field.key] ? 'Saving…' : 'Save' }}
                     </button>
                   </div>
-                </Field.Root>
+                </div>
               </div>
             </div>
           </template>

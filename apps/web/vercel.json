@@ -1,5 +1,11 @@
 {
   "framework": "nuxtjs",
   "buildCommand": "pnpm run build",
-  "outputDirectory": ".output/public"
+  "outputDirectory": ".output/public",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/__fallback" },
+    { "src": "/admin", "dest": "/__fallback" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/__fallback" }
+  ]
 }
