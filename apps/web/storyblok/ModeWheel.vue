@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import type { ModeWheelBlock } from '~/types/storyblok'
+import type { ModeWheelBlock, ModeId } from '~/types/storyblok'
 import { useMode } from '~/composables/useTheme'
 
 const { mode, setMode } = useMode()
-
-const props = defineProps<{
-  blok: ModeWheelBlock
-}>()
+const { blok } = defineProps<{ blok: ModeWheelBlock }>()
 
 // Modes come from Storyblok — editable names, order, and which are active.
 // Falls back to the four canonical modes if the block is empty.
 const modes = computed(() => {
-  if (props.blok.modes?.length) {
-    return props.blok.modes.filter((m) => m.enabled !== false).map((m) => ({
+  if (blok.modes?.length) {
+    return blok.modes.filter((m) => m.enabled !== false).map((m) => ({
       id: m.mode_id,
       name: m.name,
     }))
@@ -27,8 +24,8 @@ const modes = computed(() => {
 
 const activeIndex = computed(() => modes.value.findIndex((m) => m.id === mode.value))
 
-function selectMode(id: string) {
-  setMode(id as 'essential' | 'brutal' | 'clay' | 'generative')
+function selectMode(id: ModeId) {
+  setMode(id)
 }
 
 function onKeydown(event: KeyboardEvent, index: number) {

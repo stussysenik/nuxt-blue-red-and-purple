@@ -1,4 +1,6 @@
 // Storyblok block type definitions
+import type { Mode as ModeId, Theme as ThemeId } from '@brp/types'
+
 export interface SbComponentType {
   _uid: string
   component: string
@@ -78,10 +80,12 @@ export interface PageBlock {
 }
 
 // ── Template / Mode configuration ──────────────────────────────────────────
+// ModeId and ThemeId are the canonical unions from @brp/types.
+
 // A single editable mode entry in the mode wheel.
 export interface ModeEntry {
   _uid: string
-  mode_id: string // 'essential' | 'brutal' | 'clay' | 'generative'
+  mode_id: ModeId
   name: string // Display name, editable
   enabled?: boolean // false = hidden from the wheel
 }
@@ -97,9 +101,9 @@ export interface ModeWheelBlock {
 export interface TemplateConfigBlock {
   _uid: string
   component: 'template_config'
-  default_mode?: string
-  default_theme?: string
-  scale?: number
+  default_mode?: ModeId
+  default_theme?: ThemeId
+  scale?: 1 | 1.1 | 1.25
 }
 
 // Project index block: renders the works catalogue.

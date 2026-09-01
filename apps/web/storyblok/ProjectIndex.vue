@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ProjectIndexBlock } from '~/types/storyblok'
-import { getGroupedWorks, type Work } from '~/data/works'
+import { getGroupedWorks } from '~/data/works'
 
 const props = defineProps<{
   blok: ProjectIndexBlock
@@ -16,12 +16,12 @@ function paintImage(image: string | null) {
   hoveredImage.value = image
 }
 
-// Catalogue numbering follows reading order.
-const flatWorks = computed(() => groupedWorks.value.flatMap((g) => g.items))
+// Catalogue numbering follows reading order — groups top-to-bottom,
+// items in the shared deterministic sort, so numerals climb I→XVIII.
 const numeralOf = computed(() => {
   const map = new Map<string, string>()
   const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII']
-  flatWorks.value.forEach((w, i) => {
+  groupedWorks.value.flatMap((g) => g.items).forEach((w, i) => {
     map.set(w.slug, numerals[i] ?? String(i + 1))
   })
   return map

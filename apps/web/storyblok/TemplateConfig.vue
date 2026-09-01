@@ -1,17 +1,28 @@
 <script setup lang="ts">
 import type { TemplateConfigBlock } from '~/types/storyblok'
+import { useMode, useTheme } from '~/composables/useTheme'
 
-defineProps<{
+const { setMode } = useMode()
+const { setTheme } = useTheme()
+
+const props = defineProps<{
   blok: TemplateConfigBlock
 }>()
+
+// Apply template defaults only on first visit — when no localStorage
+// preference exists. The no-FOUC bootstrap already resolved from
+// localStorage/prefers-color-scheme before paint; this only fills the
+// gap for a pristine browser.
+onMounted(() => {
+  if (props.blok.default_mode && !localStorage.getItem('mode')) {
+    setMode(props.blok.default_mode)
+  }
+  if (props.blok.default_theme && !localStorage.getItem('theme')) {
+    setTheme(props.blok.default_theme)
+  }
+})
 </script>
 
 <template>
-  <!-- TemplateConfig is a non-rendering data block: it carries the
-       client-customizer ("dialkit") payload for the page. The visual
-       editor reads it to drive the live mode/theme/scale switches; it
-       produces no DOM of its own. -->
-  <div v-editable="blok" class="template-config" hidden aria-hidden="true">
-    {{ blok }}
-  </div>
+  <!-- Non-rendering block: applies first-visit template defaults. -->
 </template>
