@@ -26,12 +26,12 @@ useGenerativeCanvas()
 
 <template>
   <div>
-    <!-- Generative background -->
+    <!-- Generative background — fixed canvas behind all content, shown only in generative mode -->
     <div class="gen-bg" aria-hidden="true">
       <canvas id="gen-canvas"></canvas>
     </div>
 
-    <!-- Construction grid -->
+    <!-- Construction grid (pinned decor) -->
     <div class="grid-rig" aria-hidden="true">
       <span class="grid-rig__v grid-rig__v--1"></span>
       <span class="grid-rig__v grid-rig__v--2"></span>

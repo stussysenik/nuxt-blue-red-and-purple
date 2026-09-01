@@ -2,6 +2,7 @@
 export interface SbComponentType {
   _uid: string
   component: string
+  [key: string]: unknown
 }
 
 export interface SbStoryType {
@@ -76,6 +77,38 @@ export interface PageBlock {
   }
 }
 
+// ── Template / Mode configuration ──────────────────────────────────────────
+// A single editable mode entry in the mode wheel.
+export interface ModeEntry {
+  _uid: string
+  mode_id: string // 'essential' | 'brutal' | 'clay' | 'generative'
+  name: string // Display name, editable
+  enabled?: boolean // false = hidden from the wheel
+}
+
+// Mode wheel block: editors rename modes, toggle visibility, reorder.
+export interface ModeWheelBlock {
+  _uid: string
+  component: 'mode_wheel'
+  modes?: ModeEntry[]
+}
+
+// Template config block: the client-customizer ("dialkit") payload.
+export interface TemplateConfigBlock {
+  _uid: string
+  component: 'template_config'
+  default_mode?: string
+  default_theme?: string
+  scale?: number
+}
+
+// Project index block: renders the works catalogue.
+export interface ProjectIndexBlock {
+  _uid: string
+  component: 'project_index'
+  title?: string
+}
+
 // Union type for all known blocks
 export type StoryblokBlock =
   | HeroBlock
@@ -85,3 +118,6 @@ export type StoryblokBlock =
   | FeatureBlock
   | TeaserBlock
   | PageBlock
+  | ModeWheelBlock
+  | TemplateConfigBlock
+  | ProjectIndexBlock

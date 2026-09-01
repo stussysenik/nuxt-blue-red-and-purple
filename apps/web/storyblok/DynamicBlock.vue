@@ -10,6 +10,9 @@ import Grid from './Grid.vue'
 import Feature from './Feature.vue'
 import Teaser from './Teaser.vue'
 import Page from './Page.vue'
+import ModeWheel from './ModeWheel.vue'
+import TemplateConfig from './TemplateConfig.vue'
+import ProjectIndex from './ProjectIndex.vue'
 
 const componentMap: Record<string, Component> = {
   hero: Hero,
@@ -19,6 +22,9 @@ const componentMap: Record<string, Component> = {
   feature: Feature,
   teaser: Teaser,
   page: Page,
+  mode_wheel: ModeWheel,
+  template_config: TemplateConfig,
+  project_index: ProjectIndex,
 }
 
 const props = defineProps<{
