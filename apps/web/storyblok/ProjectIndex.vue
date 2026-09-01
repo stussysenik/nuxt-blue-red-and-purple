@@ -2,12 +2,10 @@
 import type { ProjectIndexBlock } from '~/types/storyblok'
 import { getGroupedWorks } from '~/data/works'
 
-const props = defineProps<{
-  blok: ProjectIndexBlock
-}>()
+const { blok } = defineProps<{ blok: ProjectIndexBlock }>()
 
-// Works come from the data layer (Sanity-backed). The block configures
-// display options; the works themselves are the curated collection.
+// Works come from the data layer. The block configures display options;
+// the works themselves are the curated collection.
 const groupedWorks = getGroupedWorks()
 
 const hoveredImage = ref<string | null>(null)
@@ -17,15 +15,14 @@ function paintImage(image: string | null) {
 }
 
 // Catalogue numbering follows reading order — groups top-to-bottom,
-// items in the shared deterministic sort, so numerals climb I→XVIII.
-const numeralOf = computed(() => {
-  const map = new Map<string, string>()
-  const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII']
-  groupedWorks.value.flatMap((g) => g.items).forEach((w, i) => {
-    map.set(w.slug, numerals[i] ?? String(i + 1))
-  })
-  return map
-})
+// items in the shared deterministic sort, so numerals climb I→XVIII
+// straight down the index.
+const numerals = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII']
+const numeralOf = new Map(
+  groupedWorks
+    .flatMap((g) => g.items)
+    .map((w, i) => [w.slug, numerals[i] ?? String(i + 1)] as const)
+)
 </script>
 
 <template>

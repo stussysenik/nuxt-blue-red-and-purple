@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import type { ModeWheelBlock, ModeId } from '~/types/storyblok'
+import type { ModeWheelBlock } from '~/types/storyblok'
+import type { Mode } from '@brp/types'
 import { useMode } from '~/composables/useTheme'
 
 const { mode, setMode } = useMode()
 const { blok } = defineProps<{ blok: ModeWheelBlock }>()
 
+// A mode slot: the kernel id (union of four literals) + the display
+// name (editable in Storyblok).
+interface ModeSlot {
+  readonly id: Mode
+  readonly name: string
+}
+
 // Modes come from Storyblok — editable names, order, and which are active.
 // Falls back to the four canonical modes if the block is empty.
-const modes = computed(() => {
+const modes = computed<ModeSlot[]>(() => {
   if (blok.modes?.length) {
     return blok.modes.filter((m) => m.enabled !== false).map((m) => ({
       id: m.mode_id,
@@ -24,7 +32,7 @@ const modes = computed(() => {
 
 const activeIndex = computed(() => modes.value.findIndex((m) => m.id === mode.value))
 
-function selectMode(id: ModeId) {
+function selectMode(id: Mode) {
   setMode(id)
 }
 
