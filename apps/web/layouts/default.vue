@@ -8,6 +8,7 @@ const route = useRoute();
 const pathname = computed(() => route.path.replace(/\/+$/, '') || '/');
 const onHome = computed(() => pathname.value === '/');
 const onIndex = computed(() => pathname.value === '/works');
+const onSystem = computed(() => pathname.value === '/system');
 
 const INQUIRY = 'mailto:hi@blueredandpurple.world';
 
@@ -35,6 +36,9 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
         <NuxtLink to="/works" class="chrome__index font-mono" :aria-current="onIndex ? 'page' : undefined">
           Index
         </NuxtLink>
+        <NuxtLink to="/system" class="chrome__index font-mono" :aria-current="onSystem ? 'page' : undefined">
+          System
+        </NuxtLink>
         <!-- Archived: Generator/World/Showcase nav links.
         <NuxtLink to="/generator" class="chrome__generator font-mono" :aria-current="onGenerator ? 'page' : undefined">
           Generator
@@ -47,6 +51,9 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
         </NuxtLink>
         -->
         <div class="chrome__group">
+          <NuxtLink to="/cms" class="chrome__cms font-mono">
+            CMS
+          </NuxtLink>
           <a :href="INQUIRY" class="chrome__cta">
             Get in touch<span class="chrome__arrow" aria-hidden="true">↗</span>
           </a>
@@ -164,6 +171,25 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
   transform: scale(0.97);
 }
 
+.chrome__cms {
+  font-size: var(--type-label);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0.3em 0.6em;
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  transition: background var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+
+.chrome__cms:hover {
+  background: var(--paper-1);
+}
+
 .chrome__home[aria-current='page'],
 .chrome__index[aria-current='page'] {
   pointer-events: none;
@@ -194,6 +220,9 @@ const { visible: toolbarVisible, isReady: toolbarReady } = useToolbar();
   .chrome__index {
     letter-spacing: 0.12em;
     font-size: 0.7rem;
+  }
+  .chrome__index:not(:first-child) {
+    margin-left: -0.3rem;
   }
   .chrome__group {
     gap: var(--space-2);

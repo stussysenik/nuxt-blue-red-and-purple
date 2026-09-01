@@ -1,69 +1,90 @@
 <script setup lang="ts">
-import { getGroupedWorks } from '~/data/works';
-import { toRoman } from '~/data/roman';
+// Works index: fetches works from Sanity, grouped by category.
+// Falls back to empty array if Sanity is not configured (build-time safety).
 
-useHead({
-  title: 'Project index — *blue red + purple/',
-});
+const query = groq`*[_type == "work" && isHidden != true] | order(sortOrder asc, year desc){
+  _id, slug, title, category, year, image, palette, isReal, mechanic, summary
+}`
 
-const groups = getGroupedWorks();
-const allWorks = groups.flatMap((g) => g.items);
-const numeralOf = new Map(allWorks.map((w, i) => [w.slug, toRoman(i + 1)] as const));
+const { data: works } = await useSanityQuery<
+  Array<{
+    _id: string
+    slug: { current: string }
+    title: string
+    category: string
+    year: number
+    image: any
+    palette: string[]
+    isReal: boolean
+    mechanic: string
+    summary: string
+  }>
+>(query)
 
-const hoveredImage = ref<string | null>(allWorks[0]?.image ?? null);
+// Group by category (matching existing site behavior)
+const CATEGORY_ORDER = ['restaurant', 'hotel', 'music', 'books', 'vintage']
 
-function paintImage(url: string | null) {
-  hoveredImage.value = url;
+const groupedWorks = computed(() => {
+  if (!works.value) return []
+  const visible = works.value.filter((w) => !w.isHidden)
+  return [...new Set(visible.map((w) => w.category))]
+    .sort((a, b) => {
+      const ai = CATEGORY_ORDER.includes(a) ? CATEGORY_ORDER.indexOf(a) : 99
+      const bi = CATEGORY_ORDER.includes(b) ? CATEGORY_ORDER.indexOf(b) : 99
+      return ai - bi || a.localeCompare(b)
+    })
+    .map((category) => ({
+      category,
+      items: visible.filter((w) => w.category === category),
+    }))
+})
+
+const hoveredImage = ref<string | null>(null)
+
+// Build image URL from Sanity asset reference
+function getImageUrl(image: any): string | null {
+  if (!image?.asset?._ref) return null
+  // Sanity image ref format: image-<assetId>-<dimensions>-<format>
+  const ref = image.asset._ref
+  const [, assetId, dimensions, format] = ref.match(/^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/) || []
+  if (!assetId) return null
+  const projectId = useSanityConfig().projectId
+  return `https://cdn.sanity.io/images/${projectId}/production/${assetId}-${dimensions}.${format}`
 }
 
-// Archived: vertical descriptions (tagline + blurb per category). The live
-// site uses plain "{category} store" labels. These were generator-direction
-// copy. Restore by uncommenting VERTICAL_DESCRIPTIONS and the blurb elements.
-// const VERTICAL_DESCRIPTIONS: Record<string, { tagline: string; blurb: string }> = {
-//   restaurant: { tagline: 'Menus, counters, and one-page ordering', blurb: '...' },
-//   music: { tagline: 'Tour dates, releases, and artist worlds', blurb: '...' },
-//   hotel: { tagline: 'Booking-first, restraint as the brand', blurb: '...' },
-//   books: { tagline: 'Reading-mode, the book is the interface', blurb: '...' },
-//   vintage: { tagline: 'Editorial stacks and dated drops', blurb: '...' },
-// };
+function paintImage(image: any) {
+  hoveredImage.value = getImageUrl(image)
+}
+
+useHead({ title: 'Project index — *blue red + purple/' })
 </script>
 
 <template>
   <main class="index">
-    <span class="index__ghost" :style="{ backgroundImage: hoveredImage ? `url('${hoveredImage}')` : '' }" aria-hidden="true"></span>
+    <span
+      class="index__ghost"
+      :style="{ backgroundImage: hoveredImage ? `url('${hoveredImage}')` : '' }"
+      aria-hidden="true"
+    />
 
     <h1 class="visually-hidden">Project index</h1>
 
-    <section v-for="group in groups" :key="group.category" class="group">
+    <section v-for="group in groupedWorks" :key="group.category" class="group">
       <h2 class="group__label font-mono ttu tracked">{{ group.category }} store</h2>
       <ul class="index__list">
-        <li v-for="w in group.items" :key="w.slug">
+        <li v-for="w in group.items" :key="w._id">
           <NuxtLink
             class="row"
-            :to="`/works/${w.slug}`"
+            :to="`/works/${w.slug.current}`"
             @pointerenter="paintImage(w.image)"
             @focus="paintImage(w.image)"
           >
             <span class="row__dot" aria-hidden="true" />
-            <span class="row__title">{{ numeralOf.get(w.slug) }}</span>
+            <span class="row__title">{{ w.title }}</span>
           </NuxtLink>
         </li>
       </ul>
     </section>
-
-    <!-- ── Archived: Generator CTA (unfinished generator-direction content) ──
-    <section class="gen-cta">
-      <h2 class="gen-cta__h2">Or describe what you need</h2>
-      <p class="gen-cta__blurb measure">
-        Tell us about your project in plain English. Our generator maps your
-        intent to a complete design system — mode, palette, typography — in
-        real time. No templates. No subscriptions.
-      </p>
-      <NuxtLink to="/generator" class="gen-cta__link">
-        Try the generator<span class="gen-cta__arrow" aria-hidden="true">↗</span>
-      </NuxtLink>
-    </section>
-    -->
   </main>
 </template>
 
@@ -149,9 +170,7 @@ function paintImage(url: string | null) {
   flex: none;
   opacity: 0;
   transform: scale(0.3);
-  transition:
-    opacity 0.25s var(--ease),
-    transform 0.25s var(--ease);
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
 }
 
 .row:hover .row__dot,
@@ -167,7 +186,6 @@ function paintImage(url: string | null) {
   line-height: 1.1;
   letter-spacing: var(--tracking-display);
   color: inherit;
-  font-variant-numeric: tabular-nums;
 }
 
 .index:has(.row:hover) .index__ghost,
@@ -176,19 +194,6 @@ function paintImage(url: string | null) {
   filter: blur(40px) saturate(1.18);
   transform: scale(1.08);
 }
-
-/* ── Archived: Generator CTA styles ───────────────────────────────────
-   The gen-cta section is archived in the template above. These styles are
-   kept for restore-on-uncomment but could be removed if the section stays
-   hidden long-term.
-.gen-cta { ... }
-.gen-cta__h2 { ... }
-.gen-cta__blurb { ... }
-.gen-cta__link { ... }
-.gen-cta__link:hover { ... }
-.gen-cta__arrow { ... }
-.gen-cta__link:hover .gen-cta__arrow { ... }
-── */
 
 @media (prefers-reduced-motion: reduce) {
   .index__ghost,

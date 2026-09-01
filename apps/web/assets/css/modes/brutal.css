@@ -24,19 +24,19 @@
 }
 
 [data-mode='brutal'][data-theme='light'] {
-  --paper: #f7f3ec;
-  --paper-1: #ffffff;
-  --ink: #16130f;
-  --ink-1: #16130f;
-  --ink-2: #3d3a34;
-  --ink-3: #6e6a61;
+  --paper: #ffffff;
+  --paper-1: #f0f0f0;
+  --ink: #000000;
+  --ink-1: #000000;
+  --ink-2: #333333;
+  --ink-3: #666666;
 }
 
 [data-mode='brutal'][data-theme='dark'] {
-  --paper: #16130f;
-  --paper-1: #221e18;
-  --ink: #f7f3ec;
-  --ink-1: #f7f3ec;
-  --ink-2: #d8d3c9;
-  --ink-3: #a8a399;
+  --paper: #000000;
+  --paper-1: #111111;
+  --ink: #ffffff;
+  --ink-1: #ffffff;
+  --ink-2: #cccccc;
+  --ink-3: #999999;
 }

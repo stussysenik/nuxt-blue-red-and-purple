@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-08-27',
-  devtools: { enabled: false },
+  devtools: { enabled: true },
   devServer: {
     host: '127.0.0.1',
     port: 3000,
@@ -11,26 +11,6 @@ export default defineNuxtConfig({
     prerender: {
       crawl: true,
       routes: [
-        '/',
-        '/works',
-        '/works/smac',
-        '/works/olive-thyme',
-        '/works/midnight-noodle',
-        '/works/veranda',
-        '/works/after',
-        '/works/b374',
-        '/works/d429',
-        '/works/f853',
-        '/works/skrillex',
-        '/works/b421',
-        '/works/b508',
-        '/works/b970',
-        '/works/echo-chamber',
-        '/works/g858',
-        '/works/h724',
-        '/works/l384',
-        '/works/p673',
-        '/works/d445',
         '/showcase',
         '/generator',
         '/design',
@@ -40,16 +20,31 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/': { prerender: true },
-    '/works': { prerender: true },
-    '/works/**': { prerender: true },
+    // Storyblok-powered pages: SSR with s-maxage cache
+    '/': { swr: 60, ssr: true },
+    '/works': { swr: 60, ssr: true },
+    '/works/**': { swr: 300, ssr: true },
+    // Static pages: prerender at build time
     '/showcase': { prerender: true },
     '/generator': { prerender: true },
     '/design': { prerender: true },
     '/world': { prerender: true },
+    // API routes
     '/api/**': { ssr: true },
   },
-  modules: ['@unocss/nuxt'],
+  modules: ['@unocss/nuxt', '@storyblok/nuxt'],
+
+  storyblok: {
+    accessToken: 'zpujJltrUcgk20CfGqTe5gtt',
+    // bridge: enables the visual editor bridge for inline editing
+    // Editors see "Edit" overlays when logged into Storyblok preview
+    bridge: true,
+    enableSudo: true,
+    // Visual editor: enables live preview and inline editing
+    apiOptions: {
+      cache: { type: 'memory', clear: 'auto' },
+    },
+  },
   css: ['~/assets/css/fonts.css', '~/assets/css/base.css'],
   router: {},
   app: {

@@ -1,187 +1,156 @@
-# blue red + purple
+# blueredandpurple — Website + CMS
 
-A design agency with one specialization: one-page systems. One fixed content
-structure, four interchangeable design systems — switched live.
+A design agency website powered by **Nuxt 3** (frontend) + **Sanity** (CMS).
 
-## Monorepo structure
+## Architecture
 
 ```
-.
+blueredandpurple/
+├── studio/          # Sanity Studio (standalone, independent deployment)
+│   ├── sanity.config.ts    # Studio UI + visual editing
+│   ├── schemaTypes/        # Content model (page, work, blocks)
+│   └── package.json        # Sanity + React deps
+│
 ├── apps/
-│   └── web/          # Nuxt 3 site (the agency site + work index)
-├── packages/
-│   ├── tokens/       # @brp/tokens — palette, color law, design constants
-│   ├── types/        # @brp/types — shared TypeScript types (Work, Theme, Mode)
-│   └── unocss-preset/ # @brp/unocss-preset — vendored Tachyons vocabulary
-├── package.json      # workspace root (scripts delegate to filters)
-└── pnpm-workspace.yaml
+│   └── web/         # Nuxt 3 frontend
+│       ├── pages/
+│       │   ├── index.vue        # Homepage (fetches from Sanity)
+│       │   └── works/index.vue  # Works index (fetches from Sanity)
+│       ├── lib/
+│       │   └── content.ts       # Content adapter (future-proofing)
+│       └── nuxt.config.ts      # @nuxtjs/sanity module
+│
+└── apps/web/scripts/
+    ├── seed-home.ts     # Create home page in Sanity
+    └── seed-works.ts    # Import existing works into Sanity
 ```
 
-## Packages
+## Quick Start
 
-| Package | Exports | Purpose |
-|---------|---------|---------|
-| `@brp/tokens` | `PALETTE`, `PaletteToken` | Single source of truth for the color law. No blue/red/purple in chrome. |
-| `@brp/types` | `Work`, `Theme`, `Mode` | Shared domain types consumed by the app and future packages. |
-| `@brp/unocss-preset` | `tachyonsPreset`, `STEP`, `FONT`, `COLOR_TOKENS` | Vendored Tachyons ruleset. Data-driven, resolves to CSS custom properties. |
+### Prerequisites
+- Node.js 22.12+
+- pnpm 11+
 
-## Development
+### 1. Install dependencies
 
 ```bash
-pnpm dev          # starts @brp/web on localhost:3000
-pnpm build        # production build of @brp/web
-pnpm typecheck    # runs typecheck in every package
-pnpm lint         # biome check across the workspace
+# Root (Nuxt app)
+pnpm install
+
+# Studio (separate)
+cd studio && pnpm install
 ```
 
-## Branching model
-
-- `main` is the release branch. It only ever receives merges from `develop` (or hotfixes). Never commit directly.
-- `develop` is the integration branch. Feature branches merge here.
-- All work happens on feature branches: `feature/<short-description>`.
-- Commit early, commit often. Small focused commits over big-bang merges.
-- Use conventional commit prefixes (`feat:`, `fix:`, `chore:`, `refactor:`, `docs:`).
+### 2. Environment variables
 
 ```bash
-# Start a new feature
-git checkout develop
-git pull
-git checkout -b feature/my-thing
+# Nuxt app (.env.local in apps/web/)
+NUXT_SANITY_PROJECT_ID=lkyz5ssa
+NUXT_SANITY_DATASET=production
+SANITY_API_READ_TOKEN=your-read-token
 
-# Done? Merge back
-git checkout develop
-git merge feature/my-thing
+# Studio (.env.local in studio/)
+SANITY_STUDIO_PREVIEW_ORIGIN=http://localhost:3000
+SANITY_API_READ_TOKEN=your-read-token
 ```
 
-## Architecture decisions
+### 3. Start development
 
-- **Design tokens are code, not config.** `@brp/tokens` exports TypeScript, so the
-  UnoCSS config, the design-doc generator, and any future app all read one source.
-- **The Tachyons vocabulary is vendored.** We own the table. Rules are generated
-  from data scales (DOP) — no per-utility hex ever ships; everything resolves to
-  `--ink`, `--paper`, `--spot` custom properties.
-- **Mode kernels are CSS-only.** Switching design system = two attribute writes
-  (`data-mode`, `data-theme`). No JS re-render, no class toggling on individual
-  elements.
-- **Work data is static.** The works index is a typed data file, not a CMS query.
-  Roman numerals are computed, not stored.
+```bash
+# Terminal 1: Sanity Studio
+cd studio && ppnpm dev
+# → http://localhost:3333
 
----
-
-## Product direction
-
-> **BRP builds generative brand worlds for the music industry.**
-> Not websites. Worlds. A portal you step into, not a page you scroll.
-
-### The thesis
-
-World-building is at the core of what we do. A website should be an extension of
-a brand's world. We build custom digital experiences that immerse audiences deeper
-into a brand — creating identity through visuals and story.
-
-For the music industry specifically: we bring together music, visuals, releases,
-videos, tour dates, and everything surrounding an artist's project in one place
-that feels like stepping into their universe.
-
-### The business model
-
-**B2B. We sell to record labels.**
-
-Labels care about three things: artist discovery, marketing/customer acquisition,
-and content production. Our generative engine hits the latter two.
-
-| Tier | What it is | Price |
-|------|-----------|-------|
-| Release Campaign World | Generative world for a specific album/EP/single drop. Pre-release teaser → release day unlock → post-release growth. | $15–50k/release |
-| Artist World (Always-On) | Living world that evolves with the artist's career. New music auto-integrates, tour dates update, fan community grows. | $5–15k setup + $2–5k/mo |
-| Label OS (Roster-Wide) | White-label. Every artist on the roster gets a world. Label dashboard shows fan acquisition cost, conversion, engagement depth. | $20–100k/yr |
-
-### The unfair advantage
-
-A traditional label spends $15–50k and 6+ weeks on an artist's web presence (team
-of 5+). Our generative engine does it in 48 hours for a fraction of the cost.
-
-The engine IS the margin. The world IS the marketing. The world markets itself
-through shareable artifacts and viral fan loops.
-
-### The pitch to labels
-
-> "We build generative fan worlds that cut your customer acquisition cost by 60%.
-> You spend $50k on a marketing campaign. We build a world for $15k that acquires
-> fans at 1/3 the cost and keeps growing after the campaign ends."
-
----
-
-## Build progress
-
-### 2026-08-27 — Direction locked, demo scoped
-
-**Decision:** Build the Toure Xali generative world as the proof-of-concept demo.
-This is the artifact that sells the vision. Ship by 2026-08-28.
-
-**What the demo is:**
-- An immersive WebGL environment (reusing the existing generative canvas shader engine)
-- Artist's brand colors drive the generative visuals
-- Music player integrated
-- Discoverable "artifacts" — song clips, video, photos, notes, voice memos
-- Fan interaction — leave a message, sign the wall, unlock content
-- Share mechanic — each visitor gets a unique artifact to share on social
-- Campaign phases — pre-release (mysterious) → release day (blooms) → post-release (grows)
-- Industry door — press kit, booking, streaming links
-
-**Architecture:**
-```
-world/
-  world.config.ts        # Artist brief → world configuration
-  components/
-    WorldCanvas.vue      # Generative WebGL background (reuses shader engine)
-    WorldArtifacts.vue   # Discoverable content nodes
-    WorldFan.vue         # Fan interaction layer
-    WorldMusic.vue       # Music player
-    WorldCampaign.vue    # Campaign phase controller
-  pages/
-    world.vue            # The world entry point
+# Terminal 2: Nuxt app
+cd apps/web && pnpm dev
+# → http://localhost:3000
 ```
 
-**Clean architecture principles:**
-- World is data. A brief goes in, a world configuration comes out.
-- Components render the configuration. No per-artist custom code.
-- The shader engine is reused — palette and mood parameters change, engine stays.
-- Systematic, not hacky. Every artist gets the same engine, different world.
+### 4. Seed initial content
 
-**Next steps after demo:**
-1. Research Toure Xali — sound, aesthetic, campaign goals
-2. Build the world config from his brief
-3. Implement the world page + components
-4. Deploy live
-5. Film the walkthrough → post on X/LinkedIn → tag labels and A&Rs
-6. Outbound to 50 labels + 100 A&Rs
+```bash
+cd apps/web
+SANITY_API_WRITE_TOKEN=your-write-token pnpm run sanity:seed
+```
+
+This creates a home page with default sections and imports all 18 works.
 
 ---
 
-## Website updates (pending)
+## Content Editing
 
-Changes to the BRP agency site that support the new direction:
+### For non-technical editors
 
-- [ ] **About Us** — New world-building copy (see product direction above)
-- [ ] **Nav** — Change "Get in touch" to "Contact" (top-right)
-- [ ] **Roman numerals** — Use Mono45 backslash character in works index
-- [ ] **Remove** bottom contacts section (link to top-right Contact instead)
-- [ ] **Keep** "Previously: BFA Cooper Union" and "Free game" lineage
+1. Open **Sanity Studio** at `http://localhost:3333` (or the deployed URL)
+2. Log in with your Google/GitHub account (must be invited as a project member)
+3. Edit the **Home** page → modify hero tagline, about text, contact info
+4. Edit **Works** → add/remove works, toggle visibility, change order
+5. Click **Publish** → changes appear on the live site in seconds
+
+### Visual Editing (advanced)
+
+With a read token configured, editors see "Edit" overlays directly on the live site:
+- Click any text field → edit in-place
+- Changes publish instantly via Sanity's CDN
 
 ---
 
-## Related repos
+## Deployment
 
-| Repo | Role |
-|------|------|
-| `valoric` | Generative engine mothership — typed IR kernel, multi-target emit, grammar gates |
-| `one-page-love-solidstart` | Consumer harness — prompt → full HTML site (Loop) |
-| `valoric-flutter` | Flutter emit target + builder UI + AI generator |
-| `valoric-typescript` | TS/React IR→render engine |
-| `valoric-solidstart` | SolidStart web seam |
-| `valoric-svelte` | Svelte 5 web seam |
-| `stussysenik-onlook` | Local-first visual editing |
+### Nuxt app → Vercel
+```bash
+cd apps/web && pnpm build
+# Connect to Vercel, auto-detects Nuxt 3
+```
 
-All repos share one thesis: **generative brand systems for the music industry,
-sold B2B to record labels.**
+### Studio → Sanity hosting
+```bash
+cd studio && pnpm deploy
+# → https://your-project.sanity.io
+```
+
+---
+
+## Content Backup
+
+Export all content to a git-tracked backup:
+```bash
+cd apps/web && pnpm run sanity:backup
+# → server/backups.tar.gz
+```
+
+---
+
+## Self-hosting Path
+
+If you outgrow Sanity's free tier:
+
+1. Export content: `pnpm run sanity:backup`
+2. Implement `ContentAdapter` in `lib/content.ts` with your backend
+3. Swap the adapter in `pages/index.vue` and `pages/works/index.vue`
+
+The frontend components don't change — only the data source.
+
+---
+
+## Project Structure
+
+### Content Types
+
+| Type | Fields | Used In |
+|------|--------|---------|
+| `page` | title, slug, sections[] | Homepage |
+| `work` | title, slug, category, year, image, summary, palette, isReal, isHidden, sortOrder | Portfolio |
+| `hero` | tagline, layout | Page sections |
+| `textSection` | text, align | Page sections |
+| `worksGrid` | columns, category, showCount | Page sections |
+| `contact` | email, phone | Page sections |
+
+### Route Rules
+
+| Route | Rendering | Cache |
+|-------|-----------|-------|
+| `/` | SSR | 60s SWR |
+| `/works` | SSR | 60s SWR |
+| `/works/[slug]` | SSR | 300s SWR |
+| `/showcase`, `/generator`, `/design`, `/world` | Prerendered | Build-time |

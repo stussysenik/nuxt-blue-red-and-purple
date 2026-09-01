@@ -21,6 +21,16 @@ export function broadcastUpdate(data: any): void {
   }
 }
 
+// Broadcast builder-specific events (block changes, page changes)
+export function broadcastBuilderEvent(event: string, payload: any): void {
+  broadcastUpdate({
+    type: 'builder_event',
+    event,
+    payload,
+    timestamp: Date.now(),
+  });
+}
+
 // SSE endpoint handler
 export function createSSEHandler(event: any): void {
   const nodeEvent = event.node.res;

@@ -24,21 +24,21 @@
 }
 
 [data-mode='clay'][data-theme='light'] {
-  --paper: #f4eee4;
-  --paper-1: #fbf7f0;
-  --ink: #1b1712;
-  --ink-1: #423d36;
-  --ink-2: #6e695c;
-  --ink-3: #6e695c;
-  --line: #e3dacb;
+  --paper: #ffffff;
+  --paper-1: #f0f0f0;
+  --ink: #000000;
+  --ink-1: #333333;
+  --ink-2: #666666;
+  --ink-3: #999999;
+  --line: #e0e0e0;
 }
 
 [data-mode='clay'][data-theme='dark'] {
-  --paper: #17140f;
-  --paper-1: #211d17;
-  --ink: #f6f1e8;
-  --ink-1: #d6d1c7;
-  --ink-2: #a6a196;
-  --ink-3: #8a8578;
-  --line: #2e2a23;
+  --paper: #000000;
+  --paper-1: #111111;
+  --ink: #ffffff;
+  --ink-1: #cccccc;
+  --ink-2: #999999;
+  --ink-3: #666666;
+  --line: #222222;
 }
